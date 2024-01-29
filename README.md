@@ -1,6 +1,17 @@
 # Federated Learning: clients/server desktop implementation
 This is a design of a simple client/server architecture to simulate federated learning involving real nodes, where each node (client) owns its own data. The client and server are written in Python and communicate via sockets using the TCP transport protocol.
 
+## Table of contents
+
+* [Architecture](#architecture)
+    + [Server](#server)
+    + [Client](#client)
+    + [Message exchange](#message-exchange)
+    + [Limits of the implementation](#limits-of-the-implementation)
+* [Simulation Mnist Dataset](#simulation-mnist-dataset)
+    + [Requirements](#requirements)
+    + [Launch simulation](#launch-simulation)
+
 ## Architecture
 ![fl_architecture](/images/fl_arc.png)
 
@@ -44,7 +55,7 @@ Before each training, the dataset is shuffled to avoid overfitting situations an
 
 Once the federated training is complete, the client closes the connection with the server.
 
-### Client/server message exchange
+### Message exchange
 The communication between the server and clients occurs through the TCP transport protocol. Each transmitted message consists of a variable-length sequence of bytes, where the first four bytes indicate the message length.
 
 The message is composed of:
