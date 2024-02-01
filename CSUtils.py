@@ -1,8 +1,6 @@
 from enum import Enum
 import pickle
 import struct
-from tensorflow.keras.models import Sequential
-import tensorflow.keras.layers as layers
 
 
 class MessageType(Enum):
@@ -10,18 +8,6 @@ class MessageType(Enum):
     CLIENT_TRAINED_WEIGHTS = 2
     END_FL_TRAINING = 3
     CLIENT_EVALUATION = 4
-
-
-def get_skeleton_model() -> Sequential:
-    """
-    Return the skeleton of the model
-    :return: skeleton of the model
-    """
-    return Sequential([
-        layers.InputLayer(input_shape=(784,)),
-        layers.Dense(10),
-        layers.Softmax(),
-    ])
 
 
 def build_message(msg_type: MessageType, body: object) -> bytes:

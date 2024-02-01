@@ -1,19 +1,19 @@
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from abc import ABC, abstractmethod
 import numpy as np
 import socket
 import threading
 import struct
 import CSUtils
 from matplotlib import pyplot as plt
+from tensorflow.keras.models import Model
 
 
-class TCPServer:
-    NUMBER_OF_CLIENTS = 10
-    ROUNDS = 10
+class TCPServer(ABC):
 
-    def __init__(self, address):
+    def __init__(self, address, number_clients, number_rounds):
         self.server_address = address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_sockets = []  # list of client sockets
@@ -21,7 +21,9 @@ class TCPServer:
         self.client_weights = {}  # shared variable
         self.clients_evaluations = {}  # shared variable
         self.weights = self.initialize_federated_model()
-        self.round = 0
+        self.actual_round = 0
+        self.number_clients = number_clients
+        self.numer_rounds = number_rounds
         # threads
         self.client_threads = []  # list of client threads connected to the server
         self.thread_client_connections = None
@@ -34,7 +36,7 @@ class TCPServer:
     def bind_and_listen(self) -> None:
         """It makes the server listening to server_address"""
         self.socket.bind(self.server_address)
-        self.socket.listen(self.NUMBER_OF_CLIENTS)
+        self.socket.listen(self.number_clients)
         print("Server active on {}:{}".format(*self.server_address))
 
     @staticmethod
@@ -194,7 +196,7 @@ class TCPServer:
         to manage the communication client<-->server.
         """
         n_client = 0
-        while n_client < self.NUMBER_OF_CLIENTS:
+        while n_client < self.number_clients:
             # Client connection
             client_socket, client_address = self.socket.accept()
 
@@ -219,13 +221,13 @@ class TCPServer:
             while True:
                 self.condition_add_weights.wait()
                 # Check if all clients involved have sent trained weights
-                if len(self.client_weights) >= self.NUMBER_OF_CLIENTS:
+                if len(self.client_weights) >= self.number_clients:
                     # aggregate weights
                     self.aggregate_weights()
                     # send new model to clients
                     self.send_fl_model_to_clients()
                     # increase round
-                    self.round += 1
+                    self.actual_round += 1
 
     def handle_final_evaluations(self) -> None:
         """
@@ -236,7 +238,7 @@ class TCPServer:
                 self.condition_add_client_evaluation.wait()
                 i = 4
                 # Check if all clients involved have sent the evaluation
-                if len(self.clients_evaluations) == self.NUMBER_OF_CLIENTS:
+                if len(self.clients_evaluations) == self.number_clients:
 
                     def plot_metric_per_client(metric_type, values):
                         fig, ax = plt.subplots()
@@ -289,8 +291,8 @@ class TCPServer:
                         # plt.savefig(f'plots/{metric_type}_federated_model.png')
                         plt.show()
 
-                    # plot_average("accuracy", ac_mean)
-                    # plot_average("loss", loss_mean)
+                    plot_average("accuracy", ac_mean)
+                    plot_average("loss", loss_mean)
 
     def send_fl_model_to_client(self, client_socket: socket.socket) -> None:
         """
@@ -301,7 +303,7 @@ class TCPServer:
         """
         msg_type = CSUtils.MessageType.END_FL_TRAINING
 
-        if self.round < self.ROUNDS - 1:
+        if self.actual_round < self.numer_rounds - 1:
             msg_type = CSUtils.MessageType.FEDERATED_WEIGHTS
 
         self.send_message(client_socket, msg_type, self.weights)
@@ -316,15 +318,22 @@ class TCPServer:
             else:
                 self.client_sockets.remove(client_socket)
 
-    @staticmethod
-    def initialize_federated_model() -> np.ndarray:
+    @abstractmethod
+    def get_skeleton_model(self) -> Model:
+        """
+        Get the skeleton of the model
+        :return: keras Model
+        """
+        pass
+
+    def initialize_federated_model(self) -> np.ndarray:
         """
         Initialize weights of the model to send to clients.
         :return: weights
         :rtype: np.ndarray
         """
 
-        model = CSUtils.get_skeleton_model()
+        model = self.get_skeleton_model()
 
         model_weights = model.get_weights()
 
@@ -343,20 +352,3 @@ class TCPServer:
         self.weights = weights / len(self.client_weights)
 
         self.client_weights.clear()
-
-
-if __name__ == "__main__":
-    server_address = ('localhost', 12345)
-
-    # Server creation and initialization
-    server = TCPServer(server_address)
-
-    try:
-        # Binding and ready to listen
-        server.bind_and_listen()
-        # Create server threads
-        server.create_server_threads()
-    finally:
-        server.join_server_threads()
-        # Close server socket
-        server.socket.close()
