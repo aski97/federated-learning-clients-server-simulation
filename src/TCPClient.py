@@ -1,13 +1,11 @@
 import os
 
-import keras.optimizers
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from abc import ABC, abstractmethod
 import struct
 import numpy as np
 import socket
-from tensorflow.keras.models import Model
+import tensorflow.keras as keras
 import src.CSUtils as cs_utils
 
 np.random.seed(1)  # reproducibility of simulations
@@ -122,7 +120,7 @@ class TCPClient(ABC):
         pass
 
     @abstractmethod
-    def get_skeleton_model(self) -> Model:
+    def get_skeleton_model(self) -> keras.Model:
         """
         Get the skeleton of the model
         :return: keras model

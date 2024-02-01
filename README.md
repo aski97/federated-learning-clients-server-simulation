@@ -10,7 +10,7 @@ This is a design of a simple client/server architecture to simulate federated le
     + [Limits of the implementation](#limits-of-the-implementation)
 * [Requirements](#requirements)
 * [Simulation Mnist Dataset](#simulation-mnist-dataset)
-    + [Requirements](#requirements)
+    + [Install required packages](#install-required-packages)
     + [Launch simulation](#launch-simulation)
 
 ## Architecture
@@ -27,13 +27,13 @@ This sequence is iterated for a predetermined number of rounds, at the end of wh
 ###  Server
 The server is implemented in the file [TCPServer.py](/src/TCPServer.py). When the script is executed, a socket is opened at the specified address, in our case, localhost:12345, and three threads are created:
 
-+ A thread, **thread_client_connections**, listens to accept client connections. It accepts up to a number of connections equal to *NUMBER_OF_CLIENTS*. For each connected client, a *client_thread* is associated with it to handle communication.
++ A thread, **thread_client_connections**, listens to accept client connections. It accepts up to a number of connections equal to *number_clients*. For each connected client, a *client_thread* is associated with it to handle communication.
 + A thread, **thread_fl_algorithms**, manages rounds for federated learning. Once all clients send their weights, it calculates the average of all weights and sends the new model to the clients.
 + A thread, **thread_final_evaluations**, performs the final evaluation of the learning. When the learning process concludes, it collects the accuracies and losses of each local model and creates graphs.
 
 At this point, the server waits for client connections, and when a connection is initialized, the server sends an initialized model to the node, represented by weights and biases with values set to 0.
 
-When all clients are connected, the server waits for the reception of local models, thus starting the learning phase that lasts for a number of rounds defined by the *ROUNDS* variable. At each round, when the server collects all models, the following sequence of events occurs:
+When all clients are connected, the server waits for the reception of local models, thus starting the learning phase that lasts for a number of rounds defined by the *number_rounds* variable. At each round, when the server collects all models, the following sequence of events occurs:
 
 1. Models (weights and biases) are aggregated by taking the average of the models.
 2. The server sends the resulting model to all clients.
@@ -99,7 +99,7 @@ pip install tensorflow
 
 ## Simulation Mnist Dataset
 
-### Install required package
+### Install required packages
 1. Install [Requirements](#requirements).
 
 2. Install the released TensorFlow Federated Python package (for the federated mnist dataset)
