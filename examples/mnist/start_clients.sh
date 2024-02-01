@@ -8,6 +8,6 @@ fi
 instances=$1
 
 for ((i=0; i<instances; i++)); do
-    xterm -e "python3 TCPClient.py $i" &
+    xterm -e "python3 Client.py $i" &
 #    python3 "TCPClient.py" " $i" & disown
 done

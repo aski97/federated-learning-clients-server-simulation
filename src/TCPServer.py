@@ -6,7 +6,7 @@ import numpy as np
 import socket
 import threading
 import struct
-import CSUtils
+import src.CSUtils as cs_utils
 from matplotlib import pyplot as plt
 from tensorflow.keras.models import Model
 
@@ -23,7 +23,7 @@ class TCPServer(ABC):
         self.weights = self.initialize_federated_model()
         self.actual_round = 0
         self.number_clients = number_clients
-        self.numer_rounds = number_rounds
+        self.number_rounds = number_rounds
         # threads
         self.client_threads = []  # list of client threads connected to the server
         self.thread_client_connections = None
@@ -39,15 +39,29 @@ class TCPServer(ABC):
         self.socket.listen(self.number_clients)
         print("Server active on {}:{}".format(*self.server_address))
 
+    def run(self) -> None:
+        """
+        Execute server tasks
+        """
+        try:
+            # listen to clients connections
+            self.bind_and_listen()
+            # Create server threads
+            self.create_server_threads()
+        finally:
+            self.join_server_threads()
+            # Close server socket
+            self.socket.close()
+
     @staticmethod
-    def send_message(recipient: socket.socket, msg_type: CSUtils.MessageType, body: object) -> None:
+    def send_message(recipient: socket.socket, msg_type: cs_utils.MessageType, body: object) -> None:
         """
         Send a message to a client in {'type': '', 'body': ''} format
         :param recipient: recipient socket.
         :param msg_type: type of the message.
         :param  body: body of the message.
         """
-        msg_serialized = CSUtils.build_message(msg_type, body)
+        msg_serialized = cs_utils.build_message(msg_type, body)
         recipient.sendall(msg_serialized)
 
     @staticmethod
@@ -70,7 +84,7 @@ class TCPServer(ABC):
                 break
             data += packet
 
-        return CSUtils.unpack_message(data)
+        return cs_utils.unpack_message(data)
 
     def create_server_threads(self) -> None:
         """
@@ -149,7 +163,7 @@ class TCPServer(ABC):
 
                 # behave differently with respect to the type of message received
                 match m_type:
-                    case CSUtils.MessageType.CLIENT_TRAINED_WEIGHTS:
+                    case cs_utils.MessageType.CLIENT_TRAINED_WEIGHTS:
                         # Received trained weights from the client
                         # print("Received trained weights")
                         # Add weights to the shared variable
@@ -158,7 +172,7 @@ class TCPServer(ABC):
                             self.client_weights[client_id] = weights
                             # Notify the server thread
                             self.condition_add_weights.notify()
-                    case CSUtils.MessageType.CLIENT_EVALUATION:
+                    case cs_utils.MessageType.CLIENT_EVALUATION:
                         # print("Received evaluation")
                         with self.condition_add_client_evaluation:
                             self.clients_evaluations[client_id] = m_body
@@ -205,7 +219,7 @@ class TCPServer(ABC):
                                              args=(client_socket, client_address))
             client_thread.start()
 
-            # print(f"{client_address} connected")
+            print(f"{client_address} connected")
             # Add the thread to the list
             self.client_threads.append(client_thread)
             # Add socket to the list
@@ -301,10 +315,10 @@ class TCPServer(ABC):
         or the federated learning has finished (so the client just evaluate the model with the new weights).
         :param client_socket: socket that handles the communication to the client
         """
-        msg_type = CSUtils.MessageType.END_FL_TRAINING
+        msg_type = cs_utils.MessageType.END_FL_TRAINING
 
-        if self.actual_round < self.numer_rounds - 1:
-            msg_type = CSUtils.MessageType.FEDERATED_WEIGHTS
+        if self.actual_round < self.number_rounds - 1:
+            msg_type = cs_utils.MessageType.FEDERATED_WEIGHTS
 
         self.send_message(client_socket, msg_type, self.weights)
         # print("Sent updated weights to client")

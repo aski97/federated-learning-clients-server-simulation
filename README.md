@@ -8,6 +8,7 @@ This is a design of a simple client/server architecture to simulate federated le
     + [Client](#client)
     + [Message exchange](#message-exchange)
     + [Limits of the implementation](#limits-of-the-implementation)
+* [Requirements](#requirements)
 * [Simulation Mnist Dataset](#simulation-mnist-dataset)
     + [Requirements](#requirements)
     + [Launch simulation](#launch-simulation)
@@ -24,7 +25,7 @@ Here is a representation of the architecture, as shown in the figure. The server
 This sequence is iterated for a predetermined number of rounds, at the end of which, clients send the server accuracy and loss data of the federated model before closing the connection with the server.
 
 ###  Server
-The server is implemented in the file [TCPServer.py](/TCPServer.py). When the script is executed, a socket is opened at the specified address, in our case, localhost:12345, and three threads are created:
+The server is implemented in the file [TCPServer.py](/src/TCPServer.py). When the script is executed, a socket is opened at the specified address, in our case, localhost:12345, and three threads are created:
 
 + A thread, **thread_client_connections**, listens to accept client connections. It accepts up to a number of connections equal to *NUMBER_OF_CLIENTS*. For each connected client, a *client_thread* is associated with it to handle communication.
 + A thread, **thread_fl_algorithms**, manages rounds for federated learning. Once all clients send their weights, it calculates the average of all weights and sends the new model to the clients.
@@ -47,7 +48,7 @@ The learning process concludes when the number of rounds is exhausted, resulting
 + ***Trend of average loss per round***.
 
 ### Client
-The client is implemented in the script [TCPClient.py](/TCPClient.py). Upon execution, it reads its own *ID* from the command line and initializes its dataset, consisting of samples used for training and samples used for testing.
+The client is implemented in the script [TCPClient.py](/src/TCPClient.py). Upon execution, it reads its own *ID* from the command line and initializes its dataset, consisting of samples used for training and samples used for testing.
 
 The client creates a socket and connects to the server's address. Then, it waits to receive the federated model from the server. Once it receives the weights and biases, it loads them into the local model (net) and starts an initial evaluation. In this phase, the evaluation helps understanding the accuracy of the federated model using the local test dataset. After evaluating the federated model, the client starts the training on the training data.
 
@@ -86,38 +87,42 @@ The proposed implementation is very simple, and for this reason, some simplifica
 + The exchanged messages are not encrypted.
 + ...and so on.
 
-## Simulation Mnist Dataset
-
-### Requirements
+## Requirements
 1. Install the Python development environment
 ```
 sudo apt install python3-dev python3-pip  # Python 3
 ```
+2. Install tensorflow Python package
+```
+pip install tensorflow
+```
+
+## Simulation Mnist Dataset
+
+### Install required package
+1. Install [Requirements](#requirements).
+
 2. Install the released TensorFlow Federated Python package (for the federated mnist dataset)
 ```
 pip install --upgrade tensorflow-federated
-```
-2. (optional) If you want to use your own dataset, you can just use tensorflow Python package instead of the federated version
-```
-pip install tensorflow
 ```
 
 ### Launch simulation
 1. Execute Server script:
 ```
-python3 TCPServer.py 
+python3 examples/mnist/Server.py 
 ```
 2. Execute Clients script manually:
 ```
-python3 TCPClient.py id_client
+python3 examples/mnist/Client.py id_client
 ```
 > [!IMPORTANT]
-> To perform a simulation, you need to execute the client script a number of times equal to the value of the variable ***NUMBER_OF_CLIENTS*** contained in the TCPServer class. This is because federated training starts when that number of clients is connected to the server. It goes without saying that the client ID specified with each execution of the client script must be a positive integer, different for each run.
+> To perform a simulation, you need to execute the client script a number of times equal to the value of the variable ***number_clients*** contained in the Server class. This is because federated training starts when that number of clients is connected to the server. It goes without saying that the client ID specified with each execution of the client script must be a positive integer, different for each run.
 
 2. (optional) Execute Clients script automatically:
 Automating the execution of clients is possible by ```start_clients.sh``` bash script:
 ```
-./start_clients.sh n_clients
+./examples/mnist/start_clients.sh n_clients
 ```
 > [!IMPORTANT]
-> It will execute the TCPClient.py script 'n_clients' times on a different terminal. As before n_clients must be equal to ***NUMBER_OF_CLIENTS***. You can specify any type of terminal; in our case, xterm is used, so if you want to use this script, make sure you have it installed!!!. 
+> It will execute the Client.py script 'n_clients' times on a different terminal. As before n_clients must be equal to ***number_clients***. You can specify any type of terminal; in our case, xterm is used, so if you want to use this script, make sure you have it installed!!!. 
