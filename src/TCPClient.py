@@ -5,15 +5,17 @@ from abc import ABC, abstractmethod
 import struct
 import numpy as np
 import socket
-import tensorflow.keras as keras
+import tensorflow as tf
+from tensorflow import keras
 import src.CSUtils as cs_utils
-
-np.random.seed(1)  # reproducibility of simulations
-
 
 class TCPClient(ABC):
 
-    def __init__(self, server_address, client_id: int):
+    def __init__(self, server_address, client_id: int, enable_op_determinism=True):
+        if enable_op_determinism:
+            tf.keras.utils.set_random_seed(1)  # sets seeds for base-python, numpy and tf
+            tf.config.experimental.enable_op_determinism()
+
         self.server_address = server_address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = client_id

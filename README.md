@@ -25,7 +25,17 @@ Here is a representation of the architecture, as shown in the figure. The server
 This sequence is iterated for a predetermined number of rounds, at the end of which, clients send the server accuracy and loss data of the federated model before closing the connection with the server.
 
 ###  Server
-The server is implemented in the file [TCPServer.py](/src/TCPServer.py). When the script is executed, a socket is opened at the specified address, in our case, localhost:12345, and three threads are created:
+The server is defined by the abstract class [TCPServer](/src/TCPServer.py). The constructor of the class takes 3 input parameters:
++ server_address: Address of the server.
++ number_clients: Number of clients participating in federated training.
++ number_rounds: Number of rounds in federated training.
+
+The method to be implemented in the abstract class is:
++ get_skeleton_model(): Returns the skeleton of the Keras model.
+
+Once the TCPServer class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the server.
+
+The server opens a socket at the specified address, in our case, localhost:12345, and three threads are created:
 
 + A thread, **thread_client_connections**, listens to accept client connections. It accepts up to a number of connections equal to *number_clients*. For each connected client, a *client_thread* is associated with it to handle communication.
 + A thread, **thread_fl_algorithms**, manages rounds for federated learning. Once all clients send their weights, it calculates the average of all weights and sends the new model to the clients.
@@ -48,11 +58,26 @@ The learning process concludes when the number of rounds is exhausted, resulting
 + ***Trend of average loss per round***.
 
 ### Client
-The client is implemented in the script [TCPClient.py](/src/TCPClient.py). Upon execution, it reads its own *ID* from the command line and initializes its dataset, consisting of samples used for training and samples used for testing.
+The client is defined by the abstract class [TCPClient](/src/TCPClient.py) The constructor of the class takes 3 input parameters:
++ server_address: Address of the server.
++ client_id: Client's ID.
++ enable_op_determinism: Determines whether to use deterministic operations; if true, the result of each simulation will always be the same.
 
-The client creates a socket and connects to the server's address. Then, it waits to receive the federated model from the server. Once it receives the weights and biases, it loads them into the local model (net) and starts an initial evaluation. In this phase, the evaluation helps understanding the accuracy of the federated model using the local test dataset. After evaluating the federated model, the client starts the training on the training data.
+The methods to be implemented in the abstract class are:
++ load_dataset(): Defines how to load the client's dataset, returning the dataset already split into training and test sets.
++ get_skeleton_model(): Returns the skeleton of the Keras model.
++ get_optimizer(): Returns the optimizer used.
++ get_loss_function(): Returns the loss function used.
++ get_metric(): Returns the type of metric for training.
++ get_batch_size(): Returns the batch size used for training.
++ get_train_epochs(): Returns the number of epochs for each training.
++ shuffle_dataset_before_training(): Returns true if the dataset should be shuffled before each training.
 
-Before each training, the dataset is shuffled to avoid overfitting situations and divided into batches, where each batch contains a number of samples equal to **BATCH_SIZE**. Training proceeds for a number of epochs specified by **EPOCHES**. Upon completion, the model is re-evaluated on the test data, and the results are stored. Afterward, the client sends the weights and biases of the just-trained model to the server. This operation repeats until the server sends the final model, on which the client performs a single evaluation, sending all previous evaluations back to the server.
+Once the TCPClient class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the client.
+
+The client opens a socket and connects to the server's address. Then, it waits to receive the federated model from the server. Once it receives the weights and biases, it loads them into the local model (net) and starts an initial evaluation. In this phase, the evaluation helps understanding the accuracy of the federated model using the local test dataset. After evaluating the federated model, the client starts the training on the training data.
+
+Before each training, the dataset could be shuffled if **shuffle_dataset_before_training()** method returns True, thus avoiding overfitting situations. The dataset is divided into batches, where each batch has a number of samples equal to the value returned by the **get_batch_size()** method. Training proceeds for a number of epochs equal to the value returned by the **get_train_epochs()** method. Upon completion, the model is re-evaluated on the test data, and the results are stored. Afterward, the client sends the weights and biases of the just-trained model to the server. This operation repeats until the server sends the final model, on which the client performs a single evaluation, sending all previous evaluations back to the server.
 
 Once the federated training is complete, the client closes the connection with the server.
 

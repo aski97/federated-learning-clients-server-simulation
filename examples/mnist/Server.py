@@ -21,5 +21,5 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 4, 10)
+    server = Server(server_address, 10, 10)
     server.run()
