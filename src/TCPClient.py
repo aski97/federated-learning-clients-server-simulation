@@ -7,11 +7,12 @@ import numpy as np
 import socket
 import tensorflow as tf
 from tensorflow import keras
-import src.CSUtils as cs_utils
+from src.CSUtils import MessageType, build_message, unpack_message
+
 
 class TCPClient(ABC):
 
-    def __init__(self, server_address, client_id: int, enable_op_determinism=True):
+    def __init__(self, server_address, client_id: int, enable_op_determinism: bool = True):
         if enable_op_determinism:
             tf.keras.utils.set_random_seed(1)  # sets seeds for base-python, numpy and tf
             tf.config.experimental.enable_op_determinism()
@@ -41,7 +42,7 @@ class TCPClient(ABC):
 
             # behave differently with respect to the type of message received
             match m_type:
-                case cs_utils.MessageType.FEDERATED_WEIGHTS:
+                case MessageType.FEDERATED_WEIGHTS:
                     print("Received federated weights")
                     # Update model
                     self.update_weights(m_body)
@@ -51,7 +52,7 @@ class TCPClient(ABC):
                     self.train_model()
                     # send trained weights to the server
                     self.send_trained_weights()
-                case cs_utils.MessageType.END_FL_TRAINING:
+                case MessageType.END_FL_TRAINING:
                     print("Received final federated weights. Federated training has finished.")
                     # Update model
                     self.update_weights(m_body)
@@ -80,13 +81,13 @@ class TCPClient(ABC):
             # Close socket
             self.close()
 
-    def send_message(self, msg_type: cs_utils.MessageType, body: object) -> None:
+    def send_message(self, msg_type: MessageType, body: object) -> None:
         """
         Send a message to the server in {'type': '', 'body': ''} format
         :param msg_type: type of the message.
         :param body: body of the message.
         """
-        msg_serialized = cs_utils.build_message(msg_type, body)
+        msg_serialized = build_message(msg_type, body)
         self.socket.sendall(msg_serialized)
 
     def receive_message(self) -> tuple:
@@ -107,7 +108,7 @@ class TCPClient(ABC):
                 break
             data += packet
 
-        return cs_utils.unpack_message(data)
+        return unpack_message(data)
 
     def close(self) -> None:
         """It closes connection with the server"""
@@ -201,7 +202,6 @@ class TCPClient(ABC):
             self.x_train = self.x_train[indices]
             self.y_train = self.y_train[indices]
 
-
         batch_size = self.get_batch_size()
         epochs = self.get_train_epochs()
 
@@ -244,11 +244,10 @@ class TCPClient(ABC):
     def send_trained_weights(self):
         """Send trained weights to the server"""
         msg_body = {'client_id': self.id, 'weights': self.weights}
-        self.send_message(cs_utils.MessageType.CLIENT_TRAINED_WEIGHTS, msg_body)
+        self.send_message(MessageType.CLIENT_TRAINED_WEIGHTS, msg_body)
 
     def send_evaluation_data(self):
         """Send evaluation data to the server"""
         msg_body = {'client_id': self.id, 'evaluation_federated': self.evaluation_data_federated_model,
                     'evaluation_training': self.evaluation_data_training_model}
-        self.send_message(cs_utils.MessageType.CLIENT_EVALUATION, msg_body)
-
+        self.send_message(MessageType.CLIENT_EVALUATION, msg_body)

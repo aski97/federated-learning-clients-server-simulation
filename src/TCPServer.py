@@ -6,7 +6,7 @@ import numpy as np
 import socket
 import threading
 import struct
-import src.CSUtils as cs_utils
+from src.CSUtils import MessageType, build_message, unpack_message
 from matplotlib import pyplot as plt
 from tensorflow.keras.models import Model
 
@@ -54,14 +54,14 @@ class TCPServer(ABC):
             self.socket.close()
 
     @staticmethod
-    def send_message(recipient: socket.socket, msg_type: cs_utils.MessageType, body: object) -> None:
+    def send_message(recipient: socket.socket, msg_type: MessageType, body: object) -> None:
         """
         Send a message to a client in {'type': '', 'body': ''} format
         :param recipient: recipient socket.
         :param msg_type: type of the message.
         :param  body: body of the message.
         """
-        msg_serialized = cs_utils.build_message(msg_type, body)
+        msg_serialized = build_message(msg_type, body)
         recipient.sendall(msg_serialized)
 
     @staticmethod
@@ -84,7 +84,7 @@ class TCPServer(ABC):
                 break
             data += packet
 
-        return cs_utils.unpack_message(data)
+        return unpack_message(data)
 
     def create_server_threads(self) -> None:
         """
@@ -163,7 +163,7 @@ class TCPServer(ABC):
 
                 # behave differently with respect to the type of message received
                 match m_type:
-                    case cs_utils.MessageType.CLIENT_TRAINED_WEIGHTS:
+                    case MessageType.CLIENT_TRAINED_WEIGHTS:
                         # Received trained weights from the client
                         # print("Received trained weights")
                         # Add weights to the shared variable
@@ -172,7 +172,7 @@ class TCPServer(ABC):
                             self.client_weights[client_id] = weights
                             # Notify the server thread
                             self.condition_add_weights.notify()
-                    case cs_utils.MessageType.CLIENT_EVALUATION:
+                    case MessageType.CLIENT_EVALUATION:
                         # print("Received evaluation")
                         with self.condition_add_client_evaluation:
                             self.clients_evaluations[client_id] = m_body
@@ -315,10 +315,10 @@ class TCPServer(ABC):
         or the federated learning has finished (so the client just evaluate the model with the new weights).
         :param client_socket: socket that handles the communication to the client
         """
-        msg_type = cs_utils.MessageType.END_FL_TRAINING
+        msg_type = MessageType.END_FL_TRAINING
 
         if self.actual_round < self.number_rounds - 1:
-            msg_type = cs_utils.MessageType.FEDERATED_WEIGHTS
+            msg_type = MessageType.FEDERATED_WEIGHTS
 
         self.send_message(client_socket, msg_type, self.weights)
         # print("Sent updated weights to client")
@@ -342,25 +342,27 @@ class TCPServer(ABC):
 
     def initialize_federated_model(self) -> np.ndarray:
         """
-        Initialize weights of the model to send to clients.
+        Initialize weights of the model to send to clients. The result
+        is affected by "kernel_initializer" of the keras model layers.
         :return: weights
         :rtype: np.ndarray
         """
-
         model = self.get_skeleton_model()
 
-        model_weights = model.get_weights()
-
-        # initialize zero weights
-        return np.array(model_weights, dtype='object') * 0
+        # initialize weights
+        return np.array(model.get_weights(), dtype='object')
 
     def aggregate_weights(self) -> None:
         """
         It aggregates weights from clients computing the mean of the weights.
         """
-        weights = self.client_weights[0]
-        for i in range(1, len(self.client_weights)):
-            weights = weights + np.array(self.client_weights[i], dtype='object')
+        weights = None
+
+        for key, client_weight in self.client_weights.items():
+            if weights is None:
+                weights = np.array(client_weight, dtype='object')
+            else:
+                weights += np.array(client_weight, dtype='object')
 
         # aggregate weights, computing the mean
         self.weights = weights / len(self.client_weights)

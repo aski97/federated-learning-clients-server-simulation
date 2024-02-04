@@ -12,7 +12,7 @@ class Server(TCPServer):
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
             keras.layers.InputLayer(input_shape=(784,)),
-            keras.layers.Dense(10),
+            keras.layers.Dense(10, kernel_initializer="zero"),
             keras.layers.Softmax(),
         ])
 
