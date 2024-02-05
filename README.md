@@ -10,8 +10,7 @@ This is a design of a simple client/server architecture to simulate federated le
     + [Limits of the implementation](#limits-of-the-implementation)
 * [Requirements](#requirements)
 * [Simulation Mnist Dataset](#simulation-mnist-dataset)
-    + [Install required packages](#install-required-packages)
-    + [Launch simulation](#launch-simulation)
+* [Simulation BNCI2014_001 Dataset](#simulation-BNCI2014_001-dataset)
 
 ## Architecture
 ![fl_architecture](/images/fl_arc.png)
@@ -151,3 +150,26 @@ Automating the execution of clients is possible by ```start_clients.sh``` bash s
 ```
 > [!IMPORTANT]
 > It will execute the Client.py script 'n_clients' times on a different terminal. As before n_clients must be equal to ***number_clients***. You can specify any type of terminal; in our case, xterm is used, so if you want to use this script, make sure you have it installed!!!. 
+
+## Simulation BNCI2014_001 Dataset
+
+### Install required packages
+1. Install [Requirements](#requirements).
+
+2. Install MOABB
+```
+pip install MOABB
+```
+
+### Launch simulation
+1. Execute Server script:
+```
+python3 examples/BNCI2014_001/Server.py 
+```
+2. Execute Clients script automatically:
+Automating the execution of clients is possible by ```start_clients.sh``` bash script:
+```
+./examples/BNCI2014_001/start_clients.sh
+```
+> [!Note]
+> It will execute the Client.py script 9 times on a different terminal. You can specify any type of terminal; in our case, xterm is used, so if you want to use this script, make sure you have it installed!!!. 
