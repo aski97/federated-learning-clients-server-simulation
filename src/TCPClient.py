@@ -131,7 +131,7 @@ class TCPClient(ABC):
         pass
 
     @abstractmethod
-    def get_optimizer(self) -> keras.optimizers.Optimizer:
+    def get_optimizer(self) -> keras.optimizers.Optimizer | str:
         """
         Get the optimizer of the model
         :return: keras optimizer
@@ -139,7 +139,7 @@ class TCPClient(ABC):
         pass
 
     @abstractmethod
-    def get_loss_function(self) -> keras.losses.Loss:
+    def get_loss_function(self) -> keras.losses.Loss | str:
         """
         Get the loss of the model
         :return: keras loss
@@ -147,7 +147,7 @@ class TCPClient(ABC):
         pass
 
     @abstractmethod
-    def get_metric(self) -> keras.metrics.Metric:
+    def get_metric(self) -> keras.metrics.Metric | str:
         """
         Get the metric for the evaluation
         :return: keras metric

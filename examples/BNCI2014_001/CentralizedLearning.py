@@ -53,7 +53,7 @@ x_train, x_test, y_train, y_test = train_test_split(dataset, labels_encoded, tes
 y_train = tf.keras.utils.to_categorical(y_train, 2)
 y_test = tf.keras.utils.to_categorical(y_test, 2)
 
-initializer="glorot_uniform"
+initializer = "glorot_uniform"
 # Model definition
 model = Sequential([
     Conv1D(64, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=x_train.shape[1:]),
@@ -89,27 +89,23 @@ print("Confusion Matrix (Percentage):")
 print(cm_percentage)
 
 
-# def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Reds):
-#     if normalize:
-#         cm = cm_percentage
-#
-#     plt.imshow(cm, interpolation='nearest', cmap=cmap)
-#     plt.title(title)
-#     plt.colorbar()
-#     tick_marks = np.arange(len(classes))
-#     plt.xticks(tick_marks, classes, rotation=45)
-#     plt.yticks(tick_marks, classes)
-#
-#     thresh = cm.max() / 2.
-#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-#         color = "white" if cm[i, j] > thresh else "black"
-#         plt.text(j, i, str(cm[i, j]), horizontalalignment="center", color=color)
-#
-#     plt.tight_layout()
-#     plt.ylabel('True label')
-#     plt.xlabel('Predicted label')
-#     plt.show()
-#
-#
-# plot_confusion_matrix(cm, classes=['left', 'right'],
-#                       normalize=True)
+def plot_confusion_matrix(values, classes, title='Confusion matrix', cmap=plt.colormaps["Reds"]):
+    plt.imshow(values, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    thresh = values.max() / 2.
+    for i, j in itertools.product(range(values.shape[0]), range(values.shape[1])):
+        color = "white" if values[i, j] > thresh else "black"
+        plt.text(j, i, str(values[i, j]), horizontalalignment="center", color=color)
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
+
+
+plot_confusion_matrix(cm_percentage, classes=['left', 'right'])
