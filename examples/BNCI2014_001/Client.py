@@ -19,7 +19,7 @@ class Client(TCPClient):
         return 32
 
     def get_train_epochs(self) -> int:
-        return 5
+        return 3
 
     def get_loss_function(self):
         return "categorical_crossentropy"
@@ -29,16 +29,10 @@ class Client(TCPClient):
 
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
-            keras.layers.Conv1D(64, 5, padding='same', activation='relu',
+            keras.layers.Conv1D(32, 5, padding='same', activation='relu',
                                 input_shape=self.x_train.shape[1:]),
-            keras.layers.Conv1D(128, 3, padding='same', activation='relu'),
-            keras.layers.MaxPooling1D(pool_size=2),
-            keras.layers.Dropout(0.5),
-            keras.layers.Conv1D(256, 3, padding='same', activation='relu'),
-            keras.layers.MaxPooling1D(pool_size=2),
-            keras.layers.Dropout(0.5),
             keras.layers.Flatten(),
-            keras.layers.Dense(512, activation='relu'),
+            keras.layers.Dense(64, activation='relu'),
             keras.layers.Dropout(0.5),
             keras.layers.Dense(2, activation='softmax')
         ])

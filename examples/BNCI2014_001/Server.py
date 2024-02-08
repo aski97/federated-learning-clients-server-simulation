@@ -13,15 +13,9 @@ class Server(TCPServer):
         initializer = "glorot_uniform"
 
         return keras.models.Sequential([
-            keras.layers.Conv1D(64, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=(253, 1)),
-            keras.layers.Conv1D(128, 3, padding='same', activation='relu', kernel_initializer=initializer),
-            keras.layers.MaxPooling1D(pool_size=2),
-            keras.layers.Dropout(0.5),
-            keras.layers.Conv1D(256, 3, padding='same', activation='relu', kernel_initializer=initializer),
-            keras.layers.MaxPooling1D(pool_size=2),
-            keras.layers.Dropout(0.5),
+            keras.layers.Conv1D(32, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=(253, 1)),
             keras.layers.Flatten(),
-            keras.layers.Dense(512, activation='relu', kernel_initializer=initializer),
+            keras.layers.Dense(64, activation='relu', kernel_initializer=initializer),
             keras.layers.Dropout(0.5),
             keras.layers.Dense(2, activation='softmax', kernel_initializer=initializer)
         ])
