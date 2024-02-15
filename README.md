@@ -72,7 +72,7 @@ The methods to be implemented in the abstract class are:
 + ```get_metric()```: Returns the type of metric for training.
 + ```get_batch_size()```: Returns the batch size used for training.
 + ```get_train_epochs()```: Returns the number of epochs for each training.
-+ ```get_num_classes```: Returns the number of classes managed by the dataset.
++ ```get_num_classes()```: Returns the number of classes managed by the dataset.
 + ```shuffle_dataset_before_training()```: Returns true if the dataset should be shuffled before each training.
 
 Once the TCPClient class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the client.
