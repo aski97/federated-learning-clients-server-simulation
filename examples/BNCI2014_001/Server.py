@@ -20,6 +20,9 @@ class Server(TCPServer):
             keras.layers.Dense(2, activation='softmax', kernel_initializer=initializer)
         ])
 
+    def get_classes_name(self) -> list[str]:
+        return ['left', 'right']
+
 
 if __name__ == "__main__":
     server_address = ('localhost', 12345)

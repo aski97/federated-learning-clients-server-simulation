@@ -7,6 +7,7 @@ import numpy as np
 import socket
 import tensorflow as tf
 from tensorflow import keras
+from sklearn.metrics import confusion_matrix
 from src.CSUtils import MessageType, build_message, unpack_message
 
 
@@ -23,6 +24,9 @@ class TCPClient(ABC):
         self.weights = None
         self.evaluation_data_federated_model = np.empty((0, 2), dtype=float)
         self.evaluation_data_training_model = np.empty((0, 2), dtype=float)
+        _n_classes = self.get_num_classes()
+        self.confusion_matrix_federated_model = np.empty((0, _n_classes, _n_classes), dtype=float)
+        self.confusion_matrix_training_model = np.empty((0, _n_classes, _n_classes), dtype=float)
         # populate dataset
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
@@ -163,6 +167,11 @@ class TCPClient(ABC):
         pass
 
     @abstractmethod
+    def get_num_classes(self) -> int:
+        """Get the number of classes managed by the dataset"""
+        pass
+
+    @abstractmethod
     def shuffle_dataset_before_training(self) -> bool:
         """If True it shuffles the training dataset randomly before training the model."""
         pass
@@ -226,7 +235,17 @@ class TCPClient(ABC):
 
         test_loss, test_acc = model.evaluate(self.x_test, self.y_test)
 
+        # Confusion Matrix
+        y_pred = model.predict(self.x_test)
+
+        cm = confusion_matrix(np.argmax(self.y_test, axis=1), np.argmax(y_pred, axis=1), normalize="true",
+                              labels=list(range(self.get_num_classes())))
+
+        cm_percentage = np.round(cm, 2)
+
         print(f'Test accuracy: {test_acc}')
+        print("Confusion Matrix (Percentage):")
+        print(cm_percentage)
 
         evaluation_data = np.array([[test_acc, test_loss]])
 
@@ -234,10 +253,15 @@ class TCPClient(ABC):
             # It's using federated weights
             self.evaluation_data_federated_model = np.append(self.evaluation_data_federated_model, evaluation_data,
                                                              axis=0)
+            self.confusion_matrix_federated_model = np.append(self.confusion_matrix_federated_model, [cm_percentage],
+                                                              axis=0)
+
         else:
-            # It's using train weights
+            # It's using training weights
             self.evaluation_data_training_model = np.append(self.evaluation_data_training_model, evaluation_data,
                                                             axis=0)
+            self.confusion_matrix_training_model = np.append(self.confusion_matrix_training_model, [cm_percentage],
+                                                             axis=0)
 
         return evaluation_data
 
@@ -248,6 +272,9 @@ class TCPClient(ABC):
 
     def send_evaluation_data(self):
         """Send evaluation data to the server"""
-        msg_body = {'client_id': self.id, 'evaluation_federated': self.evaluation_data_federated_model,
-                    'evaluation_training': self.evaluation_data_training_model}
+        msg_body = {'client_id': self.id,
+                    'evaluation_federated': self.evaluation_data_federated_model,
+                    'evaluation_training': self.evaluation_data_training_model,
+                    'cm_federated': self.confusion_matrix_federated_model,
+                    'cm_training': self.confusion_matrix_training_model}
         self.send_message(MessageType.CLIENT_EVALUATION, msg_body)

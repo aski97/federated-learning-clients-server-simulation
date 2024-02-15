@@ -27,6 +27,9 @@ class Client(TCPClient):
     def get_metric(self):
         return "accuracy"
 
+    def get_num_classes(self) -> int:
+        return 2
+
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
             keras.layers.Conv1D(32, 5, padding='same', activation='relu',
@@ -50,7 +53,7 @@ class Client(TCPClient):
         print(f"Dataset loaded: {len(x)} items")
 
         # Add dummy dimension for the Conv net
-        x = np.expand_dims(x, axis=-1)  # Aggiungi una dimensione "dummy" alla fine
+        x = np.expand_dims(x, axis=-1)
 
         # Encode labels (0: 'left_hand', 1: 'right_hand')
         y_encoded = np.where(y == 'left_hand', 0, 1)

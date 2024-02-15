@@ -12,6 +12,9 @@ import tensorflow_federated as tff
 
 class Client(TCPClient):
 
+    def get_num_classes(self) -> int:
+        return 10
+
     def shuffle_dataset_before_training(self) -> bool:
         return False
 
@@ -21,13 +24,11 @@ class Client(TCPClient):
     def get_train_epochs(self) -> int:
         return 10
 
-    def get_loss_function(self) -> keras.losses.Loss:
-        # Using sparse categorical crossentropy to not convert the labels in one-hot representation
-        # ex: 5 ----> [0 0 0 0 0 1 0 0 0 0]
-        return keras.losses.SparseCategoricalCrossentropy()
+    def get_loss_function(self):
+        return "categorical_crossentropy"
 
-    def get_metric(self) -> keras.metrics.Metric:
-        return keras.metrics.SparseCategoricalAccuracy()
+    def get_metric(self):
+        return "accuracy"
 
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
@@ -58,8 +59,10 @@ class Client(TCPClient):
 
             # reshape data from (value, 28, 28) to (value, 784)
             x_set_reshaped = x_set.reshape((x_set.shape[0], -1))
+            # labels one-hot encoding
+            y_one_hot = keras.utils.to_categorical(y_set, 10)
 
-            return x_set_reshaped, y_set
+            return x_set_reshaped, y_one_hot
 
         x_train, y_train = get_x_y_set_reshaped(train_dataset)
         x_test, y_test = get_x_y_set_reshaped(test_dataset)

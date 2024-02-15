@@ -16,6 +16,9 @@ class Server(TCPServer):
             keras.layers.Softmax(),
         ])
 
+    def get_classes_name(self) -> list[str]:
+        return ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+
 
 if __name__ == "__main__":
     server_address = ('localhost', 12345)

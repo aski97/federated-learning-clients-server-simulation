@@ -31,6 +31,7 @@ The server is defined by the abstract class [TCPServer](/src/TCPServer.py). The 
 
 The method to be implemented in the abstract class is:
 + ```get_skeleton_model()```: Returns the skeleton of the Keras model.
++ ```get_classes_names()```: Returns the list of the names of the classes, used for the confusion matrix.
 
 Once the TCPServer class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the server.
 
@@ -55,6 +56,7 @@ The learning process concludes when the number of rounds is exhausted, resulting
 + **Trend of loss per round for predicting test samples for each client**.
 + **Trend of average accuracy per round**.
 + **Trend of average loss per round**.
++ **Confusion matrix of the final model (mean of clients confusion matrix of the final model)**.
 
 ### Client
 The client is defined by the abstract class [TCPClient](/src/TCPClient.py) The constructor of the class takes 3 input parameters:
@@ -70,6 +72,7 @@ The methods to be implemented in the abstract class are:
 + ```get_metric()```: Returns the type of metric for training.
 + ```get_batch_size()```: Returns the batch size used for training.
 + ```get_train_epochs()```: Returns the number of epochs for each training.
++ ```get_num_classes```: Returns the number of classes managed by the dataset.
 + ```shuffle_dataset_before_training()```: Returns true if the dataset should be shuffled before each training.
 
 Once the TCPClient class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the client.

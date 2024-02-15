@@ -4,7 +4,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv1D, Activation, MaxPooling1D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
@@ -56,15 +56,12 @@ y_test = tf.keras.utils.to_categorical(y_test, 2)
 initializer = "glorot_uniform"
 # Model definition
 model = Sequential([
-    Conv1D(64, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=x_train.shape[1:]),
-    Conv1D(128, 3, padding='same', activation='relu', kernel_initializer=initializer),
-    MaxPooling1D(pool_size=2),
-    Dropout(0.5),
-    Conv1D(256, 3, padding='same', activation='relu', kernel_initializer=initializer),
+    Conv1D(32, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=x_train.shape[1:]),
+    Conv1D(64, 3, padding='same', activation='relu', kernel_initializer=initializer),
     MaxPooling1D(pool_size=2),
     Dropout(0.5),
     Flatten(),
-    Dense(512, activation='relu', kernel_initializer=initializer),
+    Dense(64, activation='relu', kernel_initializer=initializer),
     Dropout(0.5),
     Dense(2, activation='softmax', kernel_initializer=initializer)
 ])
@@ -72,17 +69,14 @@ model = Sequential([
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # Training
-epochs = 10
+epochs = 5
 batch_size = 32
 model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs)
 
 # Confusion Matrix
 y_pred = model.predict(x_test)
-cm = confusion_matrix(np.argmax(y_test, axis=1), np.argmax(y_pred, axis=1))
-
-# Normalize Matrix
-cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-cm_percentage = np.round(cm_normalized, 2)
+cm = confusion_matrix(np.argmax(y_test, axis=1), np.argmax(y_pred, axis=1), normalize="true")
+cm_percentage = np.round(cm, 2)
 
 # Print Confusion Matrix
 print("Confusion Matrix (Percentage):")

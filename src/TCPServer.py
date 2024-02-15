@@ -8,6 +8,7 @@ import threading
 import struct
 from src.CSUtils import MessageType, build_message, unpack_message
 from matplotlib import pyplot as plt
+import itertools
 from tensorflow.keras.models import Model
 
 
@@ -263,7 +264,6 @@ class TCPServer(ABC):
                         for key, value in values.items():
                             client_id = key
                             eval_federated = value['evaluation_federated']
-
                             metric_values = [el[0 if metric_type == "accuracy" else 1] for el in eval_federated]
                             values_per_client.append(metric_values)
                             round_numbers = list(range(len(eval_federated)))
@@ -308,6 +308,34 @@ class TCPServer(ABC):
                     plot_average("accuracy", ac_mean)
                     plot_average("loss", loss_mean)
 
+                    # confusion matrix
+
+                    final_cm_per_client = [value['cm_federated'][-1] for value in self.clients_evaluations.values()]
+                    cm_mean = np.round(np.mean(final_cm_per_client, axis=0), 2)
+
+                    print("Average Confusion Matrix final federated model (Percentage):")
+                    print(cm_mean)
+
+                    def plot_confusion_matrix(values, classes, title='Confusion matrix', cmap=plt.colormaps["Reds"]):
+                        plt.imshow(values, interpolation='nearest', cmap=cmap)
+                        plt.title(title)
+                        plt.colorbar()
+                        tick_marks = np.arange(len(classes))
+                        plt.xticks(tick_marks, classes, rotation=45)
+                        plt.yticks(tick_marks, classes)
+
+                        thresh = values.max() / 2.
+                        for i, j in itertools.product(range(values.shape[0]), range(values.shape[1])):
+                            color = "white" if values[i, j] > thresh else "black"
+                            plt.text(j, i, str(values[i, j]), horizontalalignment="center", color=color)
+
+                        plt.tight_layout()
+                        plt.ylabel('True label')
+                        plt.xlabel('Predicted label')
+                        plt.show()
+
+                    plot_confusion_matrix(cm_mean, self.get_classes_name())
+
     def send_fl_model_to_client(self, client_socket: socket.socket) -> None:
         """
         Send the federated weights to the client,
@@ -338,6 +366,11 @@ class TCPServer(ABC):
         Get the skeleton of the model
         :return: keras Model
         """
+        pass
+
+    @abstractmethod
+    def get_classes_name(self) -> list[str]:
+        """ Get the list of names of the classes to predict"""
         pass
 
     def initialize_federated_model(self) -> np.ndarray:
