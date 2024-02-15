@@ -72,7 +72,7 @@ The methods to be implemented in the abstract class are:
 + ```get_metric()```: Returns the type of metric for training.
 + ```get_batch_size()```: Returns the batch size used for training.
 + ```get_train_epochs()```: Returns the number of epochs for each training.
-+ ```get_num_classes```: Returns the number of classes managed by the dataset.
++ ```get_num_classes()```: Returns the number of classes managed by the dataset.
 + ```shuffle_dataset_before_training()```: Returns true if the dataset should be shuffled before each training.
 
 Once the TCPClient class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the client.
@@ -102,6 +102,8 @@ Based on the message type, the structure of the body can be determined. Currentl
   - *client_id*: client identifier
   - *evaluation_federated*: a list of arrays of evaluations on the test dataset using the federated model. Each array is formatted as *[accuracy, loss]*. The length of the list is equal to the number of rounds.
   - *evaluation_training*: a list of arrays of evaluations on the test dataset using the locally trained model. Each array is formatted as *[accuracy, loss]*. The length of the list is equal to the number of rounds.
+  - *cm_federated*: list of confusion matrices generated with the federated model.
+  - *cm_training*: list of confusion matrices generated with the locally trained model.
 
 The message is serialized using the *pickle module*, which transforms the message into a sequence of bytes. The generated sequence is concatenated with the initial 4 bytes representing the total length of the message.
 
