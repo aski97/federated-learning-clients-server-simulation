@@ -19,7 +19,7 @@ class Client(TCPClient):
         return 32
 
     def get_train_epochs(self) -> int:
-        return 3
+        return 5
 
     def get_loss_function(self):
         return "categorical_crossentropy"
@@ -34,6 +34,7 @@ class Client(TCPClient):
         return keras.models.Sequential([
             keras.layers.Conv1D(32, 5, padding='same', activation='relu',
                                 input_shape=self.x_train.shape[1:]),
+            keras.layers.Conv1D(64, 3, padding='same', activation='relu'),
             keras.layers.Flatten(),
             keras.layers.Dense(64, activation='relu'),
             keras.layers.Dropout(0.5),

@@ -14,6 +14,7 @@ class Server(TCPServer):
 
         return keras.models.Sequential([
             keras.layers.Conv1D(32, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=(253, 1)),
+            keras.layers.Conv1D(64, 3, padding='same', activation='relu', kernel_initializer=initializer),
             keras.layers.Flatten(),
             keras.layers.Dense(64, activation='relu', kernel_initializer=initializer),
             keras.layers.Dropout(0.5),
@@ -28,5 +29,5 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 3)
+    server = Server(server_address, 9, 5)
     server.run()
