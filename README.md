@@ -24,10 +24,11 @@ Here is a representation of the architecture, as shown in the figure. The server
 This sequence is iterated for a predetermined number of rounds, at the end of which, clients send the server accuracy and loss data of the federated model before closing the connection with the server.
 
 ###  Server
-The server is defined by the abstract class [TCPServer](/src/TCPServer.py). The constructor of the class takes 3 input parameters:
+The server is defined by the abstract class [TCPServer](/src/TCPServer.py). The constructor of the class takes 4 input parameters:
 + ```server_address```: Address of the server.
 + ```number_clients```: Number of clients participating in federated training.
 + ```number_rounds```: Number of rounds in federated training.
++ ```aggregation_strategy```: Type of federated aggregation algorithms of client models (ex FedAvg).
 
 The method to be implemented in the abstract class is:
 + ```get_skeleton_model()```: Returns the skeleton of the Keras model.
