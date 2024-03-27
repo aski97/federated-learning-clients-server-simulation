@@ -1,6 +1,8 @@
 import sys
 import os
 
+from src.AggregationStrategy import FedAvgStrategy
+
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
 from src.TCPServer import TCPServer
@@ -29,5 +31,5 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 5)
+    server = Server(server_address, 9, 5, FedAvgStrategy())
     server.run()
