@@ -1,6 +1,6 @@
 import os
 
-from src.AggregationStrategy import AggregationStrategy
+from src.AggregationAlgorithm import AggregationAlgorithm
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from abc import ABC, abstractmethod
@@ -16,12 +16,12 @@ from tensorflow.keras.models import Model
 
 class TCPServer(ABC):
 
-    def __init__(self, address, number_clients: int, number_rounds: int, aggregation_strategy: AggregationStrategy):
+    def __init__(self, address, number_clients: int, number_rounds: int, aggregation_algorithm: AggregationAlgorithm):
         self.server_address = address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_sockets = []  # list of client sockets
         # FL
-        self.aggregation_strategy = aggregation_strategy
+        self.aggregation_algorithm = aggregation_algorithm
         self.client_weights = {}  # shared variable
         self.clients_evaluations = {}  # shared variable
         self.weights = self.initialize_federated_model()
@@ -393,6 +393,6 @@ class TCPServer(ABC):
         It aggregates weights from clients computing the mean of the weights.
         """
 
-        self.weights = self.aggregation_strategy.aggregate_weights(self.client_weights)
+        self.weights = self.aggregation_algorithm.aggregate_weights(self.client_weights, self.weights)
 
         self.client_weights.clear()

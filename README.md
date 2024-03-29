@@ -28,7 +28,7 @@ The server is defined by the abstract class [TCPServer](/src/TCPServer.py). The 
 + ```server_address```: Address of the server.
 + ```number_clients```: Number of clients participating in federated training.
 + ```number_rounds```: Number of rounds in federated training.
-+ ```aggregation_strategy```: Type of federated aggregation algorithms of client models (ex FedAvg).
++ ```aggregation_algorithm```: Type of federated aggregation algorithms of clients models (ex FedAvg).
 
 The method to be implemented in the abstract class is:
 + ```get_skeleton_model()```: Returns the skeleton of the Keras model.
