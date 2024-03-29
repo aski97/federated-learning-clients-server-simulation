@@ -1,7 +1,7 @@
 import sys
 import os
 
-from src.AggregationStrategy import FedAvgStrategy
+from src.AggregationAlgorithm import FedAvgAlgorithm
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
@@ -31,5 +31,5 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 5, FedAvgStrategy())
+    server = Server(server_address, 9, 5, FedAvgAlgorithm())
     server.run()
