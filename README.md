@@ -6,6 +6,7 @@ This is a design of a simple client/server architecture to simulate federated le
 * [Architecture](#architecture)
     + [Server](#server)
     + [Client](#client)
+    + [Supported aggregation algorithms](#supported-aggregation-algorithms)
     + [Message exchange](#message-exchange)
     + [Limits of the implementation](#limits-of-the-implementation)
 * [Requirements](#requirements)
@@ -83,6 +84,12 @@ The client opens a socket and connects to the server's address. Then, it waits t
 Before each training, the dataset could be shuffled if ```shuffle_dataset_before_training()``` method returns True, thus avoiding overfitting situations. The dataset is divided into batches, where each batch has a number of samples equal to the value returned by the ```get_batch_size()``` method. Training proceeds for a number of epochs equal to the value returned by the ```get_train_epochs()``` method. Upon completion, the model is re-evaluated on the test data, and the results are stored. Afterward, the client sends the weights and biases of the just-trained model to the server. This operation repeats until the server sends the final model, on which the client performs a single evaluation, sending all previous evaluations back to the server.
 
 Once the federated training is complete, the client closes the connection with the server.
+
+### Supported aggregation algorithms
+With this implementation, it is possible to use one of the following client model aggregation algorithms:
+
++ ```FedAvg```: The resulting model will be the arithmetic mean of the client models.
++ ```FedMiddleAvg```: The resulting model will be the arithmetic mean between the last federated model and the arithmetic mean of the client models. In this way, the last model contributes to the creation of the new one without being discarded at each round.
 
 ### Message exchange
 The communication between the server and clients occurs through the TCP transport protocol. Each transmitted message consists of a variable-length sequence of bytes, where the first four bytes indicate the message length.

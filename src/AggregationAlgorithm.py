@@ -34,7 +34,7 @@ class FedAvgAlgorithm(AggregationAlgorithm):
 
 class FedMiddleAvgAlgorithm(AggregationAlgorithm):
     """
-    Aggregating weights computing the mean between the old federated model with the fed_avg_weights
+    Aggregating weights computing the mean between the latest federated model with the fed_avg_weights
     of the client weights
     """
     def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
