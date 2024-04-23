@@ -12,10 +12,12 @@ import matplotlib.pyplot as plt
 import itertools
 import sys
 
+profiling = True  # If True it prints number of called instructions since the training starts
+
 tf.keras.utils.set_random_seed(1)
 tf.config.experimental.enable_op_determinism()
 
-folder_path = "dataset/"
+folder_path = "../dataset/"
 # Check dataset has saved
 if not os.path.isdir(folder_path):
     sys.exit(f"Error: '{folder_path}' folder doesn't exist, execute SaveDataset.py first: python3 SaveDataset.py")
@@ -53,38 +55,8 @@ x_train, x_test, y_train, y_test = train_test_split(dataset, labels_encoded, tes
 y_train = tf.keras.utils.to_categorical(y_train, 2)
 y_test = tf.keras.utils.to_categorical(y_test, 2)
 
-initializer = "glorot_uniform"
-# Model definition
-model = Sequential([
-    Conv1D(32, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=x_train.shape[1:]),
-    Conv1D(64, 3, padding='same', activation='relu', kernel_initializer=initializer),
-    Flatten(),
-    Dense(64, activation='relu', kernel_initializer=initializer),
-    Dropout(0.5),
-    Dense(2, activation='softmax', kernel_initializer=initializer)
-])
-
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-# Training
-epochs = 5
-batch_size = 32
-model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs)
-
-test_loss, test_acc = model.evaluate(x_test, y_test)
-
-print(f'Test accuracy: {test_acc}')
-print(f"Test loss: {test_loss}")
-
-# Confusion Matrix
-y_pred = model.predict(x_test)
-cm = confusion_matrix(np.argmax(y_test, axis=1), np.argmax(y_pred, axis=1), normalize="true")
-cm_percentage = np.round(cm, 2)
-
-# Print Confusion Matrix
-print("Confusion Matrix (Percentage):")
-print(cm_percentage)
-
+if profiling:
+    print("Tracing active")
 
 def plot_confusion_matrix(values, classes, title='Confusion matrix', cmap=plt.colormaps["Reds"]):
     plt.imshow(values, interpolation='nearest', cmap=cmap)
@@ -105,4 +77,75 @@ def plot_confusion_matrix(values, classes, title='Confusion matrix', cmap=plt.co
     plt.show()
 
 
-plot_confusion_matrix(cm_percentage, classes=['left', 'right'])
+def train():
+    initializer = "glorot_uniform"
+    # Model definition
+    model = Sequential([
+        Conv1D(32, 5, padding='same', activation='relu', kernel_initializer=initializer, input_shape=x_train.shape[1:]),
+        Conv1D(64, 3, padding='same', activation='relu', kernel_initializer=initializer),
+        Flatten(),
+        Dense(64, activation='relu', kernel_initializer=initializer),
+        Dropout(0.5),
+        Dense(2, activation='softmax', kernel_initializer=initializer)
+    ])
+
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    # Training
+    epochs = 5
+    batch_size = 32
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs)
+
+    test_loss, test_acc = model.evaluate(x_test, y_test)
+
+    print(f'Test accuracy: {test_acc}')
+    print(f"Test loss: {test_loss}")
+
+    # Confusion Matrix
+    y_pred = model.predict(x_test)
+    cm = confusion_matrix(np.argmax(y_test, axis=1), np.argmax(y_pred, axis=1), normalize="true")
+    cm_percentage = np.round(cm, 2)
+
+    # Print Confusion Matrix
+    print("Confusion Matrix (Percentage):")
+    print(cm_percentage)
+
+    if not profiling:
+        plot_confusion_matrix(cm_percentage, classes=['left', 'right'])
+
+
+if profiling:
+    import resource
+    import trace
+    import time
+
+    start_time = time.time()
+
+    tracer = trace.Trace(
+        count=True,
+        trace=False,
+        timing=True)
+
+    tracer.runfunc(train)
+
+    stats = tracer.results()
+
+    execution_time = time.time() - start_time
+
+    n_instructions = sum(stats.counts.values())
+
+    print("Number of called instructions:", n_instructions)
+    print("Execution time:", execution_time, "secondi")
+
+    # Get value of used memory
+    used_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+    # KB to GB
+    used_memory_gb = used_memory / (1024.0 * 1024.0)
+
+    print("Used memory:", used_memory_gb, "GB")
+else:
+    train()
+
+
+

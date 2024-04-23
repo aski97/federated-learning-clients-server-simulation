@@ -1,7 +1,7 @@
 import sys
 import os
 
-from src.AggregationAlgorithm import FedAvgAlgorithm
+from src.AggregationAlgorithm import FedAvgAlgorithm, FedMiddleAvgAlgorithm
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
