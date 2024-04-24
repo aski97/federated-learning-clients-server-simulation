@@ -8,6 +8,7 @@ This is a design of a simple client/server architecture to simulate federated le
     + [Client](#client)
     + [Supported aggregation algorithms](#supported-aggregation-algorithms)
     + [Message exchange](#message-exchange)
+    + [Profiling](#profiling)
     + [Limits of the implementation](#limits-of-the-implementation)
 * [Requirements](#requirements)
 * [Simulation Mnist Dataset](#simulation-mnist-dataset)
@@ -43,7 +44,7 @@ The server opens a socket at the specified address, in our case, localhost:12345
 + A thread, ```thread_fl_algorithms```, manages rounds for federated learning. Once all clients send their weights, it calculates the average of all weights and sends the new model to the clients.
 + A thread, ```thread_final_evaluations```, performs the final evaluation of the learning. When the learning process concludes, it collects the accuracies and losses of each local model and creates graphs.
 
-At this point, the server waits for client connections, and when a connection is initialized, the server sends an initialized model to the node, represented by weights and biases with values set to 0.
+At this point, the server waits for client connections, and when a connection is initialized, the server sends configuration values an initialized model with weights and biases dependent on ```kernel_initializer``` and ```bias_initializer```, respectively defined in the layers of the Keras model returned by the ```get_skeleton_model()``` function. The currently supported configuration is ```profiling```, which allows enabling or disabling profiling for the node in question.
 
 When all clients are connected, the server waits for the reception of local models, thus starting the learning phase that lasts for a number of rounds defined by the ```number_rounds``` variable. At each round, when the server collects all models, the following sequence of events occurs:
 
@@ -59,6 +60,9 @@ The learning process concludes when the number of rounds is exhausted, resulting
 + **Trend of average accuracy per round**.
 + **Trend of average loss per round**.
 + **Confusion matrix of the final model (mean of clients confusion matrix of the final model)**.
++ **Number of instructions executed per client during the training phases**. 
++ **Total execution time per client for the training phases**.
++ **Maximum RAM usage per client**.
 
 ### Client
 The client is defined by the abstract class [TCPClient](/src/TCPClient.py) The constructor of the class takes 3 input parameters:
@@ -101,7 +105,10 @@ The message is composed of:
 
 Based on the message type, the structure of the body can be determined. Currently, the following types are specified:
 
-+ ```FEDERATED_WEIGHTS```: indicates that the message body contains the federated model created by the server by aggregating the client models.
++ ```FEDERATED_WEIGHTS```: indicates that the message body contains the federated model created by the server by aggregating the client models. The body will be formed by the following dictionary:
+  - *weights*: federated model.
+  - *configurations*: at the initial round (0), the server sends the node's configuration values.
+    - *Profiling*: whether to activate profiling of the node or not.
 + ```CLIENT_TRAINED_WEIGHTS```: indicates that the message body contains the model trained by a client. The body will be in the form of the following dictionary:
   - *client_id*: client identifier
   - *weights*: weights and biases of the trained model.
@@ -112,8 +119,19 @@ Based on the message type, the structure of the body can be determined. Currentl
   - *evaluation_training*: a list of arrays of evaluations on the test dataset using the locally trained model. Each array is formatted as *[accuracy, loss]*. The length of the list is equal to the number of rounds.
   - *cm_federated*: list of confusion matrices generated with the federated model.
   - *cm_training*: list of confusion matrices generated with the locally trained model.
+  - *info_profiling*: contains profiling information.
+    - *training_n_instructions*: number of instructions executed during the training phases.
+    - *training_execution_time*: total execution time of the training phases.
+    - *max_ram_used*: maximum RAM used by the node.
 
 The message is serialized using the *pickle module*, which transforms the message into a sequence of bytes. The generated sequence is concatenated with the initial 4 bytes representing the total length of the message.
+
+### Profiling
+Through the initial configurations, the server can decide whether to enable profiling on the nodes or not. If enabled, each node will, at the end of federated learning, send the following information to the server:
+
++ ```training_n_instructions```: number of instructions executed during the training phases.
++ ```training_execution_time```: total execution time of the training phases.
++ ```max_ram_used```: maximum RAM used by the node.
 
 ### Limits of the implementation
 The proposed implementation is very simple, and for this reason, some simplifications were necessary, leading to the following limitations:
