@@ -9,8 +9,6 @@ import socket
 import threading
 import struct
 from src.CSUtils import MessageType, build_message, unpack_message
-from matplotlib import pyplot as plt
-import itertools
 from tensorflow.keras.models import Model
 
 
@@ -19,7 +17,9 @@ class TCPServer(ABC):
     def __init__(self, address, number_clients: int, number_rounds: int, aggregation_algorithm: AggregationAlgorithm):
         self.server_address = address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_sockets = []  # list of client sockets
+        self._client_sockets = []  # list of client sockets
+        self._clients_profiling_enabled = False
+        self._evaluation_plots_enabled = True
         # FL
         self.aggregation_algorithm = aggregation_algorithm
         self.client_weights = {}  # shared variable
@@ -36,6 +36,18 @@ class TCPServer(ABC):
         # conditions to access to shared variables
         self.condition_add_weights = threading.Condition()
         self.condition_add_client_evaluation = threading.Condition()
+
+    def enable_clients_profiling(self, value: bool):
+        """It enables the profiling of the clients in order to receive by clients:
+            - number of instructions executed
+            - max memory used
+        """
+        self._clients_profiling_enabled = value
+
+    def enable_evaluations_plots(self, value: bool):
+        """If enabled it plots graphs of the evaluation data
+        """
+        self._evaluation_plots_enabled = value
 
     def bind_and_listen(self) -> None:
         """It makes the server listening to server_address"""
@@ -206,7 +218,7 @@ class TCPServer(ABC):
         self.client_threads.remove(client_thread)
 
         # remove socket from the list
-        self.client_sockets.remove(client_socket)
+        self._client_sockets.remove(client_socket)
 
     def handle_accept_connections(self) -> None:
         """
@@ -227,7 +239,7 @@ class TCPServer(ABC):
             # Add the thread to the list
             self.client_threads.append(client_thread)
             # Add socket to the list
-            self.client_sockets.append(client_socket)
+            self._client_sockets.append(client_socket)
             n_client += 1
 
     def handle_round_fl(self) -> None:
@@ -240,12 +252,12 @@ class TCPServer(ABC):
                 self.condition_add_weights.wait()
                 # Check if all clients involved have sent trained weights
                 if len(self.client_weights) >= self.number_clients:
+                    # increase round
+                    self.actual_round += 1
                     # aggregate weights
                     self.aggregate_weights()
                     # send new model to clients
                     self.send_fl_model_to_clients()
-                    # increase round
-                    self.actual_round += 1
 
     def handle_final_evaluations(self) -> None:
         """
@@ -258,17 +270,64 @@ class TCPServer(ABC):
                 # Check if all clients involved have sent the evaluation
                 if len(self.clients_evaluations) == self.number_clients:
 
-                    def plot_metric_per_client(metric_type, values):
+                    def get_federated_average_metrics(metric_type, values):
+                        data_per_client = []
+
+                        for key, value in values.items():
+                            eval_federated = value['evaluation_federated']
+                            metric_values = [el[0 if metric_type == "accuracy" else 1] for el in eval_federated]
+                            data_per_client.append(metric_values)
+
+                        values_per_client_np = np.array(data_per_client)
+                        mean = np.mean(values_per_client_np, axis=0)
+                        return mean
+
+                    def print_clients_profiling_data():
+                        for key, value in self.clients_evaluations.items():
+                            client_id = key
+                            profiling_data = value['info_profiling']
+
+                            n_i = profiling_data['training_n_instructions']
+                            e_t = profiling_data['training_execution_time']
+                            ram_used = profiling_data['max_ram_used']
+
+                            print(f"Profiling Client {client_id} -> #instructions = {n_i} || execution_time = {e_t} s "
+                                  f"|| max_ram_used = {ram_used / (1024.0 * 1024.0)} GB")
+
+                    def plot_profiling_data(data_type, title, y_label):
+                        from matplotlib import pyplot as plt
+
+                        clients = []
+                        data = []
+                        plt.title(title)
+                        for key, value in self.clients_evaluations.items():
+                            client_id = key
+                            profiling_data = value['info_profiling']
+
+                            clients.append(f"C{client_id}")
+                            val = profiling_data[data_type]
+
+                            if data_type== "max_ram_used":
+                                val = val / (1024.0 * 1024.0)  # convert from KB to GB
+
+                            data.append(val)
+
+                        plt.stem(clients, data)
+
+                        plt.ylabel(y_label)
+
+                        plt.show()
+
+                    def plot_metric_per_client(metric_type):
+                        from matplotlib import pyplot as plt
+
                         fig, ax = plt.subplots()
                         fig.suptitle(f'{metric_type.capitalize()} on test samples after receiving Federated Model')
 
-                        values_per_client = []
-
-                        for key, value in values.items():
+                        for key, value in self.clients_evaluations.items():
                             client_id = key
                             eval_federated = value['evaluation_federated']
                             metric_values = [el[0 if metric_type == "accuracy" else 1] for el in eval_federated]
-                            values_per_client.append(metric_values)
                             round_numbers = list(range(len(eval_federated)))
 
                             ax.plot(round_numbers, metric_values, label=f'Client {client_id}', marker='o')
@@ -280,20 +339,10 @@ class TCPServer(ABC):
                         # plt.savefig(f'plots/{metric_type}_per_client.png')
 
                         plt.show()
-                        values_per_client_np = np.array(values_per_client)
-                        mean = np.mean(values_per_client_np, axis=0)
-                        return mean
 
-                    # Accuracy plot
-                    ac_mean = plot_metric_per_client('accuracy', self.clients_evaluations)
+                    def plot_average_metric(metric_type, values):
+                        from matplotlib import pyplot as plt
 
-                    # Loss plot
-                    loss_mean = plot_metric_per_client('loss', self.clients_evaluations)
-
-                    print(f"Average accuracy final federated model: {ac_mean[-1]}\n")
-                    print(f"Average loss final federated model: {loss_mean[-1]}\n")
-
-                    def plot_average(metric_type, values):
                         rounds = list(range(len(values)))
 
                         fig, ax = plt.subplots()
@@ -308,20 +357,12 @@ class TCPServer(ABC):
                         # plt.savefig(f'plots/{metric_type}_federated_model.png')
                         plt.show()
 
-                    plot_average("accuracy", ac_mean)
-                    plot_average("loss", loss_mean)
+                    def plot_confusion_matrix(values, classes):
+                        from matplotlib import pyplot as plt
+                        import itertools
 
-                    # confusion matrix
-
-                    final_cm_per_client = [value['cm_federated'][-1] for value in self.clients_evaluations.values()]
-                    cm_mean = np.round(np.mean(final_cm_per_client, axis=0), 2)
-
-                    print("Average Confusion Matrix final federated model (Percentage):")
-                    print(cm_mean)
-
-                    def plot_confusion_matrix(values, classes, title='Confusion matrix', cmap=plt.colormaps["Reds"]):
-                        plt.imshow(values, interpolation='nearest', cmap=cmap)
-                        plt.title(title)
+                        plt.imshow(values, interpolation='nearest', cmap=plt.colormaps["Reds"])
+                        plt.title('Confusion matrix')
                         plt.colorbar()
                         tick_marks = np.arange(len(classes))
                         plt.xticks(tick_marks, classes, rotation=45)
@@ -337,7 +378,37 @@ class TCPServer(ABC):
                         plt.xlabel('Predicted label')
                         plt.show()
 
-                    plot_confusion_matrix(cm_mean, self.get_classes_name())
+                    # compute federated average metrics
+                    accuracy_avg = get_federated_average_metrics('accuracy', self.clients_evaluations)
+                    loss_avg = get_federated_average_metrics('loss', self.clients_evaluations)
+
+                    # confusion matrix
+                    final_cm_per_client = [value['cm_federated'][-1] for value in self.clients_evaluations.values()]
+                    cm_mean = np.round(np.mean(final_cm_per_client, axis=0), 2)
+
+                    print(f"Average accuracy of final federated model: {accuracy_avg[-1]}\n")
+                    print(f"Average loss of final federated model: {loss_avg[-1]}\n")
+                    print("Average Confusion Matrix of final federated model (Percentage):")
+                    print(cm_mean)
+                    print_clients_profiling_data()
+
+                    if self._evaluation_plots_enabled:
+                        plot_metric_per_client('accuracy')
+                        plot_metric_per_client('loss')
+                        plot_average_metric("accuracy", accuracy_avg)
+                        plot_average_metric("loss", loss_avg)
+                        plot_confusion_matrix(cm_mean, self.get_classes_name())
+
+                        if self._clients_profiling_enabled:
+                            plot_profiling_data('training_n_instructions',
+                                                "Total number of instructions during all the training process",
+                                                "# instructions")
+                            plot_profiling_data('training_execution_time',
+                                                "Total execution time of the training",
+                                                "seconds")
+                            plot_profiling_data('max_ram_used',
+                                                "Max memory used during all the training process",
+                                                "GB")
 
     def send_fl_model_to_client(self, client_socket: socket.socket) -> None:
         """
@@ -348,20 +419,26 @@ class TCPServer(ABC):
         """
         msg_type = MessageType.END_FL_TRAINING
 
-        if self.actual_round < self.number_rounds - 1:
+        msg = {'weights': self.weights}
+
+        if self.actual_round < self.number_rounds:
             msg_type = MessageType.FEDERATED_WEIGHTS
 
-        self.send_message(client_socket, msg_type, self.weights)
+        if self.actual_round == 0 and self._clients_profiling_enabled:
+            # the first message of the server contains some configurations
+            msg['configurations'] = {'profiling': True}
+
+        self.send_message(client_socket, msg_type, msg)
         # print("Sent updated weights to client")
 
     def send_fl_model_to_clients(self) -> None:
         """Send the federated model (weights) to all clients"""
-        for client_socket in self.client_sockets:
+        for client_socket in self._client_sockets:
             # Send only if the client is connected
             if self.is_client_active(client_socket):
                 self.send_fl_model_to_client(client_socket)
             else:
-                self.client_sockets.remove(client_socket)
+                self._client_sockets.remove(client_socket)
 
     @abstractmethod
     def get_skeleton_model(self) -> Model:

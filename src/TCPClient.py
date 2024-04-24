@@ -20,8 +20,12 @@ class TCPClient(ABC):
 
         self.server_address = server_address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self.id = client_id
+        self._is_profiling = False
+        self._info_profiling = {'training_n_instructions': 0, 'training_execution_time': 0, 'max_ram_used': 0}
         self.weights = None
+
         self.evaluation_data_federated_model = np.empty((0, 2), dtype=float)
         self.evaluation_data_training_model = np.empty((0, 2), dtype=float)
         _n_classes = self.get_num_classes()
@@ -48,18 +52,57 @@ class TCPClient(ABC):
             match m_type:
                 case MessageType.FEDERATED_WEIGHTS:
                     print("Received federated weights")
-                    # Update model
-                    self.update_weights(m_body)
+                    # get weights from server
+                    weights = m_body["weights"]
+
+                    # check for configurations (round 0)
+                    if "configurations" in m_body:
+                        self._is_profiling = m_body['configurations']['profiling']
+
+                    # update model
+                    self.update_weights(weights)
                     # evaluate model with new weights
                     self.evaluate_model()
+
                     # train model with new weights
-                    self.train_model()
+                    if self._is_profiling:
+                        import resource
+                        import trace
+                        import time
+
+                        print("Tracing active")
+
+                        start_time = time.time()
+
+                        tracer = trace.Trace(
+                            count=True,
+                            trace=False,
+                            timing=True)
+
+                        tracer.runfunc(self.train_model)
+
+                        stats = tracer.results()
+
+                        execution_time = time.time() - start_time
+
+                        n_instructions = sum(stats.counts.values())
+
+                        used_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+                        self._info_profiling['training_n_instructions'] += n_instructions
+                        self._info_profiling['training_execution_time'] += execution_time
+                        self._info_profiling['max_ram_used'] = max(used_memory, self._info_profiling['max_ram_used'])
+
+                    else:
+                        self.train_model()
                     # send trained weights to the server
                     self.send_trained_weights()
                 case MessageType.END_FL_TRAINING:
                     print("Received final federated weights. Federated training has finished.")
+                    # get weights from server
+                    weights = m_body["weights"]
                     # Update model
-                    self.update_weights(m_body)
+                    self.update_weights(weights)
                     # evaluate model with new weights
                     self.evaluate_model()
                     # send evaluation data to the server
@@ -277,4 +320,8 @@ class TCPClient(ABC):
                     'evaluation_training': self.evaluation_data_training_model,
                     'cm_federated': self.confusion_matrix_federated_model,
                     'cm_training': self.confusion_matrix_training_model}
+
+        if self._is_profiling:
+            msg_body['info_profiling'] = self._info_profiling
+
         self.send_message(MessageType.CLIENT_EVALUATION, msg_body)

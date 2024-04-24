@@ -50,7 +50,6 @@ class Centralized(CentralizedLearning):
             x_test = np.append(x_test, x_client_test, axis=0)
             y_test = np.append(y_test, y_client_test, axis=0)
 
-
         print(f"Campioni: {len(x_train)}, {len(y_train)}")
         return x_train, x_test, y_train, y_test
 

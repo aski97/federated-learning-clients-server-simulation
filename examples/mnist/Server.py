@@ -27,4 +27,6 @@ if __name__ == "__main__":
 
     # Server creation and execution
     server = Server(server_address, 10, 10, FedAvgAlgorithm())
+    server.enable_clients_profiling(True)
+    # server.enable_evaluations_plots(False)
     server.run()
