@@ -132,6 +132,13 @@ Through the initial configurations, the server can decide whether to enable prof
 + ```training_n_instructions```: number of instructions executed during the training phases.
 + ```training_execution_time```: total execution time of the training phases.
 + ```max_ram_used```: maximum RAM used by the node.
++ ```bytes_input```: number of bytes downloaded (received) by the client.
++ ```train_samples```: number of samples involved in the training of the local model.
++ ```test_samples```: number of samples involved in the test evaluation of the local/federated model.
+
+The server will also save:
+
++ ```bytes_output```: number of bytes uploaded (sent) to each client.
 
 ### Limits of the implementation
 The proposed implementation is very simple, and for this reason, some simplifications were necessary, leading to the following limitations:
