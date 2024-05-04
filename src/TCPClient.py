@@ -23,7 +23,13 @@ class TCPClient(ABC):
 
         self.id = client_id
         self._is_profiling = False
-        self._info_profiling = {'training_n_instructions': 0, 'training_execution_time': 0, 'max_ram_used': 0}
+        self._info_profiling = {
+            'train_samples': 0,
+            'test_samples': 0,
+            'bytes_input': 0,
+            'training_n_instructions': 0,
+            'training_execution_time': 0,
+            'max_ram_used': 0}
         self.weights = None
 
         self.evaluation_data_federated_model = np.empty((0, 2), dtype=float)
@@ -34,6 +40,7 @@ class TCPClient(ABC):
         # populate dataset
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
+
     def connect(self) -> None:
         """Connect to the server"""
         self.socket.connect(self.server_address)
@@ -42,11 +49,13 @@ class TCPClient(ABC):
         """ It manages the message communication with the server"""
         while True:
             # Wait for Server message
-            m_body, m_type = self.receive_message()
+            m_body, m_type, m_len = self.receive_message()
 
             # check if server closed the connection
             if m_body is None or m_type is None:
                 break
+
+            self._info_profiling['bytes_input'] += m_len
 
             # behave differently with respect to the type of message received
             match m_type:
@@ -140,12 +149,12 @@ class TCPClient(ABC):
     def receive_message(self) -> tuple:
         """
         It waits until a message from a server is received.
-        :return: unpacked message {msg_type, msg_body}.
+        :return: unpacked message {msg_type, msg_body} and message length
         """
         # Read message length by first 4 bytes
         msg_len_bytes = self.socket.recv(4)
         if not msg_len_bytes:
-            return None, None
+            return None, None, None
         msg_len = struct.unpack('!I', msg_len_bytes)[0]
         # Read the message data
         data = b''
@@ -155,7 +164,8 @@ class TCPClient(ABC):
                 break
             data += packet
 
-        return unpack_message(data)
+        msg_body, msg_type = unpack_message(data)
+        return msg_body, msg_type, msg_len
 
     def close(self) -> None:
         """It closes connection with the server"""
@@ -322,6 +332,8 @@ class TCPClient(ABC):
                     'cm_training': self.confusion_matrix_training_model}
 
         if self._is_profiling:
+            self._info_profiling['train_samples'] = len(self.y_train)
+            self._info_profiling['test_samples'] = len(self.y_test)
             msg_body['info_profiling'] = self._info_profiling
 
         self.send_message(MessageType.CLIENT_EVALUATION, msg_body)

@@ -28,6 +28,7 @@ class TCPServer(ABC):
         self.actual_round = 0
         self.number_clients = number_clients
         self.number_rounds = number_rounds
+        self._output_bytes_clients = {}
         # threads
         self.client_threads = []  # list of client threads connected to the server
         self.thread_client_connections = None
@@ -85,12 +86,12 @@ class TCPServer(ABC):
         """
         It waits until a message from a client is received.
         :param client_socket: client socket.
-        :return: unpacked message {msg_type, msg_body}.
+        :return: unpacked message and length (msg_type, msg_body, msg_length)
         """
         # Read the message length by first 4 bytes
         msg_len_bytes = client_socket.recv(4)
         if not msg_len_bytes:  # EOF
-            return None, None
+            return None, None, None
         msg_len = struct.unpack('!I', msg_len_bytes)[0]
         # Read the message data
         data = b''
@@ -100,7 +101,8 @@ class TCPServer(ABC):
                 break
             data += packet
 
-        return unpack_message(data)
+        msg_body, msg_type = unpack_message(data)
+        return msg_body, msg_type, msg_len
 
     def create_server_threads(self) -> None:
         """
@@ -162,7 +164,7 @@ class TCPServer(ABC):
 
             while True:
                 # Wait for client message
-                m_body, m_type = self.receive_message(client_socket)
+                m_body, m_type, m_len = self.receive_message(client_socket)
 
                 # check if client closed the connection
                 if m_body is None or m_type is None:
@@ -176,6 +178,11 @@ class TCPServer(ABC):
                     client_id = m_body.pop("client_id")
                 else:
                     break
+
+                if client_id in self._output_bytes_clients:
+                    self._output_bytes_clients[client_id] += m_len
+                else:
+                    self._output_bytes_clients[client_id] = m_len
 
                 # behave differently with respect to the type of message received
                 match m_type:
@@ -287,12 +294,22 @@ class TCPServer(ABC):
                             client_id = key
                             profiling_data = value['info_profiling']
 
+                            output_bytes = self._output_bytes_clients[client_id]
+                            input_bytes = profiling_data['bytes_input']
+                            train_samples = profiling_data['train_samples']
+                            test_samples = profiling_data['test_samples']
                             n_i = profiling_data['training_n_instructions']
                             e_t = profiling_data['training_execution_time']
                             ram_used = profiling_data['max_ram_used']
 
-                            print(f"Profiling Client {client_id} -> #instructions = {n_i} || execution_time = {e_t} s "
-                                  f"|| max_ram_used = {ram_used / (1024.0 * 1024.0)} GB")
+                            print(f"Profiling Client {client_id} -> "
+                                  f"input_bytes = {input_bytes} B"
+                                  f"|| output_bytes = {output_bytes} B"
+                                  f"|| #instructions = {n_i} "
+                                  f"|| execution_time = {e_t} s "
+                                  f"|| max_ram_used = {ram_used / (1024.0 * 1024.0)} GB "
+                                  f"|| #train_samples = {train_samples} "
+                                  f"!! #test_samples = {test_samples} ")
 
                     def plot_profiling_data(data_type, title, y_label):
                         from matplotlib import pyplot as plt
