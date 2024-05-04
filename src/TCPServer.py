@@ -390,6 +390,11 @@ class TCPServer(ABC):
                     print(f"Average loss of final federated model: {loss_avg[-1]}\n")
                     print("Average Confusion Matrix of final federated model (Percentage):")
                     print(cm_mean)
+                    if self._clients_profiling_enabled:
+                        import resource
+                        max_m_used = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                        print(f"Server max memory used: {max_m_used / (1024.0 * 1024.0)} GB")
+
                     print_clients_profiling_data()
 
                     if self._evaluation_plots_enabled:
