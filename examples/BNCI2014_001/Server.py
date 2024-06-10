@@ -1,7 +1,7 @@
 import sys
 import os
 
-from src.AggregationAlgorithm import FedAvgAlgorithm, FedMiddleAvgAlgorithm
+from src.AggregationAlgorithm import FedAvg, FedMiddleAvg
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
@@ -31,7 +31,8 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 5, FedAvgAlgorithm())
+    server = Server(server_address, 9, 5)
+    server.set_aggregation_algorithm(FedAvg())
     server.enable_clients_profiling(True)
     # server.enable_evaluations_plots(False)
     server.run()

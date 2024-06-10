@@ -13,7 +13,7 @@ class AggregationAlgorithm(ABC):
         pass
 
 
-class FedAvgAlgorithm(AggregationAlgorithm):
+class FedAvg(AggregationAlgorithm):
     """
         Aggregating weights computing the mean of clients weights
     """
@@ -32,12 +32,12 @@ class FedAvgAlgorithm(AggregationAlgorithm):
         return fed_avg_weights
 
 
-class FedMiddleAvgAlgorithm(AggregationAlgorithm):
+class FedMiddleAvg(AggregationAlgorithm):
     """
     Aggregating weights computing the mean between the latest federated model with the fed_avg_weights
     of the client weights
     """
     def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
-        fed_avg = FedAvgAlgorithm().aggregate_weights(clients_weights, federated_model)
+        fed_avg = FedAvg().aggregate_weights(clients_weights, federated_model)
         fed_middle_avg_weights = (fed_avg + federated_model) / 2
         return fed_middle_avg_weights

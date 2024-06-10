@@ -20,6 +20,14 @@ class CentralizedLearning(ABC):
 
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
+        # # Creazione di dataset TensorFlow dai dati di training e test
+        # self.train_dataset = tf.data.Dataset.from_tensor_slices((self.x_train, self.y_train))
+        # self.test_dataset = tf.data.Dataset.from_tensor_slices((self.x_test, self.y_test))
+        #
+        # # Applicazione del caching dei dati
+        # self.train_dataset = self.train_dataset.cache().prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+        # self.test_dataset = self.test_dataset.cache().prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+
     @abstractmethod
     def shuffle_dataset_before_training(self) -> bool:
         """If True it shuffles the training dataset randomly before training the model."""
@@ -88,6 +96,8 @@ class CentralizedLearning(ABC):
 
         model.compile(optimizer=optimizer, loss=loss, metrics=[metric])
 
+        model.summary()
+
         return model
 
     def train_model(self) -> None:
@@ -105,7 +115,7 @@ class CentralizedLearning(ABC):
         batch_size = self.get_batch_size()
         epochs = self.get_train_epochs()
 
-        model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, verbose=1)
+        model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, shuffle=True, verbose=1)
 
         # evaluate model
         self.evaluate_model(model)
@@ -125,7 +135,7 @@ class CentralizedLearning(ABC):
         y_pred = model.predict(self.x_test)
 
         classes_name = self.get_classes_name()
-
+        # NB: Y_TEST MUST BE ONE-HOT encoded
         cm = confusion_matrix(np.argmax(self.y_test, axis=1), np.argmax(y_pred, axis=1), normalize="true",
                               labels=list(range(len(classes_name))))
 

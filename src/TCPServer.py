@@ -1,6 +1,6 @@
 import os
 
-from src.AggregationAlgorithm import AggregationAlgorithm
+from src.AggregationAlgorithm import AggregationAlgorithm, FedAvg
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from abc import ABC, abstractmethod
@@ -14,17 +14,17 @@ from tensorflow.keras.models import Model
 
 class TCPServer(ABC):
 
-    def __init__(self, address, number_clients: int, number_rounds: int, aggregation_algorithm: AggregationAlgorithm):
-        self.server_address = address
+    def __init__(self, address, number_clients: int, number_rounds: int):
+        self._server_address = address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._client_sockets = []  # list of client sockets
         self._clients_profiling_enabled = False
         self._evaluation_plots_enabled = True
         # FL
-        self.aggregation_algorithm = aggregation_algorithm
+        self.aggregation_algorithm = FedAvg()
         self.client_weights = {}  # shared variable
         self.clients_evaluations = {}  # shared variable
-        self.weights = self.initialize_federated_model()
+        self.weights = self._initialize_federated_model()
         self.actual_round = 0
         self.number_clients = number_clients
         self.number_rounds = number_rounds
@@ -38,40 +38,16 @@ class TCPServer(ABC):
         self.condition_add_weights = threading.Condition()
         self.condition_add_client_evaluation = threading.Condition()
 
-    def enable_clients_profiling(self, value: bool):
-        """It enables the profiling of the clients in order to receive by clients:
-            - number of instructions executed
-            - max memory used
-        """
-        self._clients_profiling_enabled = value
+    # PROPERTIES
 
-    def enable_evaluations_plots(self, value: bool):
-        """If enabled it plots graphs of the evaluation data
-        """
-        self._evaluation_plots_enabled = value
+    @property
+    def server_address(self):
+        return self._server_address
 
-    def bind_and_listen(self) -> None:
-        """It makes the server listening to server_address"""
-        self.socket.bind(self.server_address)
-        self.socket.listen(self.number_clients)
-        print("Server active on {}:{}".format(*self.server_address))
-
-    def run(self) -> None:
-        """
-        Execute server tasks
-        """
-        try:
-            # listen to clients connections
-            self.bind_and_listen()
-            # Create server threads
-            self.create_server_threads()
-        finally:
-            self.join_server_threads()
-            # Close server socket
-            self.socket.close()
+    # METHODS
 
     @staticmethod
-    def send_message(recipient: socket.socket, msg_type: MessageType, body: object) -> None:
+    def _send_message(recipient: socket.socket, msg_type: MessageType, body: object) -> None:
         """
         Send a message to a client in {'type': '', 'body': ''} format
         :param recipient: recipient socket.
@@ -82,7 +58,7 @@ class TCPServer(ABC):
         recipient.sendall(msg_serialized)
 
     @staticmethod
-    def receive_message(client_socket: socket.socket) -> tuple:
+    def _receive_message(client_socket: socket.socket) -> tuple:
         """
         It waits until a message from a client is received.
         :param client_socket: client socket.
@@ -104,34 +80,8 @@ class TCPServer(ABC):
         msg_body, msg_type = unpack_message(data)
         return msg_body, msg_type, msg_len
 
-    def create_server_threads(self) -> None:
-        """
-        It creates three threads needed by the server:
-        - A thread to manage connections with clients
-        - A thread to execute Federated algorithms
-        - A thread to manage evaluations of the Federated Learning
-        """
-        # Thread that accepts connections with clients
-        self.thread_client_connections = threading.Thread(target=self.handle_accept_connections)
-        self.thread_client_connections.start()
-
-        self.thread_fl_algorithms = threading.Thread(target=self.handle_round_fl)
-        self.thread_fl_algorithms.start()
-
-        self.thread_final_evaluations = threading.Thread(target=self.handle_final_evaluations())
-        self.thread_final_evaluations.start()
-
-    def join_server_threads(self) -> None:
-        """ It joins the threads with the main thread """
-        for client_thread in self.client_threads:
-            client_thread.join()
-
-        self.thread_client_connections.join()
-        self.thread_fl_algorithms.join()
-        self.thread_final_evaluations.join()
-
     @staticmethod
-    def is_client_active(client_socket: socket.socket) -> bool:
+    def _is_client_active(client_socket: socket.socket) -> bool:
         """
         Check if the client socket is active.
         :param client_socket: socket to check.
@@ -152,7 +102,45 @@ class TCPServer(ABC):
             print(f"Error during the check of the socket: {e}")
             return False
 
-    def handle_client(self, client_socket: socket.socket, client_address: tuple) -> None:
+    def _initialize_server(self) -> None:
+        """
+        It configures and starts the server
+        :return:
+        """
+        self.socket.bind(self.server_address)
+
+    def _wait_for_clients(self) -> None:
+        """It waits client connections"""
+        self.socket.listen(self.number_clients)
+        print("Server active on {}:{}".format(*self.server_address))
+
+    def _create_server_threads(self) -> None:
+        """
+        It creates three threads needed by the server:
+        - A thread to manage connections with clients
+        - A thread to execute Federated algorithms
+        - A thread to manage evaluations of the Federated Learning
+        """
+        # Thread that accepts connections with clients
+        self.thread_client_connections = threading.Thread(target=self._handle_accept_connections)
+        self.thread_client_connections.start()
+
+        self.thread_fl_algorithms = threading.Thread(target=self._handle_round_fl)
+        self.thread_fl_algorithms.start()
+
+        self.thread_final_evaluations = threading.Thread(target=self._handle_final_evaluations())
+        self.thread_final_evaluations.start()
+
+    def _join_server_threads(self) -> None:
+        """ It waits the end of the threads"""
+        for client_thread in self.client_threads:
+            client_thread.join()
+
+        self.thread_client_connections.join()
+        self.thread_fl_algorithms.join()
+        self.thread_final_evaluations.join()
+
+    def _handle_client(self, client_socket: socket.socket, client_address: tuple) -> None:
         """
         It manages client communications.
         :param client_socket: socket of the client
@@ -160,11 +148,11 @@ class TCPServer(ABC):
         """
         try:
             # send updated weights to the client
-            self.send_fl_model_to_client(client_socket)
+            self._send_fl_model_to_client(client_socket)
 
             while True:
                 # Wait for client message
-                m_body, m_type, m_len = self.receive_message(client_socket)
+                m_body, m_type, m_len = self._receive_message(client_socket)
 
                 # check if client closed the connection
                 if m_body is None or m_type is None:
@@ -208,13 +196,11 @@ class TCPServer(ABC):
             print(f"Error connection to the client {client_socket}: {e}")
         finally:
             # Close connection
-            self.close_client_socket(client_socket, client_address, threading.current_thread())
+            self._close_client_socket(client_socket, client_address, threading.current_thread())
 
-    def close_client_socket(self, client_socket: socket.socket, client_address: tuple,
-                            client_thread: threading.Thread) -> None:
+    def _close_client_socket(self, client_socket: socket.socket, client_thread: threading.Thread) -> None:
         """
         Close the client connection.
-        :param client_address: client address.
         :param client_socket: the socket of the client.
         :param client_thread: thread that handles the client communication.
         """
@@ -227,7 +213,7 @@ class TCPServer(ABC):
         # remove socket from the list
         self._client_sockets.remove(client_socket)
 
-    def handle_accept_connections(self) -> None:
+    def _handle_accept_connections(self) -> None:
         """
         It accepts connections from clients. For each client it creates a new thread
         to manage the communication client<-->server.
@@ -238,7 +224,7 @@ class TCPServer(ABC):
             client_socket, client_address = self.socket.accept()
 
             # Create a thread to handle the client
-            client_thread = threading.Thread(target=self.handle_client,
+            client_thread = threading.Thread(target=self._handle_client,
                                              args=(client_socket, client_address))
             client_thread.start()
 
@@ -249,9 +235,9 @@ class TCPServer(ABC):
             self._client_sockets.append(client_socket)
             n_client += 1
 
-    def handle_round_fl(self) -> None:
+    def _handle_round_fl(self) -> None:
         """
-        It starts a round for the federated learning:
+        It manages rounds for the federated learning:
         it aggregates weights and send the new model to the clients.
         """
         with self.condition_add_weights:
@@ -262,13 +248,14 @@ class TCPServer(ABC):
                     # increase round
                     self.actual_round += 1
                     # aggregate weights
-                    self.aggregate_weights()
+                    self._aggregate_weights()
                     # send new model to clients
-                    self.send_fl_model_to_clients()
+                    self._send_fl_model_to_clients()
 
-    def handle_final_evaluations(self) -> None:
+    def _handle_final_evaluations(self) -> None:
         """
-        When federated learning finishes it plots evaluations
+        It manages the final evaluations of Federated Learning,
+        displaying the results and generating any graphs if necessary.
         """
         with self.condition_add_client_evaluation:
             while True:
@@ -324,7 +311,7 @@ class TCPServer(ABC):
                             clients.append(f"C{client_id}")
                             val = profiling_data[data_type]
 
-                            if data_type== "max_ram_used":
+                            if data_type == "max_ram_used":
                                 val = val / (1024.0 * 1024.0)  # convert from KB to GB
 
                             data.append(val)
@@ -432,7 +419,7 @@ class TCPServer(ABC):
                                                 "Max memory used during all the training process",
                                                 "GB")
 
-    def send_fl_model_to_client(self, client_socket: socket.socket) -> None:
+    def _send_fl_model_to_client(self, client_socket: socket.socket) -> None:
         """
         Send the federated weights to the client,
         informing either a round is running (so the client has to train the model with the new weights)
@@ -450,17 +437,72 @@ class TCPServer(ABC):
             # the first message of the server contains some configurations
             msg['configurations'] = {'profiling': True}
 
-        self.send_message(client_socket, msg_type, msg)
+        self._send_message(client_socket, msg_type, msg)
         # print("Sent updated weights to client")
 
-    def send_fl_model_to_clients(self) -> None:
+    def _send_fl_model_to_clients(self) -> None:
         """Send the federated model (weights) to all clients"""
         for client_socket in self._client_sockets:
             # Send only if the client is connected
-            if self.is_client_active(client_socket):
-                self.send_fl_model_to_client(client_socket)
+            if self._is_client_active(client_socket):
+                self._send_fl_model_to_client(client_socket)
             else:
                 self._client_sockets.remove(client_socket)
+
+    def _initialize_federated_model(self) -> np.ndarray:
+        """
+        Initialize weights of the model to send to clients. The result
+        is affected by "kernel_initializer" of the keras model layers.
+        :return: weights
+        :rtype: np.ndarray
+        """
+        model = self.get_skeleton_model()
+
+        # initialize weights
+        return np.array(model.get_weights(), dtype='object')
+
+    def _aggregate_weights(self) -> None:
+        """
+        It aggregates weights from clients computing the mean of the weights.
+        """
+
+        self.weights = self.aggregation_algorithm.aggregate_weights(self.client_weights, self.weights)
+
+        self.client_weights.clear()
+
+    def run(self) -> None:
+        """
+        Execute server tasks
+        """
+        try:
+            # bind server
+            self._initialize_server()
+            # listen to clients connections
+            self._wait_for_clients()
+            # Create server threads
+            self._create_server_threads()
+        finally:
+            self._join_server_threads()
+            # Close server socket
+            self.socket.close()
+
+    def enable_clients_profiling(self, value: bool) -> None:
+        """
+        It enables the profiling of the clients in order to receive KPIs from clients
+        """
+        self._clients_profiling_enabled = value
+
+    def enable_evaluations_plots(self, value: bool) -> None:
+        """
+        If enabled it plots graphs of the evaluation data and KPI
+        """
+        self._evaluation_plots_enabled = value
+
+    def set_aggregation_algorithm(self, aggregation_algorithm: AggregationAlgorithm) -> None:
+        """
+        It sets the aggregation algorithm to use in the federated learning process.
+        """
+        self.aggregation_algorithm = aggregation_algorithm
 
     @abstractmethod
     def get_skeleton_model(self) -> Model:
@@ -474,24 +516,3 @@ class TCPServer(ABC):
     def get_classes_name(self) -> list[str]:
         """ Get the list of names of the classes to predict"""
         pass
-
-    def initialize_federated_model(self) -> np.ndarray:
-        """
-        Initialize weights of the model to send to clients. The result
-        is affected by "kernel_initializer" of the keras model layers.
-        :return: weights
-        :rtype: np.ndarray
-        """
-        model = self.get_skeleton_model()
-
-        # initialize weights
-        return np.array(model.get_weights(), dtype='object')
-
-    def aggregate_weights(self) -> None:
-        """
-        It aggregates weights from clients computing the mean of the weights.
-        """
-
-        self.weights = self.aggregation_algorithm.aggregate_weights(self.client_weights, self.weights)
-
-        self.client_weights.clear()
