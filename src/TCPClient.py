@@ -243,7 +243,7 @@ class TCPClient(ABC):
 
     def _send_trained_weights(self) -> None:
         """Send trained weights to the server"""
-        msg_body = {'client_id': self.id, 'weights': self.weights}
+        msg_body = {'client_id': self.id, 'weights': self.weights, 'n_training_samples': len(self.y_train)}
         self._send_message(MessageType.CLIENT_TRAINED_WEIGHTS, msg_body)
 
     def _send_kpi_data(self) -> None:

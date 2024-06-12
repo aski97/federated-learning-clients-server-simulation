@@ -180,7 +180,8 @@ class TCPServer(ABC):
                         # Add weights to the shared variable
                         with self.condition_add_weights:
                             weights = m_body["weights"]
-                            self.client_weights[client_id] = weights
+                            n_training_samples = m_body["n_training_samples"]
+                            self.client_weights[client_id] = {"weights": weights, "n_training_samples": n_training_samples}
                             # Notify the server thread
                             self.condition_add_weights.notify()
                     case MessageType.CLIENT_EVALUATION:
@@ -196,7 +197,7 @@ class TCPServer(ABC):
             print(f"Error connection to the client {client_socket}: {e}")
         finally:
             # Close connection
-            self._close_client_socket(client_socket, client_address, threading.current_thread())
+            self._close_client_socket(client_socket, threading.current_thread())
 
     def _close_client_socket(self, client_socket: socket.socket, client_thread: threading.Thread) -> None:
         """
