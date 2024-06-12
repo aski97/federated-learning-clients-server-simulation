@@ -77,14 +77,14 @@ class Centralized(CentralizedLearning):
     def get_train_epochs(self) -> int:
         return 10
 
-    def shuffle_dataset_before_training(self) -> bool:
-        return False
-
     def get_classes_name(self) -> list[str]:
         return ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 
 
 if __name__ == "__main__":
-    centralized_model = Centralized(enable_profiling=False)
-
+    centralized_model = Centralized()
+    centralized_model.shuffle_dataset_before_training(False)
+    centralized_model.enable_op_determinism()
+    centralized_model.enable_profiling(True)
+    centralized_model.enable_evaluations_plots(False)
     centralized_model.run()
