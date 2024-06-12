@@ -15,9 +15,6 @@ class Client(TCPClient):
     def get_num_classes(self) -> int:
         return 10
 
-    def shuffle_dataset_before_training(self) -> bool:
-        return False
-
     def get_batch_size(self) -> int:
         return 20
 
@@ -83,5 +80,6 @@ if __name__ == "__main__":
 
     # Create client
     client = Client(server_address, args.id)
-
+    client.enable_op_determinism()
+    client.shuffle_dataset_before_training(False)
     client.run()

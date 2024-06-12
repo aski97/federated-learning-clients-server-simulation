@@ -12,9 +12,6 @@ from sklearn.model_selection import train_test_split
 
 class Client(TCPClient):
 
-    def shuffle_dataset_before_training(self) -> bool:
-        return False
-
     def get_batch_size(self) -> int:
         return 32
 
@@ -86,5 +83,6 @@ if __name__ == "__main__":
 
     # Create client
     client = Client(server_address, args.id)
-
+    client.enable_op_determinism()
+    client.shuffle_dataset_before_training(False)
     client.run()
