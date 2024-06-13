@@ -1,7 +1,7 @@
 import sys
 import os
 
-from src.AggregationAlgorithm import FedAvg
+from src.AggregationAlgorithm import FedAvg, FedWeightedAvg, FedAvgServerMomentum
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # Server creation and execution
     server = Server(server_address, 10, 10)
-    server.set_aggregation_algorithm(FedAvg())
+    server.set_aggregation_algorithm(FedAvgServerMomentum(0.9, 1))
     server.enable_clients_profiling(True)
     # server.enable_evaluations_plots(False)
     server.run()

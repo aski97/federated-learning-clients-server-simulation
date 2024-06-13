@@ -35,7 +35,8 @@ class FedAvg(AggregationAlgorithm):
 
 class FedWeightedAvg(AggregationAlgorithm):
     """
-
+        Aggregating weights computing the weighted average of clients weights. Giving more importance to
+        nodes that have more training samples.
     """
     def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
         weights_sum = None
@@ -55,6 +56,7 @@ class FedWeightedAvg(AggregationAlgorithm):
 
         return aggregated_weights
 
+
 class FedMiddleAvg(AggregationAlgorithm):
     """
     Aggregating weights computing the mean between the latest federated model with the fed_avg_weights
@@ -66,22 +68,44 @@ class FedMiddleAvg(AggregationAlgorithm):
         return fed_middle_avg_weights
 
 
+class FedAvgServerMomentum(AggregationAlgorithm):
+    """
+    Implementation of the server momentum aggregation algorithm for Federated Learning.
 
-# class FedAvgWS(AggregationAlgorithm):
-#     """
-#
-#     """
-#     def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
-#         fed_avg = FedAvg().aggregate_weights(clients_weights, federated_model)
-#
-#         total_data_size = sum(data_sizes)
-#
-#
-#         # Sum the scaled parameters of all models
-#         for model, size in zip(models, data_sizes):
-#             for k in aggregated_model.keys():
-#                 aggregated_model[k] += model[k] * (size / total_data_size)
-#
-#         return aggregated_model
-#
-#         return fed_middle_avg_weights
+    Args:
+        beta (float): Momentum factor.
+        learning_rate (float): Learning rate for updating weights.
+    """
+    def __init__(self, beta=0.9, learning_rate=0.1):
+        self.beta = beta
+        self.learning_rate = learning_rate
+        self.momentum = None
+
+    def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
+        """
+        Aggregates client weights using server momentum.
+
+        Args:
+            clients_weights (dict): Dictionary containing client weights and respective contributions.
+            federated_model (np.ndarray): Current federated model.
+
+        Returns:
+            np.ndarray: New federated model weights.
+        """
+        if self.momentum is None:
+            self.momentum = np.zeros_like(federated_model)
+
+        # Computing the average operation
+        avg = FedWeightedAvg().aggregate_weights(clients_weights, federated_model)
+
+        # Computing the difference btw the model and the avg
+        delta = avg - federated_model
+
+        # Updating momentum
+        self.momentum = self.beta * self.momentum + delta
+
+        # Computing new weights
+
+        new_weights = federated_model + self.learning_rate * self.momentum
+
+        return new_weights
