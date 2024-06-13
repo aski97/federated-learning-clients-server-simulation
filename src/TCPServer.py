@@ -14,12 +14,13 @@ from tensorflow.keras.models import Model
 
 class TCPServer(ABC):
 
-    def __init__(self, address, number_clients: int, number_rounds: int):
+    def __init__(self, address, number_clients: int, number_rounds: int, save_weights_path: str = None):
         self._server_address = address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._client_sockets = []  # list of client sockets
         self._clients_profiling_enabled = False
         self._evaluation_plots_enabled = True
+        self._save_weights_path = save_weights_path
         # FL
         self.aggregation_algorithm = FedAvg()
         self.client_weights = {}  # shared variable
@@ -181,7 +182,8 @@ class TCPServer(ABC):
                         with self.condition_add_weights:
                             weights = m_body["weights"]
                             n_training_samples = m_body["n_training_samples"]
-                            self.client_weights[client_id] = {"weights": weights, "n_training_samples": n_training_samples}
+                            self.client_weights[client_id] = {"weights": weights,
+                                                              "n_training_samples": n_training_samples}
                             # Notify the server thread
                             self.condition_add_weights.notify()
                     case MessageType.CLIENT_EVALUATION:
@@ -252,6 +254,11 @@ class TCPServer(ABC):
                     self._aggregate_weights()
                     # send new model to clients
                     self._send_fl_model_to_clients()
+                    # check if it's finished
+                    if self.actual_round >= self.number_rounds:
+                        # FL ENDED
+                        if self._save_weights_path is not None:
+                            self.save_federated_weights(self._save_weights_path)
 
     def _handle_final_evaluations(self) -> None:
         """
@@ -504,6 +511,30 @@ class TCPServer(ABC):
         It sets the aggregation algorithm to use in the federated learning process.
         """
         self.aggregation_algorithm = aggregation_algorithm
+
+    def save_federated_weights(self, file_path) -> None:
+        """
+        It saves the federated weights at the specified path.
+        :param file_path: path where to save the weights
+        """
+        directory = os.path.dirname(file_path)
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        np.save(file_path, self.weights)
+
+    def load_initial_weights(self, file_path) -> None:
+        """
+        It initializes the federated model with the loaded weights at the specified path.
+        :param file_path: path of the weights.
+        """
+        weights = np.load(file_path, allow_pickle=True)
+
+        if weights.shape != self.weights.shape:
+            raise ValueError("Your model doesn't accept this weights. The shapes are not matching.")
+
+        self.weights = weights
 
     @abstractmethod
     def get_skeleton_model(self) -> Model:

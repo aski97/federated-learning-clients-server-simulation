@@ -28,6 +28,7 @@ if __name__ == "__main__":
     # Server creation and execution
     server = Server(server_address, 10, 10)
     server.set_aggregation_algorithm(FedAvgServerMomentum(0.9, 1))
-    server.enable_clients_profiling(True)
+    # server.load_initial_weights("weights/prova.npy")
+    # server.enable_clients_profiling(False)
     # server.enable_evaluations_plots(False)
     server.run()
