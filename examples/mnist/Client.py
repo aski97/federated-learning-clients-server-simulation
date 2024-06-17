@@ -22,10 +22,10 @@ class Client(TCPClient):
         return 10
 
     def get_loss_function(self):
-        return "categorical_crossentropy"
+        return keras.losses.CategoricalCrossentropy()
 
     def get_metric(self):
-        return "accuracy"
+        return keras.metrics.CategoricalAccuracy()
 
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
@@ -81,5 +81,4 @@ if __name__ == "__main__":
     # Create client
     client = Client(server_address, args.id)
     client.enable_op_determinism()
-    client.shuffle_dataset_before_training(False)
     client.run()

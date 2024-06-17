@@ -28,8 +28,6 @@ class TCPClient(ABC):
             'max_ram_used': 0}
         self.weights = None
 
-        self._shuffle_dataset_before_training = False
-
         self.evaluation_data_federated_model = np.empty((0, 2), dtype=float)
         self.evaluation_data_training_model = np.empty((0, 2), dtype=float)
         _n_classes = self.get_num_classes()
@@ -37,6 +35,12 @@ class TCPClient(ABC):
         self.confusion_matrix_training_model = np.empty((0, _n_classes, _n_classes), dtype=float)
         # populate dataset
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
+
+        self._model = self._load_compiled_model()
+        self._loss_fn = self.get_loss_function()
+        self._batch_size = self.get_batch_size()
+        self._epochs = self.get_train_epochs()
+        self._shuffle_dataset_each_epoch = True
 
     # METHODS
 
@@ -154,12 +158,9 @@ class TCPClient(ABC):
         """It closes connection with the server"""
         self.socket.close()
 
-    def _load_model_and_weights(self) -> keras.Model:
+    def _load_compiled_model(self) -> keras.Model:
         """ It loads the local model to be trained"""
         model = self.get_skeleton_model()
-
-        if self.weights is not None:
-            model.set_weights(self.weights)
 
         optimizer = self.get_optimizer()
         loss = self.get_loss_function()
@@ -172,30 +173,63 @@ class TCPClient(ABC):
     def _update_weights(self, weights) -> None:
         """ It updates the weights of the local model"""
         self.weights = weights
+        self._model.set_weights(weights)
+
+    @tf.function
+    def _train_step(self, x, y):
+        # Open a GradientTape to record the operations run
+        # during the forward pass, which enables auto-differentiation.
+        with tf.GradientTape() as tape:
+            # Run the forward pass of the layer.
+            # The operations that the layer applies
+            # to its inputs are going to be recorded
+            # on the GradientTape.
+            predictions = self._model(x, training=True)
+
+            # Compute the loss value for this minibatch.
+            loss_value = self._loss_fn(y, predictions)
+
+        gradients = tape.gradient(loss_value, self._model.trainable_variables)
+        self._model.optimizer.apply_gradients(zip(gradients, self._model.trainable_variables))
+        return loss_value, gradients
+
+    @tf.function
+    def _test_step(self, x, y):
+        predictions = self._model(x, training=False)
+        loss_value = self._loss_fn(y, predictions)
+        return loss_value
 
     def _train_model(self) -> None:
         """
         It trains the model.
         """
-        model = self._load_model_and_weights()
+        for epoch in range(self._epochs):
+            print(f"Epoch {epoch + 1}/{self._epochs}")
 
-        if self._shuffle_dataset_before_training is True:
-            # Shuffle training dataset
-            indices = np.arange(self.x_train.shape[0])
-            np.random.shuffle(indices)
+            if self._shuffle_dataset_each_epoch:
+                indices = np.arange(self.x_train.shape[0])
+                np.random.shuffle(indices)
+                self.x_train = self.x_train[indices]
+                self.y_train = self.y_train[indices]
 
-            self.x_train = self.x_train[indices]
-            self.y_train = self.y_train[indices]
+            epoch_loss_avg = tf.metrics.Mean()
+            epoch_accuracy = self.get_metric()
 
-        batch_size = self.get_batch_size()
-        epochs = self.get_train_epochs()
+            # Iterate over the batches of the dataset.
+            for step in range(0, len(self.x_train), self._batch_size):
+                x_batch = self.x_train[step:step + self._batch_size]
+                y_batch = self.y_train[step:step + self._batch_size]
 
-        model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, verbose=1)
+                loss_value, gradients = self._train_step(x_batch, y_batch)
+                epoch_loss_avg.update_state(loss_value)
+                epoch_accuracy.update_state(y_batch, self._model(x_batch, training=True))
+
+            print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
 
         # set trained weights
-        self._update_weights(np.array(model.get_weights(), dtype='object'))
+        self._update_weights(np.array(self._model.get_weights(), dtype='object'))
         # evaluate model
-        self._evaluate_model(model)
+        self._evaluate_model(self._model)
 
     def _evaluate_model(self, model=None) -> np.ndarray:
         """
@@ -206,10 +240,21 @@ class TCPClient(ABC):
         is_evaluating_fm = False
 
         if model is None:
-            model = self._load_model_and_weights()
+            model = self._model
             is_evaluating_fm = True
 
-        test_loss, test_acc = model.evaluate(self.x_test, self.y_test)
+        test_loss_avg = tf.metrics.Mean()
+        test_accuracy = self.get_metric()
+
+        for step in range(0, len(self.x_test), self._batch_size):
+            x_batch = self.x_test[step:step + self._batch_size]
+            y_batch = self.y_test[step:step + self._batch_size]
+
+            loss_value = self._test_step(x_batch, y_batch)
+            test_loss_avg.update_state(loss_value)
+            test_accuracy.update_state(y_batch, model(x_batch, training=False))
+
+        print(f"Test Loss: {test_loss_avg.result()}, Test Accuracy: {test_accuracy.result()}")
 
         # Confusion Matrix
         y_pred = model.predict(self.x_test)
@@ -219,11 +264,10 @@ class TCPClient(ABC):
 
         cm_percentage = np.round(cm, 2)
 
-        print(f'Test accuracy: {test_acc}')
         print("Confusion Matrix (Percentage):")
         print(cm_percentage)
 
-        evaluation_data = np.array([[test_acc, test_loss]])
+        evaluation_data = np.array([[test_accuracy.result(), test_loss_avg.result()]])
 
         if is_evaluating_fm is True:
             # It's using federated weights
@@ -283,9 +327,9 @@ class TCPClient(ABC):
         tf.keras.utils.set_random_seed(1)  # sets seeds for base-python, numpy and tf
         tf.config.experimental.enable_op_determinism()
 
-    def shuffle_dataset_before_training(self, value: bool) -> None:
+    def shuffle_dataset_each_epoch(self, value: bool) -> None:
         """If True it shuffles the training dataset randomly before training the model."""
-        self._shuffle_dataset_before_training = value
+        self._shuffle_dataset_each_epoch = value
 
     @abstractmethod
     def load_dataset(self) -> tuple:

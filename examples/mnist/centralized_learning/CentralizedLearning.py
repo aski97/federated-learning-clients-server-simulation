@@ -83,7 +83,7 @@ class Centralized(CentralizedLearning):
 
 if __name__ == "__main__":
     centralized_model = Centralized()
-    centralized_model.shuffle_dataset_before_training(False)
+    centralized_model.shuffle_dataset_each_epoch(False)
     centralized_model.enable_op_determinism()
     centralized_model.enable_profiling(True)
     centralized_model.enable_evaluations_plots(False)

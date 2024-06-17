@@ -14,7 +14,7 @@ class CentralizedLearning(ABC):
 
         self._profiling = False
         self._evaluation_plots_enabled = True
-        self._shuffle_dataset_before_training = True
+        self._shuffle_dataset_each_epoch = True
 
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
@@ -61,7 +61,7 @@ class CentralizedLearning(ABC):
         for epoch in range(epochs):
             print(f"Epoch {epoch + 1}/{epochs}")
 
-            if self._shuffle_dataset_before_training:
+            if self._shuffle_dataset_each_epoch:
                 indices = np.arange(self.x_train.shape[0])
                 np.random.shuffle(indices)
                 self.x_train = self.x_train[indices]
@@ -200,9 +200,9 @@ class CentralizedLearning(ABC):
         """
         self._evaluation_plots_enabled = value
 
-    def shuffle_dataset_before_training(self, value: bool) -> None:
-        """If True it shuffles the training dataset randomly before training the model."""
-        self._shuffle_dataset_before_training = value
+    def shuffle_dataset_each_epoch(self, value: bool) -> None:
+        """If True it shuffles the training dataset randomly before each epoch."""
+        self._shuffle_dataset_each_epoch = value
 
     @abstractmethod
     def load_dataset(self) -> tuple:
