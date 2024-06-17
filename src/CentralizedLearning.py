@@ -14,7 +14,7 @@ class CentralizedLearning(ABC):
 
         self._profiling = False
         self._evaluation_plots_enabled = True
-        self._shuffle_dataset_before_training = False
+        self._shuffle_dataset_before_training = True
 
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
@@ -32,37 +32,81 @@ class CentralizedLearning(ABC):
 
         return model
 
+    @tf.function
+    def _train_step(self, model, loss_fn, x, y):
+        # Open a GradientTape to record the operations run
+        # during the forward pass, which enables auto-differentiation.
+        with tf.GradientTape() as tape:
+            # Run the forward pass of the layer.
+            # The operations that the layer applies
+            # to its inputs are going to be recorded
+            # on the GradientTape.
+            predictions = model(x, training=True)
+
+            # Compute the loss value for this minibatch.
+            loss_value = loss_fn(y, predictions)
+
+        gradients = tape.gradient(loss_value, model.trainable_variables)
+        model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+        return loss_value, gradients
+
     def _train_model(self) -> None:
         """ It trains the model."""
         model = self._load_model()
-
-        if self._shuffle_dataset_before_training:
-            # Shuffle training dataset
-            indices = np.arange(self.x_train.shape[0])
-            np.random.shuffle(indices)
-
-            self.x_train = self.x_train[indices]
-            self.y_train = self.y_train[indices]
+        loss_fn = self.get_loss_function()
 
         batch_size = self.get_batch_size()
         epochs = self.get_train_epochs()
 
-        model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, shuffle=True, verbose=1)
+        for epoch in range(epochs):
+            print(f"Epoch {epoch + 1}/{epochs}")
 
+            if self._shuffle_dataset_before_training:
+                indices = np.arange(self.x_train.shape[0])
+                np.random.shuffle(indices)
+                self.x_train = self.x_train[indices]
+                self.y_train = self.y_train[indices]
+
+            epoch_loss_avg = tf.metrics.Mean()
+            epoch_accuracy = self.get_metric()
+
+            # Iterate over the batches of the dataset.
+            for step in range(0, len(self.x_train), batch_size):
+                x_batch = self.x_train[step:step + batch_size]
+                y_batch = self.y_train[step:step + batch_size]
+
+                loss_value, gradients = self._train_step(model, loss_fn, x_batch, y_batch)
+                epoch_loss_avg.update_state(loss_value)
+                epoch_accuracy.update_state(y_batch, model(x_batch, training=True))
+
+            print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
+
+        # print(gradients)
         # evaluate model
         self._evaluate_model(model)
 
+    @tf.function
+    def _test_step(self, model, loss_fn, x, y):
+        predictions = model(x, training=False)
+        loss_value = loss_fn(y, predictions)
+        return loss_value
+
     def _evaluate_model(self, model):
-        """
-        It evaluates the model with test dataset.
-        :param model: model to evaluate, otherwise it loads it.
-        :return: numpy array of (accuracy, loss)
-        """
+        loss_fn = self.get_loss_function()
+        batch_size = self.get_batch_size()
 
-        test_loss, test_acc = model.evaluate(self.x_test, self.y_test)
+        test_loss_avg = tf.metrics.Mean()
+        test_accuracy = self.get_metric()
 
-        print(f'Test accuracy: {test_acc}')
-        print(f"Test loss: {test_loss}")
+        for step in range(0, len(self.x_test), batch_size):
+            x_batch = self.x_test[step:step + batch_size]
+            y_batch = self.y_test[step:step + batch_size]
+
+            loss_value = self._test_step(model, loss_fn, x_batch, y_batch)
+            test_loss_avg.update_state(loss_value)
+            test_accuracy.update_state(y_batch, model(x_batch, training=False))
+
+        print(f"Test Loss: {test_loss_avg.result()}, Test Accuracy: {test_accuracy.result()}")
         # Confusion Matrix
         y_pred = model.predict(self.x_test)
 

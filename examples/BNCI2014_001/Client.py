@@ -16,7 +16,7 @@ class Client(TCPClient):
         return 32
 
     def get_train_epochs(self) -> int:
-        return 5
+        return 10
 
     def get_loss_function(self):
         return "categorical_crossentropy"
