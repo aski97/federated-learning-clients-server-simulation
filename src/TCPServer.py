@@ -182,7 +182,9 @@ class TCPServer(ABC):
                         with self.condition_add_weights:
                             weights = m_body["weights"]
                             n_training_samples = m_body["n_training_samples"]
+                            local_gradients = m_body["gradients"]
                             self.client_weights[client_id] = {"weights": weights,
+                                                              "gradients": local_gradients,
                                                               "n_training_samples": n_training_samples}
                             # Notify the server thread
                             self.condition_add_weights.notify()

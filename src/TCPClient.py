@@ -27,6 +27,7 @@ class TCPClient(ABC):
             'training_execution_time': 0,
             'max_ram_used': 0}
         self.weights = None
+        self.gradients = None
 
         self.evaluation_data_federated_model = np.empty((0, 2), dtype=float)
         self.evaluation_data_training_model = np.empty((0, 2), dtype=float)
@@ -108,7 +109,7 @@ class TCPClient(ABC):
                     else:
                         self._train_model()
                     # send trained weights to the server
-                    self._send_trained_weights()
+                    self._send_local_model()
                 case MessageType.END_FL_TRAINING:
                     print("Received final federated weights. Federated training has finished.")
                     # get weights from server
@@ -203,6 +204,10 @@ class TCPClient(ABC):
         """
         It trains the model.
         """
+        # last_gradients = None
+        accumulated_gradients = None
+        num_batches_last_epoch = 0
+
         for epoch in range(self._epochs):
             print(f"Epoch {epoch + 1}/{self._epochs}")
 
@@ -221,11 +226,29 @@ class TCPClient(ABC):
                 y_batch = self.y_train[step:step + self._batch_size]
 
                 loss_value, gradients = self._train_step(x_batch, y_batch)
+
+                # last_gradients = gradients  # Store the gradients of the last batch
+
+                if epoch == self._epochs - 1:
+                    if accumulated_gradients is None:
+                        accumulated_gradients = [gradient.numpy() for gradient in gradients]
+                    else:
+                        for i, gradient in enumerate(gradients):
+                            accumulated_gradients[i] += gradient.numpy()
+
+                    num_batches_last_epoch += 1
+
                 epoch_loss_avg.update_state(loss_value)
                 epoch_accuracy.update_state(y_batch, self._model(x_batch, training=True))
 
             print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
 
+        # Average gradients over the number of batches
+        averaged_gradients = [gradient / num_batches_last_epoch for gradient in accumulated_gradients]
+
+        self.gradients = np.array(averaged_gradients, dtype='object')
+        # Average gradients over the number of batches
+        # self.gradients = np.array([tensor.numpy() for tensor in last_gradients], dtype='object')
         # set trained weights
         self._update_weights(np.array(self._model.get_weights(), dtype='object'))
         # evaluate model
@@ -285,9 +308,9 @@ class TCPClient(ABC):
 
         return evaluation_data
 
-    def _send_trained_weights(self) -> None:
+    def _send_local_model(self) -> None:
         """Send trained weights to the server"""
-        msg_body = {'client_id': self.id, 'weights': self.weights, 'n_training_samples': len(self.y_train)}
+        msg_body = {'client_id': self.id, 'weights': self.weights, 'gradients': self.gradients, 'n_training_samples': len(self.y_train)}
         self._send_message(MessageType.CLIENT_TRAINED_WEIGHTS, msg_body)
 
     def _send_kpi_data(self) -> None:

@@ -14,11 +14,16 @@ class CentralizedLearning(ABC):
 
         self._profiling = False
         self._evaluation_plots_enabled = True
-        self._shuffle_dataset_each_epoch = True
 
         self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
-    def _load_model(self):
+        self._model = self._load_compiled_model()
+        self._loss_fn = self.get_loss_function()
+        self._batch_size = self.get_batch_size()
+        self._epochs = self.get_train_epochs()
+        self._shuffle_dataset_each_epoch = True
+
+    def _load_compiled_model(self):
         """ It loads the model to be trained"""
         model = self.get_skeleton_model()
 
@@ -33,7 +38,7 @@ class CentralizedLearning(ABC):
         return model
 
     @tf.function
-    def _train_step(self, model, loss_fn, x, y):
+    def _train_step(self, x, y):
         # Open a GradientTape to record the operations run
         # during the forward pass, which enables auto-differentiation.
         with tf.GradientTape() as tape:
@@ -41,25 +46,19 @@ class CentralizedLearning(ABC):
             # The operations that the layer applies
             # to its inputs are going to be recorded
             # on the GradientTape.
-            predictions = model(x, training=True)
+            predictions = self._model(x, training=True)
 
             # Compute the loss value for this minibatch.
-            loss_value = loss_fn(y, predictions)
+            loss_value = self._loss_fn(y, predictions)
 
-        gradients = tape.gradient(loss_value, model.trainable_variables)
-        model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+        gradients = tape.gradient(loss_value, self._model.trainable_variables)
+        self._model.optimizer.apply_gradients(zip(gradients, self._model.trainable_variables))
         return loss_value, gradients
 
     def _train_model(self) -> None:
         """ It trains the model."""
-        model = self._load_model()
-        loss_fn = self.get_loss_function()
-
-        batch_size = self.get_batch_size()
-        epochs = self.get_train_epochs()
-
-        for epoch in range(epochs):
-            print(f"Epoch {epoch + 1}/{epochs}")
+        for epoch in range(self._epochs):
+            print(f"Epoch {epoch + 1}/{self._epochs}")
 
             if self._shuffle_dataset_each_epoch:
                 indices = np.arange(self.x_train.shape[0])
@@ -71,19 +70,19 @@ class CentralizedLearning(ABC):
             epoch_accuracy = self.get_metric()
 
             # Iterate over the batches of the dataset.
-            for step in range(0, len(self.x_train), batch_size):
-                x_batch = self.x_train[step:step + batch_size]
-                y_batch = self.y_train[step:step + batch_size]
+            for step in range(0, len(self.x_train), self._batch_size):
+                x_batch = self.x_train[step:step + self._batch_size]
+                y_batch = self.y_train[step:step + self._batch_size]
 
-                loss_value, gradients = self._train_step(model, loss_fn, x_batch, y_batch)
+                loss_value, gradients = self._train_step(x_batch, y_batch)
                 epoch_loss_avg.update_state(loss_value)
-                epoch_accuracy.update_state(y_batch, model(x_batch, training=True))
+                epoch_accuracy.update_state(y_batch, self._model(x_batch, training=True))
 
             print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
 
         # print(gradients)
         # evaluate model
-        self._evaluate_model(model)
+        self._evaluate_model(self._model)
 
     @tf.function
     def _test_step(self, model, loss_fn, x, y):
@@ -92,17 +91,14 @@ class CentralizedLearning(ABC):
         return loss_value
 
     def _evaluate_model(self, model):
-        loss_fn = self.get_loss_function()
-        batch_size = self.get_batch_size()
-
         test_loss_avg = tf.metrics.Mean()
         test_accuracy = self.get_metric()
 
-        for step in range(0, len(self.x_test), batch_size):
-            x_batch = self.x_test[step:step + batch_size]
-            y_batch = self.y_test[step:step + batch_size]
+        for step in range(0, len(self.x_test), self._batch_size):
+            x_batch = self.x_test[step:step + self._batch_size]
+            y_batch = self.y_test[step:step + self._batch_size]
 
-            loss_value = self._test_step(model, loss_fn, x_batch, y_batch)
+            loss_value = self._test_step(x_batch, y_batch)
             test_loss_avg.update_state(loss_value)
             test_accuracy.update_state(y_batch, model(x_batch, training=False))
 
