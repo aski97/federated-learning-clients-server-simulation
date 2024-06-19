@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from src.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdamW, FedAdam
+from src.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam
 
 
 class TestAggregationAlgorithms(unittest.TestCase):
@@ -92,7 +92,7 @@ class TestAggregationAlgorithms(unittest.TestCase):
         aggregated_weights = fedavg_momentum.aggregate_weights(self.clients_weights, self.federated_model)
         np.testing.assert_array_almost_equal(aggregated_weights, expected_weights, decimal=3)
 
-    def test_fedadam_with_gradients(self):
+    def test_fedadam(self):
         """
         Test the FedAdam algorithm with gradients.
         """
@@ -129,41 +129,6 @@ class TestAggregationAlgorithms(unittest.TestCase):
         aggregated_weights = fedadam.aggregate_weights(self.clients_weights, self.federated_model)
         np.testing.assert_array_almost_equal(aggregated_weights, expected_weights, decimal=3)
 
-    def test_fedadam_with_weights(self):
-        """
-        Test the FedAdam algorithm with weights.
-        """
-        fedadam_w = FedAdamW(beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001, weighted=True)
-        federated_model = self.federated_model.copy()
-
-        # Initialize moment vectors
-        m = np.zeros_like(federated_model)
-        v = np.zeros_like(federated_model)
-
-        # Simulate two rounds of updates
-        for t in range(1, 3):
-            avg = (self.clients_weights['client1']['weights'] * 10 +
-                   self.clients_weights['client2']['weights'] * 20) / 30
-            delta = avg - federated_model
-
-            # Update biased first moment estimate
-            m = 0.9 * m + (1 - 0.9) * delta
-
-            # Update biased second raw moment estimate
-            v = 0.999 * v + (1 - 0.999) * (delta ** 2)
-
-            # Compute bias-corrected first moment estimate
-            m_hat = m / (1 - 0.9 ** t)
-
-            # Compute bias-corrected second raw moment estimate
-            v_hat = v / (1 - 0.999 ** t)
-
-            # Compute new weights
-            federated_model = federated_model + 0.001 * m_hat / (np.sqrt(v_hat) + 1e-7)
-
-        expected_weights = federated_model
-        aggregated_weights = fedadam_w.aggregate_weights(self.clients_weights, self.federated_model)
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights, decimal=3)
 
 if __name__ == '__main__':
     unittest.main()

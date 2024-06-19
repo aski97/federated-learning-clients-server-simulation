@@ -9,6 +9,52 @@ class AggregationAlgorithm(ABC):
     Defines the strategy for aggregation.
     """
 
+    @staticmethod
+    def compute_avg(clients_values: dict, subject: str = "weights", weighted: bool = True):
+        sum_values = None
+
+        if weighted:
+            # Compute a weighted average based on the number of training samples per client
+            total_samples = 0
+            for key, client_values in clients_values.items():
+                value = np.array(client_values[subject])
+                w = client_values["n_training_samples"]
+                total_samples += w
+
+                if sum_values is None:
+                    sum_values = value * w
+                else:
+                    sum_values += value * w
+
+            if total_samples == 0:
+                raise ValueError("Total number of training samples is zero")
+
+            avg = sum_values / total_samples
+        else:
+            total_clients = len(clients_values)
+            if total_clients == 0:
+                raise ValueError("No clients available for aggregation")
+
+            for key, client_values in clients_values.items():
+                value = np.array(client_values[subject])
+
+                if sum_values is None:
+                    sum_values = value
+                else:
+                    sum_values += value
+
+            avg = sum_values / total_clients
+
+        return avg
+
+    @staticmethod
+    def compute_avg_weights(clients_weights: dict, weighted: bool = True):
+        return AggregationAlgorithm.compute_avg(clients_weights,"weights", weighted)
+
+    @staticmethod
+    def compute_avg_gradients(clients_gradients: dict, weighted: bool = True):
+        return AggregationAlgorithm.compute_avg(clients_gradients, "gradients", weighted)
+
     @abstractmethod
     def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
         """
@@ -53,41 +99,7 @@ class FedAvg(AggregationAlgorithm):
         if not clients_weights:
             raise ValueError("clients_weights dictionary is empty")
 
-        weights_sum = None
-
-        if self.weighted:
-            # Compute a weighted average based on the number of training samples per client
-            total_samples = 0
-            for key, client_weights in clients_weights.items():
-                weights = np.array(client_weights["weights"])
-                w = client_weights["n_training_samples"]
-                total_samples += w
-
-                if weights_sum is None:
-                    weights_sum = weights * w
-                else:
-                    weights_sum += weights * w
-
-            if total_samples == 0:
-                raise ValueError("Total number of training samples is zero")
-
-            aggregated_weights = weights_sum / total_samples
-        else:
-            total_clients = len(clients_weights)
-            if total_clients == 0:
-                raise ValueError("No clients available for aggregation")
-
-            for key, client_weights in clients_weights.items():
-                weights = np.array(client_weights["weights"])
-
-                if weights_sum is None:
-                    weights_sum = weights
-                else:
-                    weights_sum += weights
-
-            aggregated_weights = weights_sum / total_clients
-
-        return aggregated_weights
+        return self.compute_avg_weights(clients_weights, self.weighted)
 
 
 class FedMiddleAvg(AggregationAlgorithm):
@@ -120,7 +132,7 @@ class FedMiddleAvg(AggregationAlgorithm):
         if federated_model is None or not isinstance(federated_model, np.ndarray):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
-        fed_avg = FedAvg(self.weighted).aggregate_weights(clients_weights, federated_model)
+        fed_avg = self.compute_avg_weights(clients_weights, self.weighted)
         fed_middle_avg_weights = (fed_avg + federated_model) / 2
         return fed_middle_avg_weights
 
@@ -161,7 +173,7 @@ class FedAvgMomentum(AggregationAlgorithm):
             self.momentum = np.zeros_like(federated_model)
 
         # Compute the average operation
-        avg = FedAvg(self.weighted).aggregate_weights(clients_weights, federated_model)
+        avg = self.compute_avg_weights(clients_weights, self.weighted)
 
         # Compute the difference between the model and the average
         delta = avg - federated_model
@@ -221,12 +233,7 @@ class FedAdam(AggregationAlgorithm):
         self.t += 1
 
         # Compute the weighted average of gradients
-        if self.weighted:
-            total_samples = sum(client_info["n_training_samples"] for client_info in clients_gradients.values())
-            avg_gradient = sum(np.array(client_info["gradients"]) * client_info["n_training_samples"] / total_samples for client_info in clients_gradients.values())
-        else:
-            total_clients = len(clients_gradients)
-            avg_gradient = sum(np.array(client_info["gradients"]) for client_info in clients_gradients.values()) / total_clients
+        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
 
         # Update biased first moment estimate
         self.m = self.beta1 * self.m + (1 - self.beta1) * avg_gradient
@@ -270,37 +277,8 @@ class FedProx(AggregationAlgorithm):
         if federated_model is None or not isinstance(federated_model, np.ndarray):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
-        weights_sum = None
-        if self.weighted:
-            total_samples = 0
-            for key, client_weights in clients_weights.items():
-                weights = np.array(client_weights["weights"])
-                w = client_weights["n_training_samples"]
-                total_samples += w
-
-                if weights_sum is None:
-                    weights_sum = weights * w
-                else:
-                    weights_sum += weights * w
-
-            if total_samples == 0:
-                raise ValueError("Total number of training samples is zero")
-
-            avg_weights = weights_sum / total_samples
-        else:
-            total_clients = len(clients_weights)
-            if total_clients == 0:
-                raise ValueError("No clients available for aggregation")
-
-            for key, client_weights in clients_weights.items():
-                weights = np.array(client_weights["weights"])
-
-                if weights_sum is None:
-                    weights_sum = weights
-                else:
-                    weights_sum += weights
-
-            avg_weights = weights_sum / total_clients
+        # Compute the weighted average of gradients
+        avg_weights = self.compute_avg_weights(clients_weights, self.weighted)
 
         prox_weights = avg_weights + self.mu * (federated_model - avg_weights)
         return prox_weights
@@ -324,12 +302,8 @@ class FedAdagrad(AggregationAlgorithm):
         if self.h is None:
             self.h = np.zeros_like(federated_model)
 
-        if self.weighted:
-            total_samples = sum(client_info["n_training_samples"] for client_info in clients_gradients.values())
-            avg_gradient = sum(np.array(client_info["gradients"]) * client_info["n_training_samples"] / total_samples for client_info in clients_gradients.values())
-        else:
-            total_clients = len(clients_gradients)
-            avg_gradient = sum(np.array(client_info["gradients"]) for client_info in clients_gradients.values()) / total_clients
+        # Compute the weighted average of gradients
+        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
 
         self.h += avg_gradient ** 2
         adjusted_gradients = avg_gradient / (np.sqrt(self.h) + self.epsilon)
@@ -364,12 +338,8 @@ class FedYogi(AggregationAlgorithm):
 
         self.t += 1
 
-        if self.weighted:
-            total_samples = sum(client_info["n_training_samples"] for client_info in clients_gradients.values())
-            avg_gradient = sum(np.array(client_info["gradients"]) * client_info["n_training_samples"] / total_samples for client_info in clients_gradients.values())
-        else:
-            total_clients = len(clients_gradients)
-            avg_gradient = sum(np.array(client_info["gradients"]) for client_info in clients_gradients.values()) / total_clients
+        # Compute the weighted average of gradients
+        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
 
         self.m = self.beta1 * self.m + (1 - self.beta1) * avg_gradient
 
@@ -378,32 +348,6 @@ class FedYogi(AggregationAlgorithm):
         m_hat = self.m / (1 - self.beta1 ** self.t)
 
         new_weights = federated_model - self.learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)
-
-        return new_weights
-
-
-class FedNova(AggregationAlgorithm):
-    """
-    Implements FedNova algorithm.
-    Normalizes updates for each client before aggregation.
-    """
-    def __init__(self, learning_rate=0.01, tau=1, weighted=True):
-        self.learning_rate = learning_rate
-        self.tau = tau
-        self.weighted = weighted
-
-    def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
-
-        if self.weighted:
-            total_samples = sum(client_info["n_training_samples"] for client_info in clients_gradients.values())
-            normalized_updates = sum((np.array(client_info["gradients"]) * client_info["n_training_samples"] / total_samples) / (self.tau + 1) for client_info in clients_gradients.values())
-        else:
-            total_clients = len(clients_gradients)
-            normalized_updates = sum(np.array(client_info["gradients"]) / (self.tau + 1) for client_info in clients_gradients.values()) / total_clients
-
-        new_weights = federated_model - self.learning_rate * normalized_updates
 
         return new_weights
 
@@ -421,12 +365,8 @@ class FedSGD(AggregationAlgorithm):
         if federated_model is None or not isinstance(federated_model, np.ndarray):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
-        if self.weighted:
-            total_samples = sum(client_info["n_training_samples"] for client_info in clients_gradients.values())
-            avg_gradient = sum(np.array(client_info["gradients"]) * client_info["n_training_samples"] / total_samples for client_info in clients_gradients.values())
-        else:
-            total_clients = len(clients_gradients)
-            avg_gradient = sum(np.array(client_info["gradients"]) for client_info in clients_gradients.values()) / total_clients
+        # Compute the weighted average of gradients
+        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
 
         new_weights = federated_model - self.learning_rate * avg_gradient
 
