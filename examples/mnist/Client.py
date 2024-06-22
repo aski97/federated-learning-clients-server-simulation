@@ -67,7 +67,7 @@ class Client(TCPClient):
         return x_train, x_test, y_train, y_test
 
     def get_optimizer(self):
-        return keras.optimizers.SGD(learning_rate=0.02)
+        return keras.optimizers.Adam()
 
 
 if __name__ == "__main__":

@@ -175,7 +175,7 @@ class TCPServer(ABC):
 
                 # behave differently with respect to the type of message received
                 match m_type:
-                    case MessageType.CLIENT_TRAINED_WEIGHTS:
+                    case MessageType.CLIENT_MODEL:
                         # Received trained weights from the client
                         # print("Received trained weights")
                         # Add weights to the shared variable

@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from src.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam
+from src.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam, FedSGD, FedProx
 
 
 class TestAggregationAlgorithms(unittest.TestCase):
@@ -17,118 +17,96 @@ class TestAggregationAlgorithms(unittest.TestCase):
                 'n_training_samples': 10
             },
             'client2': {
-                'weights': np.array([7, 8, 9]),
+                'weights': np.array([4, 5, 6]),
                 'gradients': np.array([0.2, 0.2, 0.2]),
                 'n_training_samples': 20
             }
         }
-        self.federated_model = np.array([0.5, 0.5, 0.5])
+        self.federated_model = np.array([2, 3, 4])
 
-    def test_fedavg_weighted(self):
-        """
-        Test the FedAvg algorithm with weighted averaging.
-        """
-        fedavg = FedAvg(weighted=True)
-        aggregated_weights = fedavg.aggregate_weights(self.clients_weights, self.federated_model)
-        expected_weights = (self.clients_weights['client1']['weights'] * 10 +
-                            self.clients_weights['client2']['weights'] * 20) / 30
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights)
+    def calculate_weighted_average(self, clients_values, subject="weights"):
+        sum_values = None
+        total_samples = 0
+        for client_data in clients_values.values():
+            value = client_data[subject]
+            n_samples = client_data["n_training_samples"]
+            total_samples += n_samples
 
-    def test_fedavg_unweighted(self):
-        """
-        Test the FedAvg algorithm with unweighted averaging.
-        """
-        fedavg = FedAvg(weighted=False)
-        aggregated_weights = fedavg.aggregate_weights(self.clients_weights, self.federated_model)
-        expected_weights = (self.clients_weights['client1']['weights'] +
-                            self.clients_weights['client2']['weights']) / 2
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights)
+            if sum_values is None:
+                sum_values = value * n_samples
+            else:
+                sum_values += value * n_samples
 
-    def test_fedmiddleavg_weighted(self):
-        """
-        Test the FedMiddleAvg algorithm with weighted averaging.
-        """
-        fedmiddleavg = FedMiddleAvg(weighted=True)
-        fed_avg = (self.clients_weights['client1']['weights'] * 10 +
-                   self.clients_weights['client2']['weights'] * 20) / 30
-        expected_weights = (fed_avg + self.federated_model) / 2
-        aggregated_weights = fedmiddleavg.aggregate_weights(self.clients_weights, self.federated_model)
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights)
+        return sum_values / total_samples if total_samples > 0 else sum_values
 
-    def test_fedmiddleavg_unweighted(self):
-        """
-        Test the FedMiddleAvg algorithm with unweighted averaging.
-        """
-        fedmiddleavg = FedMiddleAvg(weighted=False)
-        fed_avg = (self.clients_weights['client1']['weights'] +
-                   self.clients_weights['client2']['weights']) / 2
-        expected_weights = (fed_avg + self.federated_model) / 2
-        aggregated_weights = fedmiddleavg.aggregate_weights(self.clients_weights, self.federated_model)
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights)
+    def test_fedavg(self):
+        aggregator = FedAvg(weighted=True)
+        new_weights = aggregator.aggregate_weights(self.clients_weights, self.federated_model)
+        expected_weights = self.calculate_weighted_average(self.clients_weights)
+        np.testing.assert_array_almost_equal(new_weights, expected_weights)
 
-    def test_fedavg_momentum(self):
-        """
-        Test the FedAvgMomentum algorithm.
-        """
-        fedavg_momentum = FedAvgMomentum(beta=0.9, learning_rate=0.1, weighted=True)
-        federated_model = self.federated_model.copy()
+    def test_fedmiddleavg(self):
+        aggregator = FedMiddleAvg(weighted=True)
+        new_weights = aggregator.aggregate_weights(self.clients_weights, self.federated_model)
+        avg_weights = self.calculate_weighted_average(self.clients_weights)
+        expected_weights = (avg_weights + self.federated_model) / 2
+        np.testing.assert_array_almost_equal(new_weights, expected_weights)
 
-        # Initialize momentum
-        momentum = np.zeros_like(federated_model)
-
-        # Simulate two rounds of updates
-        for _ in range(2):
-            fed_avg = (self.clients_weights['client1']['weights'] * 10 +
-                       self.clients_weights['client2']['weights'] * 20) / 30
-            delta = fed_avg - federated_model
-
-            # Update momentum
-            momentum = 0.9 * momentum + delta
-
-            # Compute new weights
-            federated_model = federated_model + 0.1 * momentum
-
-        expected_weights = federated_model
-        aggregated_weights = fedavg_momentum.aggregate_weights(self.clients_weights, self.federated_model)
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights, decimal=3)
+    def test_fedavgmomentum(self):
+        aggregator = FedAvgMomentum(beta=0.9, learning_rate=0.1, weighted=True)
+        avg_weights = self.calculate_weighted_average(self.clients_weights)
+        delta = avg_weights - self.federated_model
+        momentum = delta
+        expected_weights = self.federated_model + 0.1 * momentum
+        new_weights = aggregator.aggregate_weights(self.clients_weights, self.federated_model)
+        np.testing.assert_array_almost_equal(new_weights, expected_weights)
 
     def test_fedadam(self):
-        """
-        Test the FedAdam algorithm with gradients.
-        """
-        fedadam = FedAdam(beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001, weighted=True)
-        federated_model = self.federated_model.copy()
+        aggregator = FedAdam(beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001)
+        avg_gradient = self.calculate_weighted_average(self.clients_weights, subject="gradients")
 
-        # Initialize moment vectors
-        m = np.zeros_like(federated_model)
-        v = np.zeros_like(federated_model)
+        m = np.zeros_like(self.federated_model)
+        v = np.zeros_like(self.federated_model)
+        t = 1
 
-        # Simulate two rounds of updates
-        for t in range(1, 3):
-            total_samples = sum(client_info["n_training_samples"] for client_info in self.clients_weights.values())
-            avg_gradient = sum(
-                client_info["gradients"] * client_info["n_training_samples"] / total_samples for client_info in
-                self.clients_weights.values())
+        m = 0.9 * m + (1 - 0.9) * avg_gradient
+        v = 0.999 * v + (1 - 0.999) * (avg_gradient ** 2)
 
-            # Update biased first moment estimate
-            m = 0.9 * m + (1 - 0.9) * avg_gradient
+        m_hat = m / (1 - 0.9 ** t)
+        v_hat = v / (1 - 0.999 ** t)
 
-            # Update biased second raw moment estimate
-            v = 0.999 * v + (1 - 0.999) * (avg_gradient ** 2)
+        expected_weights = self.federated_model - 0.001 * m_hat / (np.sqrt(v_hat) + 1e-7)
+        new_weights = aggregator.aggregate_weights(self.clients_weights, self.federated_model)
+        np.testing.assert_array_almost_equal(new_weights, expected_weights)
 
-            # Compute bias-corrected first moment estimate
-            m_hat = m / (1 - 0.9 ** t)
+    def test_fedprox(self):
+        aggregator = FedProx(learning_rate=0.01, mu=0.1)
+        params = {}
+        for key, client_data in self.clients_weights.items():
+            gradient = client_data["gradients"]
+            weights = client_data["weights"]
+            params[key] = self.federated_model - 0.01 * (gradient + 0.1 * (weights - self.federated_model))
 
-            # Compute bias-corrected second raw moment estimate
-            v_hat = v / (1 - 0.999 ** t)
+        sum_values = None
+        total_samples = 0
+        for key, param in params.items():
+            n_samples = self.clients_weights[key]["n_training_samples"]
+            total_samples += n_samples
+            if sum_values is None:
+                sum_values = param * n_samples
+            else:
+                sum_values += param * n_samples
 
-            # Compute new weights
-            federated_model = federated_model - 0.001 * m_hat / (np.sqrt(v_hat) + 1e-7)
+        expected_weights = sum_values / total_samples
+        new_weights = aggregator.aggregate_weights(self.clients_weights, self.federated_model)
+        np.testing.assert_array_almost_equal(new_weights, expected_weights)
 
-        expected_weights = federated_model
-        aggregated_weights = fedadam.aggregate_weights(self.clients_weights, self.federated_model)
-        np.testing.assert_array_almost_equal(aggregated_weights, expected_weights, decimal=3)
-
+    def test_fedsgd(self):
+        aggregator = FedSGD(learning_rate=0.01)
+        avg_gradient = self.calculate_weighted_average(self.clients_weights, subject="gradients")
+        expected_weights = self.federated_model - 0.01 * avg_gradient
+        new_weights = aggregator.aggregate_weights(self.clients_weights, self.federated_model)
+        np.testing.assert_array_almost_equal(new_weights, expected_weights)
 
 if __name__ == '__main__':
     unittest.main()

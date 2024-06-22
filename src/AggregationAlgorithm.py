@@ -201,14 +201,13 @@ class FedAdam(AggregationAlgorithm):
                          If False, use a simple arithmetic mean.
     """
 
-    def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001, weighted=True):
+    def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001):
         self.beta1 = beta1
         self.beta2 = beta2
         self.epsilon = epsilon
         self.learning_rate = learning_rate
-        self.weighted = weighted
-        self.m = None  # First moment vector
-        self.v = None  # Second moment vector
+        self.m = {}  # First moment vectors for each client
+        self.v = {}  # Second moment vectors for each client
         self.t = 0  # Timestep
 
     def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
@@ -225,50 +224,73 @@ class FedAdam(AggregationAlgorithm):
         if federated_model is None or not isinstance(federated_model, np.ndarray):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
-        if self.m is None:
-            self.m = np.zeros_like(federated_model)
-        if self.v is None:
-            self.v = np.zeros_like(federated_model)
+        # Initialize m and v for each client if not already done
+        for key in clients_gradients.keys():
+            if key not in self.m:
+                self.m[key] = np.zeros_like(federated_model)
+            if key not in self.v:
+                self.v[key] = np.zeros_like(federated_model)
 
         self.t += 1
 
-        # Compute the weighted average of gradients
-        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
+        params = {}
 
-        # Update biased first moment estimate
-        self.m = self.beta1 * self.m + (1 - self.beta1) * avg_gradient
+        for key, client_data in clients_gradients.items():
+            gradient = client_data["gradients"]
 
-        # Update biased second raw moment estimate
-        self.v = self.beta2 * self.v + (1 - self.beta2) * (avg_gradient ** 2)
+            # Update biased first moment estimate for client
+            self.m[key] = self.beta1 * self.m[key] + (1 - self.beta1) * gradient
 
-        # Compute bias-corrected first moment estimate
-        m_hat = self.m / (1 - self.beta1 ** self.t)
+            # Update biased second raw moment estimate for client
+            self.v[key] = self.beta2 * self.v[key] + (1 - self.beta2) * (gradient ** 2)
 
-        # Compute bias-corrected second raw moment estimate
-        v_hat = self.v / (1 - self.beta2 ** self.t)
+            # Compute bias-corrected first moment estimate
+            m_hat = self.m[key] / (1 - self.beta1 ** self.t)
 
-        v_hat_sqr_list = []
+            # Compute bias-corrected second raw moment estimate
+            v_hat = self.v[key] / (1 - self.beta2 ** self.t)
 
-        # Itera su ogni array nella lista originale e calcola la radice quadrata
-        for arr in v_hat:
-            sqrt_arr = np.sqrt(arr)
-            v_hat_sqr_list.append(sqrt_arr)
+            v_hat_sqr_list = []
 
-        v_hat_squared = np.array(v_hat_sqr_list, dtype='object')
+            # Compute the square of each element
+            for arr in v_hat:
+                sqrt_arr = np.sqrt(arr)
+                v_hat_sqr_list.append(sqrt_arr)
 
-        # # Compute new weights
-        new_weights = federated_model - self.learning_rate * m_hat / (v_hat_squared + self.epsilon)
+            v_hat_squared = np.array(v_hat_sqr_list, dtype='object')
 
-        return new_weights
+            # Compute params
+            params[key] = federated_model - self.learning_rate * m_hat / (v_hat_squared + self.epsilon)
+
+        sum_values = None
+        # Compute global params
+        total_samples = 0
+        for key, param in params.items():
+
+            w = clients_gradients[key]["n_training_samples"]
+            total_samples += w
+
+            if sum_values is None:
+                sum_values = param * w
+            else:
+                sum_values += param * w
+
+        if total_samples == 0:
+            raise ValueError("Total number of training samples is zero")
+
+        new_params = sum_values / total_samples
+
+        return new_params
+
 
 class FedProx(AggregationAlgorithm):
     """
     Implements FedProx algorithm.
     Adds a regularization term to penalize differences between local and global models.
     """
-    def __init__(self, mu=0.1, weighted=True):
+    def __init__(self, learning_rate=0.01, mu=0.1):
         self.mu = mu
-        self.weighted = weighted
+        self.learning_rate = learning_rate
 
     def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
         if not clients_weights:
@@ -277,79 +299,34 @@ class FedProx(AggregationAlgorithm):
         if federated_model is None or not isinstance(federated_model, np.ndarray):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
-        # Compute the weighted average of gradients
-        avg_weights = self.compute_avg_weights(clients_weights, self.weighted)
+        params = {}
 
-        prox_weights = avg_weights + self.mu * (federated_model - avg_weights)
-        return prox_weights
+        for key, client_data in clients_weights.items():
+            gradient = client_data["gradients"]
+            weights = client_data["weights"]
 
+            # Compute params
+            params[key] = federated_model - self.learning_rate * (gradient + self.mu * (weights - federated_model))
 
-class FedAdagrad(AggregationAlgorithm):
-    """
-    Implements FedAdagrad algorithm.
-    Uses adaptive gradient scaling to adjust learning rates.
-    """
-    def __init__(self, learning_rate=0.01, epsilon=1e-8, weighted=True):
-        self.learning_rate = learning_rate
-        self.epsilon = epsilon
-        self.weighted = weighted
-        self.h = None  # Accumulator for squared gradients
+        sum_values = None
+        # Compute global params
+        total_samples = 0
+        for key, param in params.items():
 
-    def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
+            w = clients_weights[key]["n_training_samples"]
+            total_samples += w
 
-        if self.h is None:
-            self.h = np.zeros_like(federated_model)
+            if sum_values is None:
+                sum_values = param * w
+            else:
+                sum_values += param * w
 
-        # Compute the weighted average of gradients
-        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
+        if total_samples == 0:
+            raise ValueError("Total number of training samples is zero")
 
-        self.h += avg_gradient ** 2
-        adjusted_gradients = avg_gradient / (np.sqrt(self.h) + self.epsilon)
-        new_weights = federated_model - self.learning_rate * adjusted_gradients
+        new_params = sum_values / total_samples
 
-        return new_weights
-
-
-class FedYogi(AggregationAlgorithm):
-    """
-    Implements FedYogi algorithm.
-    A variant of FedAdam designed to be robust to noisy and non-i.i.d. data.
-    """
-    def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-3, learning_rate=0.001, weighted=True):
-        self.beta1 = beta1
-        self.beta2 = beta2
-        self.epsilon = epsilon
-        self.learning_rate = learning_rate
-        self.weighted = weighted
-        self.m = None  # First moment vector
-        self.v = None  # Second moment vector
-        self.t = 0  # Timestep
-
-    def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
-
-        if self.m is None:
-            self.m = np.zeros_like(federated_model)
-        if self.v is None:
-            self.v = np.zeros_like(federated_model)
-
-        self.t += 1
-
-        # Compute the weighted average of gradients
-        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
-
-        self.m = self.beta1 * self.m + (1 - self.beta1) * avg_gradient
-
-        self.v = self.v - (1 - self.beta2) * (avg_gradient ** 2) * np.sign(self.v - avg_gradient ** 2)
-        v_hat = self.v / (1 - self.beta2 ** self.t)
-        m_hat = self.m / (1 - self.beta1 ** self.t)
-
-        new_weights = federated_model - self.learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)
-
-        return new_weights
+        return new_params
 
 
 class FedSGD(AggregationAlgorithm):
@@ -357,16 +334,15 @@ class FedSGD(AggregationAlgorithm):
     Implements Federated SGD (Stochastic Gradient Descent).
     Aggregates gradients directly and updates the model.
     """
-    def __init__(self, learning_rate=0.01, weighted=True):
+    def __init__(self, learning_rate=0.01):
         self.learning_rate = learning_rate
-        self.weighted = weighted
 
     def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
         if federated_model is None or not isinstance(federated_model, np.ndarray):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
         # Compute the weighted average of gradients
-        avg_gradient = self.compute_avg_gradients(clients_gradients, self.weighted)
+        avg_gradient = self.compute_avg_gradients(clients_gradients, True)
 
         new_weights = federated_model - self.learning_rate * avg_gradient
 

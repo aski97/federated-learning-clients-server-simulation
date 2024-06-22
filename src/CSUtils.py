@@ -5,7 +5,7 @@ import struct
 
 class MessageType(Enum):
     FEDERATED_WEIGHTS = 1
-    CLIENT_TRAINED_WEIGHTS = 2
+    CLIENT_MODEL = 2
     END_FL_TRAINING = 3
     CLIENT_EVALUATION = 4
 

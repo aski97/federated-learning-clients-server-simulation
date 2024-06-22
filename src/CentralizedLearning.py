@@ -22,6 +22,10 @@ class CentralizedLearning(ABC):
         self._batch_size = self.get_batch_size()
         self._epochs = self.get_train_epochs()
         self._shuffle_dataset_each_epoch = True
+        self._train_accuracies = []
+        self._train_losses = []
+        self._test_accuracies = []
+        self._test_losses = []
 
     def _load_compiled_model(self):
         """ It loads the model to be trained"""
@@ -78,16 +82,38 @@ class CentralizedLearning(ABC):
                 epoch_loss_avg.update_state(loss_value)
                 epoch_accuracy.update_state(y_batch, self._model(x_batch, training=True))
 
-            print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
+            train_loss = epoch_loss_avg.result().numpy()
+            train_accuracy = epoch_accuracy.result().numpy()
+            self._train_losses.append(train_loss)
+            self._train_accuracies.append(train_accuracy)
 
-        # print(gradients)
+            # Evaluation on test set
+            test_loss_avg = tf.metrics.Mean()
+            test_accuracy = self.get_metric()
+
+            for step in range(0, len(self.x_test), self._batch_size):
+                x_batch = self.x_test[step:step + self._batch_size]
+                y_batch = self.y_test[step:step + self._batch_size]
+
+                loss_value = self._test_step(x_batch, y_batch)
+                test_loss_avg.update_state(loss_value)
+                test_accuracy.update_state(y_batch, self._model(x_batch, training=False))
+
+            test_loss = test_loss_avg.result().numpy()
+            test_accuracy = test_accuracy.result().numpy()
+            self._test_losses.append(test_loss)
+            self._test_accuracies.append(test_accuracy)
+
+            print(
+                f"Epoch {epoch + 1}: Train Loss: {train_loss}, Train Accuracy: {train_accuracy}, Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
+
         # evaluate model
         self._evaluate_model(self._model)
 
     @tf.function
-    def _test_step(self, model, loss_fn, x, y):
-        predictions = model(x, training=False)
-        loss_value = loss_fn(y, predictions)
+    def _test_step(self, x, y):
+        predictions = self._model(x, training=False)
+        loss_value = self._loss_fn(y, predictions)
         return loss_value
 
     def _evaluate_model(self, model):
@@ -118,6 +144,7 @@ class CentralizedLearning(ABC):
         print(cm_percentage)
 
         if self._evaluation_plots_enabled:
+            self._plot_metrics()
             self._plot_confusion_matrix(cm_percentage, classes_name)
 
     @staticmethod
@@ -142,15 +169,40 @@ class CentralizedLearning(ABC):
         plt.xlabel('Predicted label')
         plt.show()
 
+    def _plot_metrics(self):
+        from matplotlib import pyplot as plt
+
+        epochs_range = range(1, self._epochs + 1)
+
+        # Plot accuracy
+        plt.figure(figsize=(14, 5))
+        plt.subplot(1, 2, 1)
+        plt.plot(epochs_range, self._train_accuracies, label='Train Accuracy')
+        plt.plot(epochs_range, self._test_accuracies, label='Test Accuracy')
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy')
+        plt.legend(loc='lower right')
+        plt.title('Train and Test Accuracy')
+
+        # Plot loss
+        plt.subplot(1, 2, 2)
+        plt.plot(epochs_range, self._train_losses, label='Train Loss')
+        plt.plot(epochs_range, self._test_losses, label='Test Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend(loc='upper right')
+        plt.title('Train and Test Loss')
+
+        plt.show()
+
     def run(self):
+        import time
+        start_time = time.time()
         if self._profiling:
             import resource
             import trace
-            import time
 
             print("Tracing active")
-
-            start_time = time.time()
 
             tracer = trace.Trace(
                 count=True,
@@ -161,22 +213,20 @@ class CentralizedLearning(ABC):
 
             stats = tracer.results()
 
-            execution_time = time.time() - start_time
-
             n_instructions = sum(stats.counts.values())
 
             print("Number of called instructions:", n_instructions)
-            print("Execution time:", execution_time, "secondi")
-
             # Get value of used memory
             used_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-
             # KB to GB
             used_memory_gb = used_memory / (1024.0 * 1024.0)
 
             print("Used memory:", used_memory_gb, "GB")
         else:
             self._train_model()
+
+        execution_time = time.time() - start_time
+        print("Execution time:", execution_time, "secondi")
 
     def enable_profiling(self, value: bool) -> None:
         """
@@ -187,7 +237,8 @@ class CentralizedLearning(ABC):
     @staticmethod
     def enable_op_determinism() -> None:
         """ The training process uses deterministic operation in order to have the same experimental results"""
-        tf.keras.utils.set_random_seed(1)  # sets seeds for base-python, numpy and tf
+        seed = 1
+        tf.keras.utils.set_random_seed(seed)  # sets seeds for base-python, numpy and tf
         tf.config.experimental.enable_op_determinism()
 
     def enable_evaluations_plots(self, value: bool) -> None:
@@ -217,7 +268,7 @@ class CentralizedLearning(ABC):
         pass
 
     @abstractmethod
-    def get_optimizer(self) -> keras.optimizers.Optimizer | str:
+    def get_optimizer(self) -> keras.optimizers.Optimizer:
         """
         Get the optimizer of the model
         :return: keras optimizer
@@ -225,7 +276,7 @@ class CentralizedLearning(ABC):
         pass
 
     @abstractmethod
-    def get_loss_function(self) -> keras.losses.Loss | str:
+    def get_loss_function(self) -> keras.losses.Loss:
         """
         Get the loss of the model
         :return: keras loss
@@ -233,7 +284,7 @@ class CentralizedLearning(ABC):
         pass
 
     @abstractmethod
-    def get_metric(self) -> keras.metrics.Metric | str:
+    def get_metric(self) -> keras.metrics.Metric:
         """
         Get the metric for the evaluation
         :return: keras metric

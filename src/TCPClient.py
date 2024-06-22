@@ -204,9 +204,9 @@ class TCPClient(ABC):
         """
         It trains the model.
         """
-        # last_gradients = None
-        accumulated_gradients = None
-        num_batches_last_epoch = 0
+        last_gradients = None
+        # accumulated_gradients = None
+        # num_batches_last_epoch = 0
 
         for epoch in range(self._epochs):
             print(f"Epoch {epoch + 1}/{self._epochs}")
@@ -220,6 +220,10 @@ class TCPClient(ABC):
             epoch_loss_avg = tf.metrics.Mean()
             epoch_accuracy = self.get_metric()
 
+            # Accumulator for gradients
+            accumulated_gradients = [tf.zeros_like(var) for var in self._model.trainable_variables]
+            num_batches = 0
+
             # Iterate over the batches of the dataset.
             for step in range(0, len(self.x_train), self._batch_size):
                 x_batch = self.x_train[step:step + self._batch_size]
@@ -227,28 +231,20 @@ class TCPClient(ABC):
 
                 loss_value, gradients = self._train_step(x_batch, y_batch)
 
-                # last_gradients = gradients  # Store the gradients of the last batch
-
-                if epoch == self._epochs - 1:
-                    if accumulated_gradients is None:
-                        accumulated_gradients = [gradient.numpy() for gradient in gradients]
-                    else:
-                        for i, gradient in enumerate(gradients):
-                            accumulated_gradients[i] += gradient.numpy()
-
-                    num_batches_last_epoch += 1
+                # Accumulate gradients
+                accumulated_gradients = [accum_grad + grad for accum_grad, grad in
+                                         zip(accumulated_gradients, gradients)]
+                num_batches += 1
 
                 epoch_loss_avg.update_state(loss_value)
                 epoch_accuracy.update_state(y_batch, self._model(x_batch, training=True))
 
+            # Average gradients over the number of batches
+            averaged_gradients = [grad / num_batches for grad in accumulated_gradients]
+            self.gradients = np.array([grad.numpy() for grad in averaged_gradients], dtype='object')
+
             print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
 
-        # Average gradients over the number of batches
-        averaged_gradients = [gradient / num_batches_last_epoch for gradient in accumulated_gradients]
-
-        self.gradients = np.array(averaged_gradients, dtype='object')
-        # Average gradients over the number of batches
-        # self.gradients = np.array([tensor.numpy() for tensor in last_gradients], dtype='object')
         # set trained weights
         self._update_weights(np.array(self._model.get_weights(), dtype='object'))
         # evaluate model
@@ -311,7 +307,7 @@ class TCPClient(ABC):
     def _send_local_model(self) -> None:
         """Send trained weights to the server"""
         msg_body = {'client_id': self.id, 'weights': self.weights, 'gradients': self.gradients, 'n_training_samples': len(self.y_train)}
-        self._send_message(MessageType.CLIENT_TRAINED_WEIGHTS, msg_body)
+        self._send_message(MessageType.CLIENT_MODEL, msg_body)
 
     def _send_kpi_data(self) -> None:
         """Send evaluation data to the server"""
@@ -351,7 +347,7 @@ class TCPClient(ABC):
         tf.config.experimental.enable_op_determinism()
 
     def shuffle_dataset_each_epoch(self, value: bool) -> None:
-        """If True it shuffles the training dataset randomly before training the model."""
+        """If True it shuffles the training dataset randomly before each epoch. Enabled by default."""
         self._shuffle_dataset_each_epoch = value
 
     @abstractmethod
