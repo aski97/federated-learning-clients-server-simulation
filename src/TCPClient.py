@@ -9,7 +9,7 @@ import tensorflow as tf
 from tensorflow import keras
 from sklearn.metrics import confusion_matrix
 from src.CSUtils import MessageType, build_message, unpack_message
-
+import time
 
 class TCPClient(ABC):
 
@@ -19,12 +19,12 @@ class TCPClient(ABC):
 
         self.id = client_id
         self._is_profiling = False
+        self._training_execution_time = 0
         self._info_profiling = {
             'train_samples': 0,
             'test_samples': 0,
             'bytes_input': 0,
             'training_n_instructions': 0,
-            'training_execution_time': 0,
             'max_ram_used': 0}
         self.weights = None
         self.gradients = None
@@ -77,15 +77,14 @@ class TCPClient(ABC):
                     # evaluate model with new weights
                     self._evaluate_model()
 
+                    start_time = time.time()
+
                     # train model with new weights
                     if self._is_profiling:
                         import resource
                         import trace
-                        import time
 
                         print("Tracing active")
-
-                        start_time = time.time()
 
                         tracer = trace.Trace(
                             count=True,
@@ -96,18 +95,19 @@ class TCPClient(ABC):
 
                         stats = tracer.results()
 
-                        execution_time = time.time() - start_time
-
                         n_instructions = sum(stats.counts.values())
 
                         used_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
                         self._info_profiling['training_n_instructions'] += n_instructions
-                        self._info_profiling['training_execution_time'] += execution_time
                         self._info_profiling['max_ram_used'] = max(used_memory, self._info_profiling['max_ram_used'])
 
                     else:
                         self._train_model()
+
+                    execution_time = time.time() - start_time
+                    self._training_execution_time += execution_time
+
                     # send trained weights to the server
                     self._send_local_model()
                 case MessageType.END_FL_TRAINING:
@@ -204,10 +204,6 @@ class TCPClient(ABC):
         """
         It trains the model.
         """
-        last_gradients = None
-        # accumulated_gradients = None
-        # num_batches_last_epoch = 0
-
         for epoch in range(self._epochs):
             print(f"Epoch {epoch + 1}/{self._epochs}")
 
@@ -315,7 +311,8 @@ class TCPClient(ABC):
                     'evaluation_federated': self.evaluation_data_federated_model,
                     'evaluation_training': self.evaluation_data_training_model,
                     'cm_federated': self.confusion_matrix_federated_model,
-                    'cm_training': self.confusion_matrix_training_model}
+                    'cm_training': self.confusion_matrix_training_model,
+                    'training_execution_time': self._training_execution_time}
 
         if self._is_profiling:
             self._info_profiling['train_samples'] = len(self.y_train)

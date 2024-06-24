@@ -26,7 +26,7 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 10, 10)
+    server = Server(server_address, 10, 3)
     server.set_aggregation_algorithm(FedProx())
     # server.load_initial_weights("weights/prova.npy")
     server.enable_clients_profiling(False)
