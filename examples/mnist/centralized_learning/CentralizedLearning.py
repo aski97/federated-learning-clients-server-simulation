@@ -76,7 +76,6 @@ class Centralized(CentralizedLearning):
             keras.layers.Dense(10, activation='softmax')
         ])
 
-
     def get_optimizer(self) -> keras.optimizers.Optimizer:
         return keras.optimizers.Adam(learning_rate=0.002)
 

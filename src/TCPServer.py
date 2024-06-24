@@ -283,30 +283,48 @@ class TCPServer(ABC):
                             data_per_client.append(metric_values)
 
                         values_per_client_np = np.array(data_per_client)
+
+                        method_name = self.aggregation_algorithm.__class__.__name__
+                        # Save the rounds values to a NumPy file
+                        # Define the directory to save the file
+                        directory = 'evaluations/nodes/'
+
+                        # Check if the directory exists, if not, create it
+                        os.makedirs(directory, exist_ok=True)
+
+                        # Save the rounds values to a NumPy file
+                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{self.number_rounds}rounds.npy'),
+                                values_per_client_np)
+
                         mean = np.mean(values_per_client_np, axis=0)
                         return mean
 
                     def print_clients_profiling_data():
                         for key, value in self.clients_evaluations.items():
                             client_id = key
-                            profiling_data = value['info_profiling']
+                            if self._clients_profiling_enabled:
+                                profiling_data = value['info_profiling']
 
-                            output_bytes = self._output_bytes_clients[client_id]
-                            input_bytes = profiling_data['bytes_input']
-                            train_samples = profiling_data['train_samples']
-                            test_samples = profiling_data['test_samples']
-                            n_i = profiling_data['training_n_instructions']
-                            e_t = value['training_execution_time']
-                            ram_used = profiling_data['max_ram_used']
+                                output_bytes = self._output_bytes_clients[client_id]
+                                input_bytes = profiling_data['bytes_input']
+                                train_samples = profiling_data['train_samples']
+                                test_samples = profiling_data['test_samples']
+                                n_i = profiling_data['training_n_instructions']
+                                e_t = value['training_execution_time']
+                                ram_used = profiling_data['max_ram_used']
 
-                            print(f"Profiling Client {client_id} -> "
-                                  f"input_bytes = {input_bytes} B"
-                                  f"|| output_bytes = {output_bytes} B"
-                                  f"|| #instructions = {n_i} "
-                                  f"|| execution_time = {e_t} s "
-                                  f"|| max_ram_used = {ram_used / (1024.0 * 1024.0)} GB "
-                                  f"|| #train_samples = {train_samples} "
-                                  f"!! #test_samples = {test_samples} ")
+                                print(f"Profiling Client {client_id} -> "
+                                      f"input_bytes = {input_bytes} B"
+                                      f"|| output_bytes = {output_bytes} B"
+                                      f"|| #instructions = {n_i} "
+                                      f"|| execution_time = {e_t} s "
+                                      f"|| max_ram_used = {ram_used / (1024.0 * 1024.0)} GB "
+                                      f"|| #train_samples = {train_samples} "
+                                      f"!! #test_samples = {test_samples} ")
+                            else:
+                                e_t = value['training_execution_time']
+                                print(f"Profiling Client {client_id} -> "
+                                      f"|| execution_time = {e_t} s ")
 
                     def plot_profiling_data(data_type, title, y_label):
                         from matplotlib import pyplot as plt
@@ -384,7 +402,7 @@ class TCPServer(ABC):
                         os.makedirs(directory, exist_ok=True)
 
                         # Save the rounds values to a NumPy file
-                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{len(values)}rounds.npy'), values)
+                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{len(values) - 1}rounds.npy'), values)
 
                     def plot_confusion_matrix(values, classes):
                         from matplotlib import pyplot as plt
@@ -413,12 +431,33 @@ class TCPServer(ABC):
 
                     # confusion matrix
                     final_cm_per_client = [value['cm_federated'][-1] for value in self.clients_evaluations.values()]
-                    cm_mean = np.round(np.mean(final_cm_per_client, axis=0), 2)
+
+                    # Compute mean confusion matrix
+                    n_classes = len(self.get_classes_name())
+
+                    sum_rows = np.zeros((n_classes, n_classes))
+                    count_rows = np.zeros(n_classes)
+
+                    for matrix in final_cm_per_client:
+                        for i in range(n_classes):
+                            # if the row has at least one not zero-value
+                            if np.any(matrix[i]):
+                                sum_rows[i] += matrix[i]
+                                count_rows[i] += 1
+
+                    average_rows = np.zeros((n_classes, n_classes))
+                    for i in range(n_classes):
+                        if count_rows[i] > 0:
+                            average_rows[i] = sum_rows[i] / count_rows[i]
+
+                    cm_mean = np.round(average_rows, 2)
 
                     print(f"Average accuracy of final federated model: {accuracy_avg[-1]}\n")
                     print(f"Average loss of final federated model: {loss_avg[-1]}\n")
                     print("Average Confusion Matrix of final federated model (Percentage):")
                     print(cm_mean)
+
+                    print_clients_profiling_data()
 
                     if self._evaluation_plots_enabled:
                         plot_metric_per_client('accuracy')
@@ -431,7 +470,7 @@ class TCPServer(ABC):
                             import resource
                             max_m_used = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
                             print(f"Server max memory used: {max_m_used / (1024.0 * 1024.0)} GB")
-                            print_clients_profiling_data()
+
                             plot_profiling_data('training_n_instructions',
                                                 "Total number of instructions during all the training process",
                                                 "# instructions")

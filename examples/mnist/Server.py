@@ -13,9 +13,14 @@ class Server(TCPServer):
 
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
-            keras.layers.InputLayer(input_shape=(784,)),
-            keras.layers.Dense(10, kernel_initializer="zero"),
-            keras.layers.Softmax(),
+            keras.layers.Conv1D(filters=32, kernel_size=5, padding='same', activation='relu', input_shape=(28, 28)),
+            keras.layers.AvgPool1D(strides=2),
+            keras.layers.Conv1D(filters=48, kernel_size=5, padding='valid', activation='relu'),
+            keras.layers.AvgPool1D(strides=2),
+            keras.layers.Flatten(),
+            keras.layers.Dense(160, activation='relu'),
+            keras.layers.Dense(84, activation='relu'),
+            keras.layers.Dense(10, activation='softmax')
         ])
 
     def get_classes_name(self) -> list[str]:
@@ -26,8 +31,8 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 10, 3)
-    server.set_aggregation_algorithm(FedProx())
+    server = Server(server_address, 10, 64)
+    server.set_aggregation_algorithm(FedAvg())
     # server.load_initial_weights("weights/prova.npy")
     server.enable_clients_profiling(False)
     server.enable_evaluations_plots(True)
