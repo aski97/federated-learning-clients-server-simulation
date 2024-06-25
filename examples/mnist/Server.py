@@ -1,7 +1,7 @@
 import sys
 import os
 
-from src.AggregationAlgorithm import FedAvg, FedAvgMomentum, FedAdam, FedSGD, FedProx
+from src.AggregationAlgorithm import FedAvg, FedAvgMomentum, FedAdam, FedSGD, FedProx, FedMiddleAvg
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
@@ -35,5 +35,5 @@ if __name__ == "__main__":
     server.set_aggregation_algorithm(FedAvg())
     # server.load_initial_weights("weights/prova.npy")
     server.enable_clients_profiling(False)
-    server.enable_evaluations_plots(True)
+    server.enable_evaluations_plots(False)
     server.run()

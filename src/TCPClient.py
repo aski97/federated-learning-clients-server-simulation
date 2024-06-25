@@ -227,6 +227,11 @@ class TCPClient(ABC):
 
                 loss_value, gradients = self._train_step(x_batch, y_batch)
 
+                # # Convert gradients to numpy and print
+                # gradients_np = [grad.numpy() for grad in gradients]
+                # for i, grad in enumerate(gradients_np):
+                #     print(f"Gradiente {i} - media: {np.mean(grad)}, std: {np.std(grad)}")
+
                 # Accumulate gradients
                 accumulated_gradients = [accum_grad + grad for accum_grad, grad in
                                          zip(accumulated_gradients, gradients)]

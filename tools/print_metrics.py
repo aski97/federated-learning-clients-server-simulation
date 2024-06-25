@@ -10,8 +10,10 @@ def print_avg_metric(acc, loss, round):
     print(f"Round: {round}, accuracy = {acc[round]}, loss = {loss[round]}")
 
 directory = '../examples/mnist/evaluations/'
-file_path_avg_acc = os.path.join(directory, "accuracy_FedAvg_64rounds.npy")
-file_path_avg_loss = os.path.join(directory, "loss_FedAvg_64rounds.npy")
+acc_name = "accuracy_FedAvg_64rounds.npy"
+loss_name = "loss_FedAvg_64rounds.npy"
+file_path_avg_acc = os.path.join(directory, acc_name)
+file_path_avg_loss = os.path.join(directory, loss_name)
 avg_acc = np.load(file_path_avg_acc, allow_pickle=True)
 avg_loss = np.load(file_path_avg_loss, allow_pickle=True)
 
@@ -21,8 +23,8 @@ print_avg_metric(avg_acc,avg_loss,32)
 print_avg_metric(avg_acc,avg_loss,64)
 
 directory = '../examples/mnist/evaluations/nodes'
-file_path_node_acc = os.path.join(directory, "accuracy_FedAvg_64rounds.npy")
-file_path_node_loss = os.path.join(directory, "loss_FedAvg_64rounds.npy")
+file_path_node_acc = os.path.join(directory, acc_name)
+file_path_node_loss = os.path.join(directory, loss_name)
 node_acc = np.load(file_path_node_acc, allow_pickle=True)
 node_loss = np.load(file_path_node_loss, allow_pickle=True)
 

@@ -24,13 +24,12 @@ def plot_metrics_from_directory(directory):
 
             grouped_files[key].append((file, x_value))
 
-
     # Plot each group
     for key, file_group in grouped_files.items():
         metric_type, number_rounds = key.split('_')
 
         fig, ax = plt.subplots()
-        ax.set_title(f'Average {metric_type.capitalize()} - {number_rounds} round')
+        ax.set_title(f'Average {metric_type.capitalize()} - {number_rounds} rounds')
         ax.set_xlabel('Rounds')
         ax.set_ylabel(f'{metric_type.capitalize()}')
 
