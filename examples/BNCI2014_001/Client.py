@@ -5,6 +5,8 @@ dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
 from src.TCPClient import TCPClient
 from tensorflow import keras
+from keras.layers import Conv1D, Flatten, Dense, Dropout
+from keras.src.regularizers import l1
 import argparse
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -16,7 +18,7 @@ class Client(TCPClient):
         return 32
 
     def get_train_epochs(self) -> int:
-        return 10
+        return 20
 
     def get_loss_function(self):
         return keras.losses.CategoricalCrossentropy()
@@ -29,13 +31,13 @@ class Client(TCPClient):
 
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
-            keras.layers.Conv1D(32, 5, padding='same', activation='relu',
-                                input_shape=self.x_train.shape[1:]),
-            keras.layers.Conv1D(64, 3, padding='same', activation='relu'),
-            keras.layers.Flatten(),
-            keras.layers.Dense(64, activation='relu'),
-            keras.layers.Dropout(0.5),
-            keras.layers.Dense(2, activation='softmax')
+            Conv1D(16, 5, padding='same', activation='relu', kernel_regularizer=l1(),
+                   input_shape=self.x_train.shape[1:]),
+            Conv1D(32, 3, padding='same', activation='relu', kernel_regularizer=l1()),
+            Flatten(),
+            Dense(64, activation='relu', kernel_regularizer=l1()),
+            Dropout(0.5),
+            Dense(2, activation='softmax')
         ])
 
     def load_dataset(self) -> tuple:
@@ -61,16 +63,17 @@ class Client(TCPClient):
         # distribution between the training set and the test set. This can be particularly important when dealing
         # with classes of different sizes or when you want to preserve the representativeness of the classes during
         # the data split.
-        x_train, x_test, y_train, y_test = train_test_split(x, y_encoded, test_size=0.2, stratify=y_encoded)
+        x_train, x_test, y_train, y_test = train_test_split(x, y_encoded, test_size=0.25, stratify=y_encoded)
 
         # labels one-hot encoding
         y_train = keras.utils.to_categorical(y_train, 2)
         y_test = keras.utils.to_categorical(y_test, 2)
 
+        print(x_train.shape[1:])
         return x_train, x_test, y_train, y_test
 
     def get_optimizer(self):
-        return keras.optimizers.SGD(0.02)
+        return keras.optimizers.Adam(0.002)
 
 
 if __name__ == "__main__":

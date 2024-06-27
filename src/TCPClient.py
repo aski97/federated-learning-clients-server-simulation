@@ -101,7 +101,6 @@ class TCPClient(ABC):
 
                         self._info_profiling['training_n_instructions'] += n_instructions
                         self._info_profiling['max_ram_used'] = max(used_memory, self._info_profiling['max_ram_used'])
-
                     else:
                         self._train_model()
 
@@ -191,7 +190,8 @@ class TCPClient(ABC):
             loss_value = self._loss_fn(y, predictions)
 
         gradients = tape.gradient(loss_value, self._model.trainable_variables)
-        self._model.optimizer.apply_gradients(zip(gradients, self._model.trainable_variables))
+        gradients_vars = zip(gradients, self._model.trainable_variables)
+        self._model.optimizer.apply_gradients(gradients_vars)
         return loss_value, gradients
 
     @tf.function

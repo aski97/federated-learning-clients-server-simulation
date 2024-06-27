@@ -199,6 +199,7 @@ class CentralizedLearning(ABC):
         import time
         start_time = time.time()
         if self._profiling:
+            import psutil
             import resource
             import trace
 
@@ -222,6 +223,14 @@ class CentralizedLearning(ABC):
             used_memory_gb = used_memory / (1024.0 * 1024.0)
 
             print("Used memory:", used_memory_gb, "GB")
+            # Ottieni il processo corrente
+            process = psutil.Process()
+
+            # Ottieni l'uso della memoria del processo corrente
+            memory_info = process.memory_info()
+
+            # Se vuoi ottenere l'uso della memoria in Megabyte
+            print(f"RSS (Resident Set Size): {memory_info.rss / (1024 ** 2)} MB")
         else:
             self._train_model()
 

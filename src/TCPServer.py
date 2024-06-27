@@ -293,16 +293,25 @@ class TCPServer(ABC):
                         os.makedirs(directory, exist_ok=True)
 
                         # Save the rounds values to a NumPy file
-                        # np.save(os.path.join(directory, f'{metric_type}_{method_name}_{self.number_rounds}rounds.npy'),
-                        #         values_per_client_np)
+                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{self.number_rounds}rounds.npy'),
+                                values_per_client_np)
 
                         mean = np.mean(values_per_client_np, axis=0)
                         return mean
 
                     def print_clients_profiling_data():
+                        import psutil
                         import resource
                         max_m_used = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
                         print(f"Server max memory used: {max_m_used / (1024.0 * 1024.0)} GB")
+                        # Ottieni il processo corrente
+                        process = psutil.Process()
+
+                        # Ottieni l'uso della memoria del processo corrente
+                        memory_info = process.memory_info()
+
+                        # Se vuoi ottenere l'uso della memoria in Megabyte
+                        print(f"RSS (Resident Set Size): {memory_info.rss / (1024 ** 2)} MB")
 
                         for key, value in self.clients_evaluations.items():
                             client_id = key
@@ -406,7 +415,7 @@ class TCPServer(ABC):
                         os.makedirs(directory, exist_ok=True)
 
                         # Save the rounds values to a NumPy file
-                        # np.save(os.path.join(directory, f'{metric_type}_{method_name}_{len(values) - 1}rounds.npy'), values)
+                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{len(values) - 1}rounds.npy'), values)
 
                     def plot_confusion_matrix(values, classes):
                         from matplotlib import pyplot as plt

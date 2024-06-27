@@ -6,9 +6,10 @@ import tensorflow as tf
 import sys
 from tensorflow import keras
 from keras.layers import Conv1D, Flatten, Dense, Dropout
+from keras.src.regularizers import l1
 from sklearn.model_selection import train_test_split
 from src.CentralizedLearning import CentralizedLearning
-
+from collections import Counter
 
 class Centralized(CentralizedLearning):
 
@@ -46,9 +47,14 @@ class Centralized(CentralizedLearning):
         labels_encoded = np.where(labels == 'left_hand', 0, 1)
 
         # Split dataset in training and test set
-        x_train, x_test, y_train, y_test = train_test_split(dataset, labels_encoded, test_size=0.2,
+        x_train, x_test, y_train, y_test = train_test_split(dataset, labels_encoded, test_size=0.25,
                                                             stratify=labels_encoded)
 
+        # # Show frequency of digits
+        # count = Counter(y_train)
+        # for number, frequency in sorted(count.items()):
+        #     print(f"Number {number} appears {frequency} times.")
+        # print(f"Training: {len(y_train)} items | Test: {len(y_test)}")
         # labels one-hot encoding
         y_train = tf.keras.utils.to_categorical(y_train, 2)
         y_test = tf.keras.utils.to_categorical(y_test, 2)
@@ -59,29 +65,29 @@ class Centralized(CentralizedLearning):
         initializer = "glorot_uniform"
 
         return keras.models.Sequential([
-            Conv1D(32, 5, padding='same', activation='relu', kernel_initializer=initializer,
+            Conv1D(16, 5, padding='same', activation='relu', kernel_regularizer=l1(), kernel_initializer=initializer,
                    input_shape=self.x_train.shape[1:]),
-            Conv1D(64, 3, padding='same', activation='relu', kernel_initializer=initializer),
+            Conv1D(32, 3, padding='same', activation='relu', kernel_regularizer=l1(), kernel_initializer=initializer),
             Flatten(),
-            Dense(64, activation='relu', kernel_initializer=initializer),
+            Dense(64, activation='relu', kernel_regularizer=l1(), kernel_initializer=initializer),
             Dropout(0.5),
             Dense(2, activation='softmax', kernel_initializer=initializer)
         ])
 
-    def get_optimizer(self) -> keras.optimizers.Optimizer | str:
-        return keras.optimizers.Adam()
+    def get_optimizer(self) -> keras.optimizers.Optimizer:
+        return keras.optimizers.Adam(learning_rate=0.002)
 
-    def get_loss_function(self) -> keras.losses.Loss | str:
-        return "categorical_crossentropy"
+    def get_loss_function(self) -> keras.losses.Loss:
+        return keras.losses.CategoricalCrossentropy()
 
-    def get_metric(self) -> keras.metrics.Metric | str:
-        return "accuracy"
+    def get_metric(self) -> keras.metrics.Metric:
+        return keras.metrics.CategoricalAccuracy()
 
     def get_batch_size(self) -> int:
         return 32
 
     def get_train_epochs(self) -> int:
-        return 5
+        return 20
 
     def get_classes_name(self) -> list[str]:
         return ['left', 'right']
@@ -89,9 +95,8 @@ class Centralized(CentralizedLearning):
 
 if __name__ == "__main__":
     centralized_model = Centralized()
-    centralized_model.shuffle_dataset_each_epoch(False)
     centralized_model.enable_op_determinism()
     centralized_model.enable_profiling(True)
-    centralized_model.enable_evaluations_plots(False)
+    centralized_model.enable_evaluations_plots(True)
 
     centralized_model.run()

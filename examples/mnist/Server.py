@@ -31,9 +31,10 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 10, 64)
+    server = Server(server_address, 10, 8)
     server.set_aggregation_algorithm(FedAvg())
+    # server.set_aggregation_algorithm(FedAdam(beta1=0.5,learning_rate=0.01))
     # server.load_initial_weights("weights/prova.npy")
     server.enable_clients_profiling(False)
-    server.enable_evaluations_plots(False)
+    server.enable_evaluations_plots(True)
     server.run()

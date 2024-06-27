@@ -49,7 +49,7 @@ class AggregationAlgorithm(ABC):
 
     @staticmethod
     def compute_avg_weights(clients_weights: dict, weighted: bool = True):
-        return AggregationAlgorithm.compute_avg(clients_weights,"weights", weighted)
+        return AggregationAlgorithm.compute_avg(clients_weights, "weights", weighted)
 
     @staticmethod
     def compute_avg_gradients(clients_gradients: dict, weighted: bool = True):
@@ -197,8 +197,6 @@ class FedAdam(AggregationAlgorithm):
         beta2 (float): Exponential decay rate for the second moment estimates.
         epsilon (float): Small constant for numerical stability.
         learning_rate (float): Learning rate for updating weights.
-        weighted (bool): If True, use a weighted average based on the number of training samples per client.
-                         If False, use a simple arithmetic mean.
     """
 
     def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001):
@@ -206,8 +204,8 @@ class FedAdam(AggregationAlgorithm):
         self.beta2 = beta2
         self.epsilon = epsilon
         self.learning_rate = learning_rate
-        self.m = {}  # First moment vectors for each client
-        self.v = {}  # Second moment vectors for each client
+        self.m = None  # First moment vectors for each client
+        self.v = None  # Second moment vectors for each client
         self.t = 0  # Timestep
 
     def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
@@ -225,60 +223,37 @@ class FedAdam(AggregationAlgorithm):
             raise ValueError("federated_model must be a valid numpy ndarray")
 
         # Initialize m and v for each client if not already done
-        for key in clients_gradients.keys():
-            if key not in self.m:
-                self.m[key] = np.zeros_like(federated_model)
-            if key not in self.v:
-                self.v[key] = np.zeros_like(federated_model)
-
+        if self.m is None:
+            self.m = np.zeros_like(federated_model)
+        if self.v is None:
+            self.v = np.zeros_like(federated_model)
         self.t += 1
 
-        params = {}
+        avg = self.compute_avg_weights(clients_gradients)
 
-        for key, client_data in clients_gradients.items():
-            gradient = client_data["gradients"]
+        delta_w = avg - federated_model
 
-            # Update biased first moment estimate for client
-            self.m[key] = self.beta1 * self.m[key] + (1 - self.beta1) * gradient
+        # Update biased first moment estimate for client
+        self.m = self.beta1 * self.m + (1 - self.beta1) * delta_w
 
-            # Update biased second raw moment estimate for client
-            self.v[key] = self.beta2 * self.v[key] + (1 - self.beta2) * (gradient ** 2)
+        # Update biased second raw moment estimate for client
+        self.v = self.beta2 * self.v + (1 - self.beta2) * (delta_w ** 2)
 
-            # Compute bias-corrected first moment estimate
-            m_hat = self.m[key] / (1 - self.beta1 ** self.t)
+        # Compute bias-corrected first moment estimate
+        m_hat = self.m / (1 - self.beta1 ** self.t)
 
-            # Compute bias-corrected second raw moment estimate
-            v_hat = self.v[key] / (1 - self.beta2 ** self.t)
+        # Compute bias-corrected second raw moment estimate
+        v_hat = self.v / (1 - self.beta2 ** self.t)
 
-            v_hat_sqr_list = []
+        v_hat_sqr_list = []
 
-            # Compute the square of each element
-            for arr in v_hat:
-                sqrt_arr = np.sqrt(arr)
-                v_hat_sqr_list.append(sqrt_arr)
+        for arr in v_hat:
+            sqrt_arr = np.sqrt(arr)
+            v_hat_sqr_list.append(sqrt_arr)
 
-            v_hat_squared = np.array(v_hat_sqr_list, dtype='object')
+        v_hat_squared = np.array(v_hat_sqr_list, dtype='object')
 
-            # Compute params
-            params[key] = federated_model - self.learning_rate * m_hat / (v_hat_squared + self.epsilon)
-
-        sum_values = None
-        # Compute global params
-        total_samples = 0
-        for key, param in params.items():
-
-            w = clients_gradients[key]["n_training_samples"]
-            total_samples += w
-
-            if sum_values is None:
-                sum_values = param * w
-            else:
-                sum_values += param * w
-
-        if total_samples == 0:
-            raise ValueError("Total number of training samples is zero")
-
-        new_params = sum_values / total_samples
+        new_params = federated_model + self.learning_rate * m_hat / (v_hat_squared + self.epsilon)
 
         return new_params
 
