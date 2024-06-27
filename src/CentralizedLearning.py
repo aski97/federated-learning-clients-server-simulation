@@ -15,9 +15,11 @@ class CentralizedLearning(ABC):
         self._profiling = False
         self._evaluation_plots_enabled = True
 
-        self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
-
-        self._model = self._load_compiled_model()
+        self.x_train = None
+        self.x_test = None
+        self.y_train = None
+        self.y_test = None
+        self._model = None
         self._loss_fn = self.get_loss_function()
         self._batch_size = self.get_batch_size()
         self._epochs = self.get_train_epochs()
@@ -61,6 +63,9 @@ class CentralizedLearning(ABC):
 
     def _train_model(self) -> None:
         """ It trains the model."""
+        if self._model is None:
+            self._model = self._load_compiled_model()
+
         for epoch in range(self._epochs):
             print(f"Epoch {epoch + 1}/{self._epochs}")
 
@@ -196,6 +201,9 @@ class CentralizedLearning(ABC):
         plt.show()
 
     def run(self):
+
+        self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
+
         import time
         start_time = time.time()
         if self._profiling:

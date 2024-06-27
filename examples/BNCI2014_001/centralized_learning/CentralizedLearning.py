@@ -96,7 +96,7 @@ class Centralized(CentralizedLearning):
 if __name__ == "__main__":
     centralized_model = Centralized()
     centralized_model.enable_op_determinism()
-    centralized_model.enable_profiling(True)
+    centralized_model.enable_profiling(False)
     centralized_model.enable_evaluations_plots(True)
 
     centralized_model.run()

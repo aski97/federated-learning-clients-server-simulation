@@ -208,12 +208,12 @@ class FedAdam(AggregationAlgorithm):
         self.v = None  # Second moment vectors for each client
         self.t = 0  # Timestep
 
-    def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
+    def aggregate_weights(self, clients_data: dict, federated_model: np.ndarray) -> np.ndarray:
         """
         Aggregates client gradients using the Adam algorithm.
 
         Args:
-            clients_gradients (dict): Dictionary containing client gradients and respective contributions.
+            clients_data (dict): Dictionary containing client weights, gradients and respective contributions.
             federated_model (np.ndarray): Current federated model weights.
 
         Returns:
@@ -229,7 +229,7 @@ class FedAdam(AggregationAlgorithm):
             self.v = np.zeros_like(federated_model)
         self.t += 1
 
-        avg = self.compute_avg_weights(clients_gradients)
+        avg = self.compute_avg_weights(clients_data)
 
         delta_w = avg - federated_model
 
@@ -254,52 +254,6 @@ class FedAdam(AggregationAlgorithm):
         v_hat_squared = np.array(v_hat_sqr_list, dtype='object')
 
         new_params = federated_model + self.learning_rate * m_hat / (v_hat_squared + self.epsilon)
-
-        return new_params
-
-
-class FedProx(AggregationAlgorithm):
-    """
-    Implements FedProx algorithm.
-    Adds a regularization term to penalize differences between local and global models.
-    """
-    def __init__(self, learning_rate=0.01, mu=0.1):
-        self.mu = mu
-        self.learning_rate = learning_rate
-
-    def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
-        if not clients_weights:
-            raise ValueError("clients_weights dictionary is empty")
-
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
-
-        params = {}
-
-        for key, client_data in clients_weights.items():
-            gradient = client_data["gradients"]
-            weights = client_data["weights"]
-
-            # Compute params
-            params[key] = federated_model - self.learning_rate * (gradient + self.mu * (weights - federated_model))
-
-        sum_values = None
-        # Compute global params
-        total_samples = 0
-        for key, param in params.items():
-
-            w = clients_weights[key]["n_training_samples"]
-            total_samples += w
-
-            if sum_values is None:
-                sum_values = param * w
-            else:
-                sum_values += param * w
-
-        if total_samples == 0:
-            raise ValueError("Total number of training samples is zero")
-
-        new_params = sum_values / total_samples
 
         return new_params
 
