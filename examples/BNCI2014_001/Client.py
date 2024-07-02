@@ -63,13 +63,12 @@ class Client(TCPClient):
         # distribution between the training set and the test set. This can be particularly important when dealing
         # with classes of different sizes or when you want to preserve the representativeness of the classes during
         # the data split.
-        x_train, x_test, y_train, y_test = train_test_split(x, y_encoded, test_size=0.25, stratify=y_encoded)
+        x_train, x_test, y_train, y_test = train_test_split(x, y_encoded, test_size=0.25, stratify=y_encoded, random_state=1)
 
         # labels one-hot encoding
         y_train = keras.utils.to_categorical(y_train, 2)
         y_test = keras.utils.to_categorical(y_test, 2)
 
-        print(x_train.shape[1:])
         return x_train, x_test, y_train, y_test
 
     def get_optimizer(self):

@@ -46,5 +46,5 @@ def plot_metrics_from_directory(directory):
         plt.show()
 
 # Example usage
-directory = '../examples/mnist/evaluations/'  # Replace with your directory
+directory = '../examples/ultracortex_eeg/evaluations/'  # Replace with your directory
 plot_metrics_from_directory(directory)

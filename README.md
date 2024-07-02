@@ -3,16 +3,45 @@ This is a design of a simple client/server architecture to simulate federated le
 
 ## Table of contents
 
+* [Overview](#overview)
+* [Libraries](#libraries)
 * [Architecture](#architecture)
     + [Server](#server)
+        - [Methods](#methods)
+            * [Abstract Methods](#abstract-methods)
+            * [Public Methods](#public-methods)
     + [Client](#client)
-    + [Supported aggregation algorithms](#supported-aggregation-algorithms)
-    + [Message exchange](#message-exchange)
+        - [Methods](#methods-1)
+            * [Abstract Methods](#abstract-methods-1)
+            * [Public Methods](#public-methods-1)
+    + [Supported Aggregation Algorithms](#supported-aggregation-algorithms)
+    + [Message Exchange](#message-exchange)
     + [Profiling](#profiling)
-    + [Limits of the implementation](#limits-of-the-implementation)
+    + [Limits of the Implementation](#limits-of-the-implementation)
 * [Requirements](#requirements)
 * [Simulation Mnist Dataset](#simulation-mnist-dataset)
-* [Simulation BNCI2014_001 Dataset](#simulation-BNCI2014_001-dataset)
+* [Simulation BNCI2014_001 Dataset](#simulation-bnci2014_001-dataset)
+
+## Overview
+
+This document provides a detailed description of the implementation of our Federated Learning (FL) framework. The framework is designed to facilitate the simulation and performance analysis of various federated algorithms. It consists of a central server and multiple clients, each training a model locally on their data and contributing to the global aggregation without sharing raw data.
+
+The implementation is done in Python (version 3.10), leveraging its simplicity and extensive libraries for machine learning. Clients and server communicate via sockets using the TCP/IP protocol.
+
+## Libraries
+
+The following libraries are used to ensure the efficiency and reusability of the code:
+
+- **TensorFlow**: For building and training machine learning models.
+- **NumPy**: For mathematical operations and data manipulation.
+- **Pickle**: For serializing and deserializing Python objects.
+- **Struct**: For converting data formats to and from bytes.
+- **Threading**: For creating and managing multiple threads.
+- **Socket**: For network communication between clients and the server.
+- **Os**: For interacting with the operating system.
+- **Trace**: For tracing the number of instructions executed during model training.
+- **Resource**: For monitoring system resource usage.
+- **Matplotlib**: For creating graphs and visualizations.
 
 ## Architecture
 ![fl_architecture](/images/fl_arc.png)
@@ -26,15 +55,11 @@ Here is a representation of the architecture, as shown in the figure. The server
 This sequence is iterated for a predetermined number of rounds, at the end of which, clients send the server accuracy and loss data of the federated model before closing the connection with the server.
 
 ###  Server
-The server is defined by the abstract class [TCPServer](/src/TCPServer.py). The constructor of the class takes 4 input parameters:
-+ ```server_address```: Address of the server.
-+ ```number_clients```: Number of clients participating in federated training.
-+ ```number_rounds```: Number of rounds in federated training.
-+ ```aggregation_algorithm```: Type of federated aggregation algorithms of clients models (ex FedAvg).
-
-The method to be implemented in the abstract class is:
-+ ```get_skeleton_model()```: Returns the skeleton of the Keras model.
-+ ```get_classes_names()```: Returns the list of the names of the classes, used for the confusion matrix.
+The server component is defined by the abstract class [TCPServer](/src/TCPServer.py). The constructor requires three main parameters:
+- `server_address`: The server address.
+- `number_clients`: The number of participating clients.
+- `number_rounds`: The number of federated learning rounds.
+- `save_weights_path` (optional): Path to save the federated learning weights. If not specified, the model is not saved.
 
 Once the TCPServer class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the server.
 
@@ -64,65 +89,122 @@ The learning process concludes when the number of rounds is exhausted, resulting
 + **Total execution time per client for the training phases**.
 + **Maximum RAM usage per client**.
 
-### Client
-The client is defined by the abstract class [TCPClient](/src/TCPClient.py) The constructor of the class takes 3 input parameters:
-+ ```server_address```: Address of the server.
-+ ```client_id```: Client's ID.
-+ ```enable_op_determinism```: Determines whether to use deterministic operations; if true, the result of each simulation will always be the same.
+#### Methods
 
-The methods to be implemented in the abstract class are:
-+ ```load_dataset()```: Defines how to load the client's dataset, returning the dataset already split into training and test sets.
-+ ```get_skeleton_model()```: Returns the skeleton of the Keras model.
-+ ```get_optimizer()```: Returns the optimizer used.
-+ ```get_loss_function()```: Returns the loss function used.
-+ ```get_metric()```: Returns the type of metric for training.
-+ ```get_batch_size()```: Returns the batch size used for training.
-+ ```get_train_epochs()```: Returns the number of epochs for each training.
-+ ```get_num_classes()```: Returns the number of classes managed by the dataset.
-+ ```shuffle_dataset_before_training()```: Returns true if the dataset should be shuffled before each training.
+##### Abstract Methods
+- `get_skeleton_model(self) -> Model`: Returns the Keras model skeleton.
+- `get_classes_names(self) -> list[str]`: Returns a list of class names used for generating the confusion matrix.
+
+##### Public Methods
+- `run(self) -> None`: Starts the server and manages the entire federated learning cycle.
+- `enable_clients_profiling(self, value: bool) -> None`: Enables profiling to receive key performance indicators (KPIs) from the nodes.
+- `enable_evaluations_plots(self, value: bool) -> None`: Displays evaluation and KPI plots if enabled.
+- `set_aggregation_algorithm(self, aggregation_algorithm) -> None`: Sets the weight aggregation algorithm.
+- `save_federated_weights(self, file_path) -> None`: Saves the federated model to the specified file path.
+- `load_initial_weights(self, file_path) -> None`: Initializes the federated model with weights from the specified path.
+
+
+### Client
+The client component is defined by the abstract class [TCPClient](/src/TCPClient.py). The constructor requires two main parameters:
+- `server_address`: The server address to connect to.
+- `client_id`: The ID of the client.
 
 Once the TCPClient class is implemented and instantiated with its parameters, the ```run()``` function should be executed to run the client.
 
 The client opens a socket and connects to the server's address. Then, it waits to receive the federated model from the server. Once it receives the weights and biases, it loads them into the local model (net) and starts an initial evaluation. In this phase, the evaluation helps understanding the accuracy of the federated model using the local test dataset. After evaluating the federated model, the client starts the training on the training data.
 
-Before each training, the dataset could be shuffled if ```shuffle_dataset_before_training()``` method returns True, thus avoiding overfitting situations. The dataset is divided into batches, where each batch has a number of samples equal to the value returned by the ```get_batch_size()``` method. Training proceeds for a number of epochs equal to the value returned by the ```get_train_epochs()``` method. Upon completion, the model is re-evaluated on the test data, and the results are stored. Afterward, the client sends the weights and biases of the just-trained model to the server. This operation repeats until the server sends the final model, on which the client performs a single evaluation, sending all previous evaluations back to the server.
+The dataset is divided into batches, where each batch has a number of samples equal to the value returned by the ```get_batch_size()``` method. Training proceeds for a number of epochs equal to the value returned by the ```get_train_epochs()``` method. Upon completion, the model is re-evaluated on the test data, and the results are stored. Afterward, the client sends the weights and biases of the just-trained model to the server. This operation repeats until the server sends the final model, on which the client performs a single evaluation, sending all previous evaluations back to the server.
 
 Once the federated training is complete, the client closes the connection with the server.
 
-### Supported aggregation algorithms
-With this implementation, it is possible to use one of the following client model aggregation algorithms:
+#### Methods
 
-+ ```FedAvg```: The resulting model will be the arithmetic mean of the client models.
-+ ```FedMiddleAvg```: The resulting model will be the arithmetic mean between the last federated model and the arithmetic mean of the client models. In this way, the last model contributes to the creation of the new one without being discarded at each round.
+##### Abstract Methods
+- `load_dataset(self) -> tuple`: Loads the client's dataset, returning training and test sets.
+- `get_skeleton_model(self) -> keras.Model`: Returns the model to be trained.
+- `get_optimizer(self) -> keras.optimizers.Optimizer | str`: Returns the optimizer for compiling the model.
+- `get_loss_function(self) -> keras.losses.Loss | str`: Returns the loss function for compiling the model.
+- `get_metric(self) -> keras.metrics.Metric | str`: Returns the metric for evaluating the model.
+- `get_batch_size(self) -> int`: Returns the batch size for training.
+- `get_train_epochs(self) -> int`: Returns the number of training epochs.
+- `get_num_classes(self) -> int`: Returns the number of classes in the client's dataset.
+
+##### Public Methods
+- `run(self) -> None`: Executes the main operations of the client.
+- `enable_op_determinism(self) -> None`: Configures training to use deterministic operations, ensuring reproducibility of experimental results.
+- `shuffle_dataset_each_epoch(self, value: bool) -> None`: Enables or disables shuffling the training dataset at the beginning of each epoch. Enabled by default.
+
+
+### Supported aggregation algorithms
+The framework supports several aggregation algorithms:
+
+- **FedAvg**: Aggregates the weights of the clients' models by computing a weighted or simple average.
+  - Weighted Average: Each local model contributes based on the number of training samples used by the client.
+  - Simple Average: Each local model contributes equally to the computation of the federated model.
+  
+  Weighted Average Formula:
+  \[
+  \theta_{t+1} = \frac{\sum_{k=1}^{K} n_k \theta_t^{(k)}}{n}
+  \]
+  Simple Average Formula:
+  \[
+  \theta_{t+1} = \frac{1}{K} \sum_{k=1}^{K} \theta_t^{(k)}
+  \]
+
+- **FedMiddleAvg**: Averages the current federated model with the average of the clients' models calculated using FedAvg.
+  \[
+  \theta_{t+1} = \frac{(\theta_{t+1}) + \theta_t}{2}
+  \]
+
+- **FedAvgMomentum**: Integrates the concept of momentum into the aggregation of weights to accelerate convergence and reduce oscillations.
+  \[
+  (\theta_{t+1}) = FedAvg(\theta_t^{(1)}, \theta_t^{(2)}, ..., \theta_t^{(k)})
+  \]
+  \[
+  \Delta_{t+1} = (\theta_{t+1}) - \theta_t
+  \]
+  \[
+  v_{t+1} = \beta v_t + \Delta_{t+1} \quad \beta \in [0, 1]
+  \]
+  \[
+  \theta_{t+1} = \theta_t + \eta v_{t+1}
+  \]
+
+- **FedAdam**: A variant of the Adam algorithm designed for federated learning, combining the benefits of AdaGrad and RMSProp.
+  \[
+  (\theta_{t+1}) = FedAvg(\theta_t^{(1)}, \theta_t^{(2)}, ..., \theta_t^{(k)})
+  \]
+  \[
+  \Delta_{t+1} = (\theta_{t+1}) - \theta_t
+  \]
+  \[
+  m_{t+1} = \beta_1 m_t + (1 - \beta_1) \Delta_{t+1}
+  \]
+  \[
+  v_{t+1} = \beta_2 v_t + (1 - \beta_2) \Delta_{t+1}^2
+  \]
+  \[
+  \theta_{t+1} = \theta_t + \eta \frac{m_{t+1}}{\sqrt{v_{t+1}} + \epsilon}
+  \]
+
+- **FedSGD**: A direct extension of Stochastic Gradient Descent (SGD) for federated learning.
+  \[
+  \theta_{t+1}^{(k)} = \theta_t - \eta g_t^{(k)}
+  \]
+  \[
+  \theta_{t+1} = \frac{\sum_{k=1}^{K} n_k \theta_{t+1}^{(k)}}{n}
+  \]
 
 ### Message exchange
-The communication between the server and clients occurs through the TCP transport protocol. Each transmitted message consists of a variable-length sequence of bytes, where the first four bytes indicate the message length.
+The server and clients communicate using the TCP/IP protocol. Each exchanged message is composed of a byte sequence, with the first four bytes indicating the message length. The message consists of the following fields:
+- `type`: Message type.
+- `body`: Message body.
 
-The message is composed of:
-
-+ ```type```: message type.
-+ ```body```: message body.
-
-Based on the message type, the structure of the body can be determined. Currently, the following types are specified:
-
-+ ```FEDERATED_WEIGHTS```: indicates that the message body contains the federated model created by the server by aggregating the client models. The body will be formed by the following dictionary:
-  - *weights*: federated model.
-  - *configurations*: at the initial round (0), the server sends the node's configuration values.
-    - *Profiling*: whether to activate profiling of the node or not.
-+ ```CLIENT_TRAINED_WEIGHTS```: indicates that the message body contains the model trained by a client. The body will be in the form of the following dictionary:
-  - *client_id*: client identifier
-  - *weights*: weights and biases of the trained model.
-+ ```END_FL_TRAINING```: indicates the end of federated learning, and the message body contains the final federated model.
-+ ```CLIENT_EVALUATION```: indicates the sending of evaluations for each round from a client. The message body will be in the form of:
-  - *client_id*: client identifier
-  - *evaluation_federated*: a list of arrays of evaluations on the test dataset using the federated model. Each array is formatted as *[accuracy, loss]*. The length of the list is equal to the number of rounds.
-  - *evaluation_training*: a list of arrays of evaluations on the test dataset using the locally trained model. Each array is formatted as *[accuracy, loss]*. The length of the list is equal to the number of rounds.
-  - *cm_federated*: list of confusion matrices generated with the federated model.
-  - *cm_training*: list of confusion matrices generated with the locally trained model.
-  - *info_profiling*: contains profiling information.
-    - *training_n_instructions*: number of instructions executed during the training phases.
-    - *training_execution_time*: total execution time of the training phases.
-    - *max_ram_used*: maximum RAM used by the node.
+Defined message types include:
+- `FEDERATED_WEIGHTS`: Contains the federated model created by the server.
+- `CLIENT_MODEL`: Contains the model trained by a client.
+- `END_FL_TRAINING`: Indicates the end of federated learning.
+- `CLIENT_EVALUATION`: Sends client evaluations for each round.
 
 The message is serialized using the *pickle module*, which transforms the message into a sequence of bytes. The generated sequence is concatenated with the initial 4 bytes representing the total length of the message.
 

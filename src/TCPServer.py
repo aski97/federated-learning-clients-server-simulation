@@ -9,6 +9,7 @@ import socket
 import threading
 import struct
 from src.CSUtils import MessageType, build_message, unpack_message
+import tensorflow as tf
 from tensorflow.keras.models import Model
 
 
@@ -25,7 +26,7 @@ class TCPServer(ABC):
         self.aggregation_algorithm = FedAvg()
         self.client_weights = {}  # shared variable
         self.clients_evaluations = {}  # shared variable
-        self.weights = self._initialize_federated_model()
+        self.weights = None
         self.actual_round = 0
         self.number_clients = number_clients
         self.number_rounds = number_rounds
@@ -545,6 +546,9 @@ class TCPServer(ABC):
         """
         Execute server tasks
         """
+        if self.weights is None:
+            self.weights = self._initialize_federated_model()
+
         try:
             # bind server
             self._initialize_server()
@@ -594,10 +598,16 @@ class TCPServer(ABC):
         """
         weights = np.load(file_path, allow_pickle=True)
 
-        if weights.shape != self.weights.shape:
-            raise ValueError("Your model doesn't accept this weights. The shapes are not matching.")
+        # if weights.shape != self.weights.shape:
+        #     raise ValueError("Your model doesn't accept this weights. The shapes are not matching.")
 
         self.weights = weights
+
+    @staticmethod
+    def enable_op_determinism() -> None:
+        """ Used to have the same initialization of the federated Model"""
+        tf.keras.utils.set_random_seed(1)  # sets seeds for base-python, numpy and tf
+        tf.config.experimental.enable_op_determinism()
 
     @abstractmethod
     def get_skeleton_model(self) -> Model:

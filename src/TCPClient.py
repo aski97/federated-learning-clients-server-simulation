@@ -16,7 +16,6 @@ class TCPClient(ABC):
     def __init__(self, server_address, client_id: int):
         self.server_address = server_address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         self.id = client_id
         self._is_profiling = False
         self._training_execution_time = 0
@@ -34,10 +33,13 @@ class TCPClient(ABC):
         _n_classes = self.get_num_classes()
         self.confusion_matrix_federated_model = np.empty((0, _n_classes, _n_classes), dtype=float)
         self.confusion_matrix_training_model = np.empty((0, _n_classes, _n_classes), dtype=float)
-        # populate dataset
-        self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
 
-        self._model = self._load_compiled_model()
+        self.x_train = None
+        self.x_test = None
+        self.y_train = None
+        self.y_test = None
+        self._model = None
+
         self._loss_fn = self.get_loss_function()
         self._batch_size = self.get_batch_size()
         self._epochs = self.get_train_epochs()
@@ -247,7 +249,7 @@ class TCPClient(ABC):
             print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
 
         # set trained weights
-        self._update_weights(np.array(self._model.get_weights(), dtype='object'))
+        self.weights = np.array(self._model.get_weights(), dtype='object')
         # evaluate model
         self._evaluate_model(self._model)
 
@@ -330,6 +332,11 @@ class TCPClient(ABC):
         """
         Execute client tasks
         """
+        self.x_train, self.x_test, self.y_train, self.y_test = self.load_dataset()
+
+        if self._model is None:
+            self._model = self._load_compiled_model()
+
         try:
             # Connection to the Server
             self._connect()
