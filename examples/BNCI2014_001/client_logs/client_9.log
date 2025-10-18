@@ -1,1638 +1,288 @@
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-E0000 00:00:1760809128.807288   17137 cuda_executor.cc:1309] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
-W0000 00:00:1760809128.844744   17137 gpu_device.cc:2342] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+E0000 00:00:1760809652.342884   48274 cuda_executor.cc:1309] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1760809652.361905   48274 gpu_device.cc:2342] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
 Skipping registering GPU devices...
 /home/vittorio_belardo/federated-learning-clients-server-simulation/.venv/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py:113: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-2025-10-18 19:38:49,126 INFO [federated_sim.TCPClient.client_9] Local model compiled with optimizer=Adam loss=CategoricalCrossentropy metric=CategoricalAccuracy
-2025-10-18 19:38:49,126 INFO [federated_sim.TCPClient.client_9] Connecting to server ('localhost', 12345)
-2025-10-18 19:38:49,127 INFO [federated_sim.TCPClient.client_9] Connected to server
-2025-10-18 19:38:49,168 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:38:49,735 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.706590, Test Accuracy: 0.500000
+2025-10-18 19:47:32,623 INFO [federated_sim.TCPClient.client_9] Local model compiled with optimizer=Adam loss=CategoricalCrossentropy metric=CategoricalAccuracy
+2025-10-18 19:47:32,623 INFO [federated_sim.TCPClient.client_9] Connecting to server ('localhost', 12345) (attempt 1)
+2025-10-18 19:47:32,624 INFO [federated_sim.TCPClient.client_9] Connected to server ('localhost', 12345)
+2025-10-18 19:47:32,651 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
+2025-10-18 19:47:33,262 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.706590, Test Accuracy: 0.500000
 Dataset loaded: 288 items
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 109ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 39ms/step [1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 49ms/step
-2025-10-18 19:38:50,017 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 120ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 53ms/step [1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 63ms/step
+2025-10-18 19:47:33,601 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
 [[0. 1.]
  [0. 1.]]
-2025-10-18 19:38:50,019 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:38:50,019 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:38:51,640 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.722735 Accuracy=0.587963
-2025-10-18 19:38:51,640 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:38:51,968 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.643698 Accuracy=0.680556
-2025-10-18 19:38:51,968 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:38:52,321 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.647438 Accuracy=0.671296
-2025-10-18 19:38:52,321 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:38:52,803 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.587869 Accuracy=0.712963
-2025-10-18 19:38:52,803 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:38:53,248 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.572557 Accuracy=0.759259
-2025-10-18 19:38:53,248 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:38:53,650 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.528721 Accuracy=0.754630
-2025-10-18 19:38:53,650 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:38:54,089 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.495076 Accuracy=0.837963
-2025-10-18 19:38:54,089 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:38:54,468 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.438934 Accuracy=0.796296
-2025-10-18 19:38:54,468 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:38:54,886 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.425444 Accuracy=0.837963
-2025-10-18 19:38:54,887 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:38:55,302 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.424153 Accuracy=0.847222
-2025-10-18 19:38:55,303 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:38:55,714 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.387554 Accuracy=0.851852
-2025-10-18 19:38:55,714 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:38:56,065 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.332132 Accuracy=0.856481
-2025-10-18 19:38:56,065 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:38:56,400 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.329279 Accuracy=0.916667
-2025-10-18 19:38:56,400 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:38:56,728 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.299212 Accuracy=0.902778
-2025-10-18 19:38:56,729 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:38:57,038 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.356823 Accuracy=0.865741
-2025-10-18 19:38:57,039 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:38:57,394 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.281035 Accuracy=0.888889
-2025-10-18 19:38:57,394 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:38:57,776 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.283672 Accuracy=0.902778
-2025-10-18 19:38:57,776 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:38:58,142 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.272927 Accuracy=0.902778
-2025-10-18 19:38:58,142 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:38:58,444 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.237401 Accuracy=0.921296
-2025-10-18 19:38:58,445 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:38:58,745 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.206927 Accuracy=0.944444
-2025-10-18 19:38:58,833 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.282134, Test Accuracy: 0.847222
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 34ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 12ms/step
-2025-10-18 19:38:58,955 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+2025-10-18 19:47:33,603 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
+2025-10-18 19:47:33,603 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
+2025-10-18 19:47:35,308 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.722735 Accuracy=0.587963
+2025-10-18 19:47:35,308 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
+2025-10-18 19:47:35,658 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.643698 Accuracy=0.680556
+2025-10-18 19:47:35,658 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
+2025-10-18 19:47:35,999 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.647438 Accuracy=0.671296
+2025-10-18 19:47:36,000 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
+2025-10-18 19:47:36,384 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.587869 Accuracy=0.712963
+2025-10-18 19:47:36,384 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
+2025-10-18 19:47:36,695 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.572557 Accuracy=0.759259
+2025-10-18 19:47:36,695 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
+2025-10-18 19:47:37,021 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.528721 Accuracy=0.754630
+2025-10-18 19:47:37,022 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
+2025-10-18 19:47:37,415 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.495076 Accuracy=0.837963
+2025-10-18 19:47:37,416 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
+2025-10-18 19:47:37,775 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.438934 Accuracy=0.796296
+2025-10-18 19:47:37,775 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
+2025-10-18 19:47:38,176 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.425444 Accuracy=0.837963
+2025-10-18 19:47:38,176 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
+2025-10-18 19:47:38,628 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.424153 Accuracy=0.847222
+2025-10-18 19:47:38,628 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
+2025-10-18 19:47:39,002 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.387554 Accuracy=0.851852
+2025-10-18 19:47:39,002 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
+2025-10-18 19:47:39,348 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.332132 Accuracy=0.856481
+2025-10-18 19:47:39,349 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
+2025-10-18 19:47:39,712 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.329279 Accuracy=0.916667
+2025-10-18 19:47:39,712 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
+2025-10-18 19:47:40,054 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.299212 Accuracy=0.902778
+2025-10-18 19:47:40,054 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
+2025-10-18 19:47:40,444 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.356823 Accuracy=0.865741
+2025-10-18 19:47:40,444 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
+2025-10-18 19:47:40,812 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.281035 Accuracy=0.888889
+2025-10-18 19:47:40,812 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
+2025-10-18 19:47:41,208 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.283672 Accuracy=0.902778
+2025-10-18 19:47:41,208 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
+2025-10-18 19:47:41,530 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.272927 Accuracy=0.902778
+2025-10-18 19:47:41,530 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
+2025-10-18 19:47:41,923 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.237401 Accuracy=0.921296
+2025-10-18 19:47:41,923 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
+2025-10-18 19:47:42,245 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.206927 Accuracy=0.944444
+2025-10-18 19:47:42,327 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.282134, Test Accuracy: 0.847222
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 41ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
+2025-10-18 19:47:42,450 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
 [[0.86 0.14]
  [0.17 0.83]]
-2025-10-18 19:38:58,957 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=8.938s)
-2025-10-18 19:38:58,957 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:38:59,037 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:38:59,123 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.663003, Test Accuracy: 0.500000
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 17ms/step
-2025-10-18 19:38:59,250 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+2025-10-18 19:47:42,452 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=8.849s)
+2025-10-18 19:47:42,453 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
+2025-10-18 19:47:42,593 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
+2025-10-18 19:47:42,682 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.663003, Test Accuracy: 0.500000
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 31ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
+2025-10-18 19:47:42,786 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
 [[0. 1.]
  [0. 1.]]
-2025-10-18 19:38:59,253 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:38:59,254 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:38:59,603 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.606551 Accuracy=0.675926
-2025-10-18 19:38:59,603 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:38:59,996 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.555968 Accuracy=0.726852
-2025-10-18 19:38:59,996 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:00,333 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.495400 Accuracy=0.787037
-2025-10-18 19:39:00,333 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:00,632 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.511570 Accuracy=0.787037
-2025-10-18 19:39:00,632 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:04,273 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.449009 Accuracy=0.819444
-2025-10-18 19:39:04,273 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:04,588 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.401481 Accuracy=0.842593
-2025-10-18 19:39:04,588 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:04,892 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.406526 Accuracy=0.833333
-2025-10-18 19:39:04,892 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:05,205 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.354713 Accuracy=0.847222
-2025-10-18 19:39:05,206 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:05,531 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.356232 Accuracy=0.893519
-2025-10-18 19:39:05,531 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:05,870 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.332111 Accuracy=0.851852
-2025-10-18 19:39:05,870 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:06,196 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.320132 Accuracy=0.861111
-2025-10-18 19:39:06,196 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:06,568 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.320115 Accuracy=0.870370
-2025-10-18 19:39:06,568 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:06,954 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.282752 Accuracy=0.912037
-2025-10-18 19:39:06,954 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:07,297 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.279681 Accuracy=0.898148
-2025-10-18 19:39:07,297 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:07,629 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.264258 Accuracy=0.925926
-2025-10-18 19:39:07,629 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:07,929 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.260947 Accuracy=0.884259
-2025-10-18 19:39:07,929 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:08,252 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.224839 Accuracy=0.921296
-2025-10-18 19:39:08,252 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:08,578 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.222415 Accuracy=0.925926
-2025-10-18 19:39:08,578 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:08,941 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.216821 Accuracy=0.888889
-2025-10-18 19:39:08,941 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:09,285 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.228769 Accuracy=0.916667
-2025-10-18 19:39:09,369 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.306499, Test Accuracy: 0.861111
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:39:09,485 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+2025-10-18 19:47:42,788 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
+2025-10-18 19:47:42,788 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
+2025-10-18 19:47:43,102 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.606551 Accuracy=0.675926
+2025-10-18 19:47:43,102 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
+2025-10-18 19:47:43,447 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.555968 Accuracy=0.726852
+2025-10-18 19:47:43,447 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
+2025-10-18 19:47:43,804 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.495400 Accuracy=0.787037
+2025-10-18 19:47:43,804 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
+2025-10-18 19:47:44,149 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.511570 Accuracy=0.787037
+2025-10-18 19:47:44,149 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
+2025-10-18 19:47:44,477 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.449009 Accuracy=0.819444
+2025-10-18 19:47:44,478 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
+2025-10-18 19:47:44,828 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.401481 Accuracy=0.842593
+2025-10-18 19:47:44,828 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
+2025-10-18 19:47:45,159 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.406526 Accuracy=0.833333
+2025-10-18 19:47:45,159 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
+2025-10-18 19:47:45,477 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.354713 Accuracy=0.847222
+2025-10-18 19:47:45,477 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
+2025-10-18 19:47:45,804 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.356232 Accuracy=0.893519
+2025-10-18 19:47:45,804 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
+2025-10-18 19:47:46,129 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.332111 Accuracy=0.851852
+2025-10-18 19:47:46,130 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
+2025-10-18 19:47:46,425 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.320132 Accuracy=0.861111
+2025-10-18 19:47:46,425 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
+2025-10-18 19:47:46,729 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.320115 Accuracy=0.870370
+2025-10-18 19:47:46,729 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
+2025-10-18 19:47:47,076 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.282752 Accuracy=0.912037
+2025-10-18 19:47:47,077 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
+2025-10-18 19:47:47,434 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.279681 Accuracy=0.898148
+2025-10-18 19:47:47,434 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
+2025-10-18 19:47:47,789 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.264258 Accuracy=0.925926
+2025-10-18 19:47:47,789 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
+2025-10-18 19:47:48,103 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.260947 Accuracy=0.884259
+2025-10-18 19:47:48,103 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
+2025-10-18 19:47:48,439 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.224839 Accuracy=0.921296
+2025-10-18 19:47:48,439 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
+2025-10-18 19:47:48,761 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.222414 Accuracy=0.925926
+2025-10-18 19:47:48,761 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
+2025-10-18 19:47:49,073 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.216804 Accuracy=0.888889
+2025-10-18 19:47:49,073 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
+2025-10-18 19:47:49,382 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.228709 Accuracy=0.916667
+2025-10-18 19:47:49,479 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.306591, Test Accuracy: 0.861111
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
+2025-10-18 19:47:49,599 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
 [[0.89 0.11]
  [0.17 0.83]]
-2025-10-18 19:39:09,487 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.233s)
-2025-10-18 19:39:09,487 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:09,555 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:09,660 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.551422, Test Accuracy: 0.736111
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 79ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 21ms/step
-2025-10-18 19:39:09,841 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.69 0.31]
+2025-10-18 19:47:49,601 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.813s)
+2025-10-18 19:47:49,602 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
+2025-10-18 19:47:49,739 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
+2025-10-18 19:47:49,835 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.542372, Test Accuracy: 0.750000
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 40ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
+2025-10-18 19:47:49,968 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+[[0.72 0.28]
  [0.22 0.78]]
-2025-10-18 19:39:09,843 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:09,844 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:10,174 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.556879 Accuracy=0.736111
-2025-10-18 19:39:10,174 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:10,520 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.545875 Accuracy=0.773148
-2025-10-18 19:39:10,520 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:10,891 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.457806 Accuracy=0.726852
-2025-10-18 19:39:10,891 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:11,224 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.419563 Accuracy=0.847222
-2025-10-18 19:39:11,225 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:11,559 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.369347 Accuracy=0.824074
-2025-10-18 19:39:11,559 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:11,892 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.334497 Accuracy=0.837963
-2025-10-18 19:39:11,892 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:12,289 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.359804 Accuracy=0.875000
-2025-10-18 19:39:12,289 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:12,636 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.328938 Accuracy=0.851852
-2025-10-18 19:39:12,636 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:12,999 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.349641 Accuracy=0.865741
-2025-10-18 19:39:12,999 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:13,347 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.331907 Accuracy=0.865741
-2025-10-18 19:39:13,347 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:13,681 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.284409 Accuracy=0.902778
-2025-10-18 19:39:13,682 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:14,021 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.255001 Accuracy=0.912037
-2025-10-18 19:39:14,022 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:14,347 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.294818 Accuracy=0.921296
-2025-10-18 19:39:14,348 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:14,684 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.249937 Accuracy=0.893519
-2025-10-18 19:39:14,684 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:15,004 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.234198 Accuracy=0.865741
-2025-10-18 19:39:15,004 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:15,602 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.272493 Accuracy=0.916667
-2025-10-18 19:39:15,602 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:15,930 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.242325 Accuracy=0.870370
-2025-10-18 19:39:15,930 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:16,250 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.218410 Accuracy=0.870370
-2025-10-18 19:39:16,250 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:16,589 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.210414 Accuracy=0.907407
-2025-10-18 19:39:16,590 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:16,933 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.216601 Accuracy=0.916667
-2025-10-18 19:39:17,046 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.310942, Test Accuracy: 0.875000
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:39:17,168 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.89 0.11]
- [0.14 0.86]]
-2025-10-18 19:39:17,170 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.326s)
-2025-10-18 19:39:17,170 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:17,302 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:17,384 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.594067, Test Accuracy: 0.694444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 29ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:39:17,480 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.83 0.17]
- [0.44 0.56]]
-2025-10-18 19:39:17,481 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:17,481 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:17,789 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.529907 Accuracy=0.759259
-2025-10-18 19:39:17,790 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:18,107 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.485073 Accuracy=0.782407
-2025-10-18 19:39:18,107 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:18,412 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.354091 Accuracy=0.847222
-2025-10-18 19:39:18,413 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:18,760 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.328611 Accuracy=0.824074
-2025-10-18 19:39:18,760 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:19,148 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.302162 Accuracy=0.861111
-2025-10-18 19:39:19,148 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:19,506 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.336154 Accuracy=0.837963
-2025-10-18 19:39:19,506 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:19,814 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.352946 Accuracy=0.856481
-2025-10-18 19:39:19,814 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:20,138 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.293870 Accuracy=0.875000
-2025-10-18 19:39:20,138 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:20,442 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.399406 Accuracy=0.837963
-2025-10-18 19:39:20,442 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:20,794 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.341986 Accuracy=0.837963
-2025-10-18 19:39:20,794 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:21,096 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.328903 Accuracy=0.847222
-2025-10-18 19:39:21,097 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:21,401 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.324145 Accuracy=0.847222
-2025-10-18 19:39:21,401 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:21,753 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.271096 Accuracy=0.912037
-2025-10-18 19:39:21,753 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:22,111 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.277220 Accuracy=0.879630
-2025-10-18 19:39:22,111 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:22,471 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.217353 Accuracy=0.902778
-2025-10-18 19:39:22,471 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:22,820 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.258861 Accuracy=0.912037
-2025-10-18 19:39:22,820 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:23,170 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.240392 Accuracy=0.912037
-2025-10-18 19:39:23,170 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:23,498 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.206373 Accuracy=0.875000
-2025-10-18 19:39:23,498 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:23,832 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.208810 Accuracy=0.902778
-2025-10-18 19:39:23,832 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:24,179 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.192886 Accuracy=0.944444
-2025-10-18 19:39:24,257 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.350978, Test Accuracy: 0.875000
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 28ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 12ms/step
-2025-10-18 19:39:24,358 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+2025-10-18 19:47:49,970 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
+2025-10-18 19:47:49,970 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
+2025-10-18 19:47:50,307 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.568434 Accuracy=0.726852
+2025-10-18 19:47:50,308 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
+2025-10-18 19:47:50,629 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.557766 Accuracy=0.731481
+2025-10-18 19:47:50,629 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
+2025-10-18 19:47:50,986 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.519155 Accuracy=0.652778
+2025-10-18 19:47:50,987 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
+2025-10-18 19:47:51,392 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.474825 Accuracy=0.814815
+2025-10-18 19:47:51,392 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
+2025-10-18 19:47:51,821 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.392179 Accuracy=0.810185
+2025-10-18 19:47:51,821 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
+2025-10-18 19:47:52,241 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.372255 Accuracy=0.819444
+2025-10-18 19:47:52,241 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
+2025-10-18 19:47:52,601 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.423550 Accuracy=0.879630
+2025-10-18 19:47:52,601 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
+2025-10-18 19:47:52,959 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.341332 Accuracy=0.833333
+2025-10-18 19:47:52,959 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
+2025-10-18 19:47:53,317 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.395787 Accuracy=0.837963
+2025-10-18 19:47:53,318 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
+2025-10-18 19:47:53,729 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.333035 Accuracy=0.888889
+2025-10-18 19:47:53,729 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
+2025-10-18 19:47:54,171 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.264145 Accuracy=0.912037
+2025-10-18 19:47:54,171 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
+2025-10-18 19:47:57,858 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.297417 Accuracy=0.902778
+2025-10-18 19:47:57,858 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
+2025-10-18 19:47:58,221 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.289329 Accuracy=0.907407
+2025-10-18 19:47:58,222 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
+2025-10-18 19:47:58,614 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.308903 Accuracy=0.912037
+2025-10-18 19:47:58,615 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
+2025-10-18 19:47:58,991 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.251468 Accuracy=0.893519
+2025-10-18 19:47:58,992 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
+2025-10-18 19:47:59,566 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.262694 Accuracy=0.935185
+2025-10-18 19:47:59,566 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
+2025-10-18 19:47:59,912 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.214554 Accuracy=0.898148
+2025-10-18 19:47:59,912 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
+2025-10-18 19:48:00,282 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.206120 Accuracy=0.907407
+2025-10-18 19:48:00,283 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
+2025-10-18 19:48:00,644 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.202847 Accuracy=0.939815
+2025-10-18 19:48:00,644 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
+2025-10-18 19:48:00,958 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.207379 Accuracy=0.944444
+2025-10-18 19:48:01,049 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.372772, Test Accuracy: 0.847222
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
+2025-10-18 19:48:01,167 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+[[0.81 0.19]
+ [0.11 0.89]]
+2025-10-18 19:48:01,170 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=11.200s)
+2025-10-18 19:48:01,170 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
+2025-10-18 19:48:01,240 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
+2025-10-18 19:48:01,336 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.602998, Test Accuracy: 0.722222
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 42ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 18ms/step
+2025-10-18 19:48:01,465 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+[[0.67 0.33]
+ [0.22 0.78]]
+2025-10-18 19:48:01,467 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
+2025-10-18 19:48:01,467 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
+2025-10-18 19:48:01,839 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.576370 Accuracy=0.754630
+2025-10-18 19:48:01,839 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
+2025-10-18 19:48:02,272 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.469993 Accuracy=0.759259
+2025-10-18 19:48:02,272 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
+2025-10-18 19:48:02,723 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.379396 Accuracy=0.805556
+2025-10-18 19:48:02,723 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
+2025-10-18 19:48:03,146 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.342591 Accuracy=0.865741
+2025-10-18 19:48:03,146 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
+2025-10-18 19:48:03,499 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.337523 Accuracy=0.842593
+2025-10-18 19:48:03,500 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
+2025-10-18 19:48:03,907 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.371319 Accuracy=0.833333
+2025-10-18 19:48:03,907 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
+2025-10-18 19:48:04,281 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.336290 Accuracy=0.851852
+2025-10-18 19:48:04,281 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
+2025-10-18 19:48:04,643 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.301454 Accuracy=0.861111
+2025-10-18 19:48:04,643 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
+2025-10-18 19:48:05,009 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.327157 Accuracy=0.810185
+2025-10-18 19:48:05,009 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
+2025-10-18 19:48:05,340 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.293322 Accuracy=0.833333
+2025-10-18 19:48:05,340 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
+2025-10-18 19:48:05,680 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.261552 Accuracy=0.856481
+2025-10-18 19:48:05,680 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
+2025-10-18 19:48:06,100 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.231746 Accuracy=0.907407
+2025-10-18 19:48:06,101 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
+2025-10-18 19:48:06,548 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.224837 Accuracy=0.912037
+2025-10-18 19:48:06,548 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
+2025-10-18 19:48:06,958 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.258070 Accuracy=0.912037
+2025-10-18 19:48:06,958 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
+2025-10-18 19:48:07,351 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.182641 Accuracy=0.916667
+2025-10-18 19:48:07,351 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
+2025-10-18 19:48:07,743 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.223779 Accuracy=0.944444
+2025-10-18 19:48:07,743 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
+2025-10-18 19:48:08,113 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.208799 Accuracy=0.935185
+2025-10-18 19:48:08,113 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
+2025-10-18 19:48:08,537 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.180390 Accuracy=0.907407
+2025-10-18 19:48:08,537 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
+2025-10-18 19:48:08,895 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.173962 Accuracy=0.902778
+2025-10-18 19:48:08,895 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
+2025-10-18 19:48:09,248 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.200114 Accuracy=0.930556
+2025-10-18 19:48:09,345 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.410566, Test Accuracy: 0.791667
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 63ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 20ms/step
+2025-10-18 19:48:09,508 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
 [[0.92 0.08]
- [0.17 0.83]]
-2025-10-18 19:39:24,360 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.879s)
-2025-10-18 19:39:24,360 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:24,463 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:24,546 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.603248, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 37ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:39:24,653 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.42 0.58]]
-2025-10-18 19:39:24,655 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:24,655 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:24,970 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.554545 Accuracy=0.782407
-2025-10-18 19:39:24,971 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:25,316 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.465292 Accuracy=0.833333
-2025-10-18 19:39:25,317 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:25,637 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.388165 Accuracy=0.837963
-2025-10-18 19:39:25,637 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:25,959 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.371997 Accuracy=0.851852
-2025-10-18 19:39:25,959 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:26,291 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.294505 Accuracy=0.861111
-2025-10-18 19:39:26,291 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:26,610 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.307417 Accuracy=0.861111
-2025-10-18 19:39:26,610 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:26,944 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.265156 Accuracy=0.856481
-2025-10-18 19:39:26,944 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:27,276 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.263692 Accuracy=0.875000
-2025-10-18 19:39:27,276 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:27,617 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.269006 Accuracy=0.898148
-2025-10-18 19:39:27,617 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:28,007 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.209267 Accuracy=0.888889
-2025-10-18 19:39:28,008 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:28,359 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.291834 Accuracy=0.884259
-2025-10-18 19:39:28,359 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:28,693 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.252080 Accuracy=0.916667
-2025-10-18 19:39:28,693 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:29,039 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.212371 Accuracy=0.888889
-2025-10-18 19:39:29,039 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:29,360 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.198668 Accuracy=0.921296
-2025-10-18 19:39:29,361 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:29,684 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.215260 Accuracy=0.939815
-2025-10-18 19:39:29,685 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:30,016 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.190073 Accuracy=0.925926
-2025-10-18 19:39:30,016 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:30,365 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.134295 Accuracy=0.930556
-2025-10-18 19:39:30,365 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:30,674 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.125119 Accuracy=0.939815
-2025-10-18 19:39:30,674 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:30,984 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.137998 Accuracy=0.935185
-2025-10-18 19:39:30,984 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:31,307 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.160190 Accuracy=0.925926
-2025-10-18 19:39:31,396 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.387764, Test Accuracy: 0.847222
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:39:31,512 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.83 0.17]
- [0.14 0.86]]
-2025-10-18 19:39:31,514 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.859s)
-2025-10-18 19:39:31,514 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:31,634 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:31,713 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.610567, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 20ms/step
-2025-10-18 19:39:31,836 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
+ [0.33 0.67]]
+2025-10-18 19:48:09,510 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=8.043s)
+2025-10-18 19:48:09,510 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
+2025-10-18 19:48:09,585 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
+2025-10-18 19:48:09,707 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.575637, Test Accuracy: 0.708333
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 46ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 19ms/step
+2025-10-18 19:48:09,857 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+[[0.86 0.14]
  [0.44 0.56]]
-2025-10-18 19:39:31,838 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:31,838 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:32,145 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.452275 Accuracy=0.796296
-2025-10-18 19:39:32,146 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:32,480 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.471389 Accuracy=0.819444
-2025-10-18 19:39:32,480 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:32,821 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.420507 Accuracy=0.782407
-2025-10-18 19:39:32,821 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:33,146 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.332959 Accuracy=0.842593
-2025-10-18 19:39:33,146 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:33,460 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.406744 Accuracy=0.824074
-2025-10-18 19:39:33,461 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:33,789 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.321303 Accuracy=0.791667
-2025-10-18 19:39:33,789 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:34,095 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.330435 Accuracy=0.847222
-2025-10-18 19:39:34,095 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:37,722 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.303228 Accuracy=0.837963
-2025-10-18 19:39:37,722 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:38,076 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.275432 Accuracy=0.884259
-2025-10-18 19:39:38,076 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:38,428 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.243172 Accuracy=0.893519
-2025-10-18 19:39:38,428 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:38,724 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.251659 Accuracy=0.884259
-2025-10-18 19:39:38,724 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:39,029 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.218392 Accuracy=0.907407
-2025-10-18 19:39:39,029 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:39,360 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.227788 Accuracy=0.879630
-2025-10-18 19:39:39,361 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:39,691 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.203117 Accuracy=0.884259
-2025-10-18 19:39:39,692 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:40,004 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.201085 Accuracy=0.925926
-2025-10-18 19:39:40,004 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:40,312 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.194103 Accuracy=0.921296
-2025-10-18 19:39:40,312 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:40,655 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.216682 Accuracy=0.912037
-2025-10-18 19:39:40,655 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:40,969 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.159660 Accuracy=0.935185
-2025-10-18 19:39:40,969 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:41,308 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.142920 Accuracy=0.935185
-2025-10-18 19:39:41,308 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:41,653 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.153116 Accuracy=0.930556
-2025-10-18 19:39:41,753 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.426029, Test Accuracy: 0.861111
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 39ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 12ms/step
-2025-10-18 19:39:41,869 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.89 0.11]
- [0.17 0.83]]
-2025-10-18 19:39:41,871 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.033s)
-2025-10-18 19:39:41,871 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:41,961 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:42,042 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.595102, Test Accuracy: 0.722222
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 34ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:39:42,142 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.31 0.69]]
-2025-10-18 19:39:42,143 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:42,143 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:42,449 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.479264 Accuracy=0.800926
-2025-10-18 19:39:42,449 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:42,776 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.432618 Accuracy=0.800926
-2025-10-18 19:39:42,776 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:43,077 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.329098 Accuracy=0.865741
-2025-10-18 19:39:43,077 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:43,424 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.295881 Accuracy=0.875000
-2025-10-18 19:39:43,424 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:43,742 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.297915 Accuracy=0.902778
-2025-10-18 19:39:43,743 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:44,072 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.302881 Accuracy=0.833333
-2025-10-18 19:39:44,073 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:44,395 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.300132 Accuracy=0.847222
-2025-10-18 19:39:44,395 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:44,712 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.237680 Accuracy=0.916667
-2025-10-18 19:39:44,712 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:45,040 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.232353 Accuracy=0.902778
-2025-10-18 19:39:45,041 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:45,353 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.206758 Accuracy=0.902778
-2025-10-18 19:39:45,353 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:45,659 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.154115 Accuracy=0.930556
-2025-10-18 19:39:45,660 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:45,984 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.151135 Accuracy=0.921296
-2025-10-18 19:39:45,984 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:46,288 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.154501 Accuracy=0.935185
-2025-10-18 19:39:46,288 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:46,627 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.161952 Accuracy=0.944444
-2025-10-18 19:39:46,627 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:46,980 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.225009 Accuracy=0.902778
-2025-10-18 19:39:46,981 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:47,304 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.197979 Accuracy=0.935185
-2025-10-18 19:39:47,304 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:47,643 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.149405 Accuracy=0.888889
-2025-10-18 19:39:47,643 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:48,030 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.153785 Accuracy=0.949074
-2025-10-18 19:39:48,031 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:48,368 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.123706 Accuracy=0.935185
-2025-10-18 19:39:48,368 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:48,685 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.115624 Accuracy=0.962963
-2025-10-18 19:39:48,784 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.575077, Test Accuracy: 0.805556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 17ms/step
-2025-10-18 19:39:48,918 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.83 0.17]
- [0.22 0.78]]
-2025-10-18 19:39:48,920 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.776s)
-2025-10-18 19:39:48,920 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:49,072 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:49,155 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.706685, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 36ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 17ms/step
-2025-10-18 19:39:49,272 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.39 0.61]]
-2025-10-18 19:39:49,275 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:49,275 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:49,590 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.519728 Accuracy=0.763889
-2025-10-18 19:39:49,591 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:49,924 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.412250 Accuracy=0.824074
-2025-10-18 19:39:49,925 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:50,235 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.366852 Accuracy=0.847222
-2025-10-18 19:39:50,235 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:50,583 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.324037 Accuracy=0.851852
-2025-10-18 19:39:50,583 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:50,934 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.263114 Accuracy=0.888889
-2025-10-18 19:39:50,934 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:51,309 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.285928 Accuracy=0.870370
-2025-10-18 19:39:51,309 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:51,702 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.268399 Accuracy=0.902778
-2025-10-18 19:39:51,702 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:52,025 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.222987 Accuracy=0.893519
-2025-10-18 19:39:52,026 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:52,385 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.196988 Accuracy=0.902778
-2025-10-18 19:39:52,385 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:52,697 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.207277 Accuracy=0.888889
-2025-10-18 19:39:52,697 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:39:53,004 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.206203 Accuracy=0.912037
-2025-10-18 19:39:53,004 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:39:53,366 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.162499 Accuracy=0.925926
-2025-10-18 19:39:53,366 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:39:53,695 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.149690 Accuracy=0.939815
-2025-10-18 19:39:53,695 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:39:54,002 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.135984 Accuracy=0.925926
-2025-10-18 19:39:54,003 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:39:54,303 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.139675 Accuracy=0.958333
-2025-10-18 19:39:54,303 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:39:54,610 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.119992 Accuracy=0.949074
-2025-10-18 19:39:54,611 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:39:54,926 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.105383 Accuracy=0.939815
-2025-10-18 19:39:54,926 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:39:55,268 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.082836 Accuracy=0.935185
-2025-10-18 19:39:55,268 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:39:55,572 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.124525 Accuracy=0.944444
-2025-10-18 19:39:55,573 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:39:55,870 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.132821 Accuracy=0.944444
-2025-10-18 19:39:55,946 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.670320, Test Accuracy: 0.819444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:39:56,055 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.89 0.11]
- [0.25 0.75]]
-2025-10-18 19:39:56,057 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.783s)
-2025-10-18 19:39:56,057 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:39:56,138 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:39:56,222 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.799452, Test Accuracy: 0.652778
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:39:56,331 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
- [0.5  0.5 ]]
-2025-10-18 19:39:56,332 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:39:56,333 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:39:56,660 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.497960 Accuracy=0.791667
-2025-10-18 19:39:56,660 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:39:56,984 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.408553 Accuracy=0.814815
-2025-10-18 19:39:56,984 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:39:57,321 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.327803 Accuracy=0.819444
-2025-10-18 19:39:57,321 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:39:57,631 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.290417 Accuracy=0.875000
-2025-10-18 19:39:57,631 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:39:57,976 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.273206 Accuracy=0.902778
-2025-10-18 19:39:57,976 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:39:58,319 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.307235 Accuracy=0.879630
-2025-10-18 19:39:58,319 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:39:58,660 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.235478 Accuracy=0.893519
-2025-10-18 19:39:58,660 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:39:58,990 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.221547 Accuracy=0.893519
-2025-10-18 19:39:58,990 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:39:59,353 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.168123 Accuracy=0.921296
-2025-10-18 19:39:59,353 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:39:59,711 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.154901 Accuracy=0.921296
-2025-10-18 19:39:59,711 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:00,073 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.158490 Accuracy=0.939815
-2025-10-18 19:40:00,073 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:00,398 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.151585 Accuracy=0.939815
-2025-10-18 19:40:00,398 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:00,707 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.147621 Accuracy=0.949074
-2025-10-18 19:40:00,708 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:01,008 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.115738 Accuracy=0.944444
-2025-10-18 19:40:01,008 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:01,319 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.151621 Accuracy=0.944444
-2025-10-18 19:40:01,320 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:01,677 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.139058 Accuracy=0.949074
-2025-10-18 19:40:01,677 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:02,105 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.109515 Accuracy=0.944444
-2025-10-18 19:40:02,105 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:02,477 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.122755 Accuracy=0.953704
-2025-10-18 19:40:02,477 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:02,843 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.114473 Accuracy=0.962963
-2025-10-18 19:40:02,843 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:03,228 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.096586 Accuracy=0.949074
-2025-10-18 19:40:03,305 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.556961, Test Accuracy: 0.847222
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:40:03,426 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.83 0.17]
- [0.14 0.86]]
-2025-10-18 19:40:03,427 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.095s)
-2025-10-18 19:40:03,427 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:03,474 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:03,564 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.738117, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 23ms/step
-2025-10-18 19:40:03,699 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.33 0.67]]
-2025-10-18 19:40:03,709 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:03,709 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:04,112 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.446134 Accuracy=0.791667
-2025-10-18 19:40:04,112 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:04,529 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.367355 Accuracy=0.870370
-2025-10-18 19:40:04,530 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:04,895 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.309382 Accuracy=0.870370
-2025-10-18 19:40:04,895 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:05,249 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.247641 Accuracy=0.884259
-2025-10-18 19:40:05,249 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:05,592 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.278394 Accuracy=0.861111
-2025-10-18 19:40:05,592 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:05,902 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.222691 Accuracy=0.861111
-2025-10-18 19:40:05,902 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:06,216 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.287556 Accuracy=0.893519
-2025-10-18 19:40:06,216 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:06,570 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.275485 Accuracy=0.879630
-2025-10-18 19:40:06,570 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:06,933 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.215794 Accuracy=0.902778
-2025-10-18 19:40:06,934 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:07,343 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.192414 Accuracy=0.916667
-2025-10-18 19:40:07,343 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:11,041 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.148210 Accuracy=0.939815
-2025-10-18 19:40:11,042 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:11,385 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.144762 Accuracy=0.944444
-2025-10-18 19:40:11,385 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:11,708 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.127160 Accuracy=0.953704
-2025-10-18 19:40:11,708 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:12,010 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.110922 Accuracy=0.949074
-2025-10-18 19:40:12,011 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:12,377 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.095564 Accuracy=0.953704
-2025-10-18 19:40:12,377 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:12,739 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.120234 Accuracy=0.949074
-2025-10-18 19:40:12,739 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:13,058 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.096361 Accuracy=0.962963
-2025-10-18 19:40:13,058 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:13,398 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.081344 Accuracy=0.958333
-2025-10-18 19:40:13,399 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:13,698 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.107953 Accuracy=0.958333
-2025-10-18 19:40:13,698 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:14,009 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.064236 Accuracy=0.958333
-2025-10-18 19:40:14,087 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.777987, Test Accuracy: 0.833333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:40:14,196 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.89 0.11]
- [0.22 0.78]]
-2025-10-18 19:40:14,199 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.490s)
-2025-10-18 19:40:14,199 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:14,316 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:14,401 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.931163, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:40:14,522 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.39 0.61]]
-2025-10-18 19:40:14,524 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:14,524 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:14,868 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.451692 Accuracy=0.800926
-2025-10-18 19:40:14,868 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:15,247 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.413693 Accuracy=0.865741
-2025-10-18 19:40:15,247 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:15,599 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.333619 Accuracy=0.842593
-2025-10-18 19:40:15,599 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:15,968 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.290753 Accuracy=0.875000
-2025-10-18 19:40:15,968 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:16,307 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.289766 Accuracy=0.861111
-2025-10-18 19:40:16,307 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:16,656 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.288984 Accuracy=0.930556
-2025-10-18 19:40:16,657 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:17,019 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.218920 Accuracy=0.916667
-2025-10-18 19:40:17,019 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:17,407 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.223122 Accuracy=0.902778
-2025-10-18 19:40:17,408 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:17,749 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.200459 Accuracy=0.916667
-2025-10-18 19:40:17,749 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:18,089 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.210211 Accuracy=0.912037
-2025-10-18 19:40:18,089 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:18,425 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.228224 Accuracy=0.935185
-2025-10-18 19:40:18,425 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:18,874 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.164705 Accuracy=0.930556
-2025-10-18 19:40:18,875 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:19,243 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.155900 Accuracy=0.912037
-2025-10-18 19:40:19,243 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:19,589 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.126695 Accuracy=0.944444
-2025-10-18 19:40:19,589 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:19,975 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.132863 Accuracy=0.962963
-2025-10-18 19:40:19,976 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:20,334 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.123927 Accuracy=0.962963
-2025-10-18 19:40:20,334 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:20,681 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.083547 Accuracy=0.953704
-2025-10-18 19:40:20,681 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:21,046 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.103642 Accuracy=0.967593
-2025-10-18 19:40:21,046 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:21,434 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.095042 Accuracy=0.944444
-2025-10-18 19:40:21,435 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:21,790 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.100391 Accuracy=0.939815
-2025-10-18 19:40:21,866 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.658630, Test Accuracy: 0.805556
+2025-10-18 19:48:09,861 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
+2025-10-18 19:48:09,861 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
+2025-10-18 19:48:10,327 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.524404 Accuracy=0.726852
+2025-10-18 19:48:10,327 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
+2025-10-18 19:48:10,673 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.463127 Accuracy=0.814815
+2025-10-18 19:48:10,673 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
+2025-10-18 19:48:11,034 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.411114 Accuracy=0.810185
+2025-10-18 19:48:11,034 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
+2025-10-18 19:48:11,444 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.368986 Accuracy=0.819444
+2025-10-18 19:48:11,445 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
+2025-10-18 19:48:11,816 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.334307 Accuracy=0.842593
+2025-10-18 19:48:11,816 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
+2025-10-18 19:48:12,150 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.319469 Accuracy=0.856481
+2025-10-18 19:48:12,151 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
+2025-10-18 19:48:12,533 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.296737 Accuracy=0.847222
+2025-10-18 19:48:12,533 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
+2025-10-18 19:48:12,862 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.279754 Accuracy=0.861111
+2025-10-18 19:48:12,862 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
+2025-10-18 19:48:13,197 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.264755 Accuracy=0.902778
+2025-10-18 19:48:13,198 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
+2025-10-18 19:48:13,611 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.237205 Accuracy=0.824074
+2025-10-18 19:48:13,611 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
+2025-10-18 19:48:13,984 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.281454 Accuracy=0.884259
+2025-10-18 19:48:13,984 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
+2025-10-18 19:48:14,324 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.277243 Accuracy=0.902778
+2025-10-18 19:48:14,325 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
+2025-10-18 19:48:14,676 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.264253 Accuracy=0.875000
+2025-10-18 19:48:14,676 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
+2025-10-18 19:48:15,019 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.249061 Accuracy=0.875000
+2025-10-18 19:48:15,020 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
+2025-10-18 19:48:15,351 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.230374 Accuracy=0.925926
+2025-10-18 19:48:15,351 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
+2025-10-18 19:48:15,692 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.232894 Accuracy=0.879630
+2025-10-18 19:48:15,692 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
+2025-10-18 19:48:16,028 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.171605 Accuracy=0.893519
+2025-10-18 19:48:16,028 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
+2025-10-18 19:48:16,377 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.176621 Accuracy=0.907407
+2025-10-18 19:48:16,377 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
+2025-10-18 19:48:16,770 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.190680 Accuracy=0.902778
+2025-10-18 19:48:16,771 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
+2025-10-18 19:48:17,144 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.196054 Accuracy=0.916667
+2025-10-18 19:48:17,235 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.399666, Test Accuracy: 0.791667
 [1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 37ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:40:21,977 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
- [0.19 0.81]]
-2025-10-18 19:40:21,978 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.454s)
-2025-10-18 19:40:21,978 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:22,012 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:22,116 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.926568, Test Accuracy: 0.666667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 12ms/step
-2025-10-18 19:40:22,218 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.39 0.61]]
-2025-10-18 19:40:22,219 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:22,219 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:22,579 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.424861 Accuracy=0.787037
-2025-10-18 19:40:22,579 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:22,946 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.376776 Accuracy=0.847222
-2025-10-18 19:40:22,947 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:23,318 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.358713 Accuracy=0.824074
-2025-10-18 19:40:23,318 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:23,698 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.383846 Accuracy=0.814815
-2025-10-18 19:40:23,698 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:24,074 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.362776 Accuracy=0.879630
-2025-10-18 19:40:24,075 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:24,482 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.306502 Accuracy=0.888889
-2025-10-18 19:40:24,482 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:24,846 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.354276 Accuracy=0.842593
-2025-10-18 19:40:24,847 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:25,185 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.287582 Accuracy=0.861111
-2025-10-18 19:40:25,185 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:25,488 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.258536 Accuracy=0.833333
-2025-10-18 19:40:25,488 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:25,830 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.221501 Accuracy=0.875000
-2025-10-18 19:40:25,831 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:26,179 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.188504 Accuracy=0.912037
-2025-10-18 19:40:26,180 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:26,555 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.165834 Accuracy=0.902778
-2025-10-18 19:40:26,555 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:26,897 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.158907 Accuracy=0.930556
-2025-10-18 19:40:26,897 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:27,220 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.099127 Accuracy=0.967593
-2025-10-18 19:40:27,220 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:27,541 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.135447 Accuracy=0.935185
-2025-10-18 19:40:27,541 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:27,858 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.100135 Accuracy=0.972222
-2025-10-18 19:40:27,858 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:28,215 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.116257 Accuracy=0.972222
-2025-10-18 19:40:28,216 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:28,678 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.070321 Accuracy=0.949074
-2025-10-18 19:40:28,678 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:29,060 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.069948 Accuracy=0.944444
-2025-10-18 19:40:29,060 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:29,373 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.104003 Accuracy=0.967593
-2025-10-18 19:40:29,450 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.698039, Test Accuracy: 0.791667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 34ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:40:29,564 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.83 0.17]
- [0.25 0.75]]
-2025-10-18 19:40:29,565 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.346s)
-2025-10-18 19:40:29,565 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:29,643 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:29,724 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.945396, Test Accuracy: 0.666667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:40:29,831 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.39 0.61]]
-2025-10-18 19:40:29,833 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:29,833 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:30,155 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.454588 Accuracy=0.800926
-2025-10-18 19:40:30,155 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:30,469 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.334289 Accuracy=0.842593
-2025-10-18 19:40:30,469 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:30,781 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.327327 Accuracy=0.837963
-2025-10-18 19:40:30,782 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:31,160 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.278935 Accuracy=0.870370
-2025-10-18 19:40:31,161 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:31,521 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.202311 Accuracy=0.907407
-2025-10-18 19:40:31,521 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:31,882 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.188096 Accuracy=0.916667
-2025-10-18 19:40:31,882 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:32,217 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.212837 Accuracy=0.930556
-2025-10-18 19:40:32,217 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:32,539 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.208631 Accuracy=0.921296
-2025-10-18 19:40:32,539 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:32,869 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.123915 Accuracy=0.949074
-2025-10-18 19:40:32,869 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:33,202 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.125061 Accuracy=0.958333
-2025-10-18 19:40:33,203 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:33,526 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.085377 Accuracy=0.967593
-2025-10-18 19:40:33,526 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:33,859 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.101282 Accuracy=0.949074
-2025-10-18 19:40:33,859 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:34,179 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.099598 Accuracy=0.935185
-2025-10-18 19:40:34,180 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:34,501 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.106509 Accuracy=0.935185
-2025-10-18 19:40:34,501 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:34,843 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.078857 Accuracy=0.949074
-2025-10-18 19:40:34,843 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:35,179 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.071601 Accuracy=0.953704
-2025-10-18 19:40:35,180 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:35,494 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.072324 Accuracy=0.958333
-2025-10-18 19:40:35,494 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:35,824 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.072061 Accuracy=0.976852
-2025-10-18 19:40:35,824 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:36,174 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.090345 Accuracy=0.972222
-2025-10-18 19:40:36,174 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:36,533 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.048708 Accuracy=0.981481
-2025-10-18 19:40:36,632 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.918789, Test Accuracy: 0.791667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 41ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 17ms/step
-2025-10-18 19:40:36,770 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.19 0.81]]
-2025-10-18 19:40:36,772 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.938s)
-2025-10-18 19:40:36,772 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:36,928 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:37,030 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.760282, Test Accuracy: 0.625000
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 37ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 26ms/step
-2025-10-18 19:40:37,175 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.5  0.5 ]]
-2025-10-18 19:40:37,180 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:37,180 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:37,546 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.425442 Accuracy=0.768519
-2025-10-18 19:40:37,546 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:37,895 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.352236 Accuracy=0.851852
-2025-10-18 19:40:37,895 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:38,232 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.267443 Accuracy=0.902778
-2025-10-18 19:40:38,233 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:38,569 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.247337 Accuracy=0.935185
-2025-10-18 19:40:38,569 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:38,959 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.188547 Accuracy=0.935185
-2025-10-18 19:40:38,959 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:39,289 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.153612 Accuracy=0.930556
-2025-10-18 19:40:39,290 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:39,612 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.135201 Accuracy=0.925926
-2025-10-18 19:40:39,612 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:39,949 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.108422 Accuracy=0.939815
-2025-10-18 19:40:39,950 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:40,279 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.138944 Accuracy=0.935185
-2025-10-18 19:40:40,279 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:40,596 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.093400 Accuracy=0.949074
-2025-10-18 19:40:40,596 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:44,281 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.087285 Accuracy=0.953704
-2025-10-18 19:40:44,281 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:44,675 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.103031 Accuracy=0.949074
-2025-10-18 19:40:44,675 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:45,028 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.075700 Accuracy=0.958333
-2025-10-18 19:40:45,028 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:45,381 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.116815 Accuracy=0.953704
-2025-10-18 19:40:45,381 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:45,707 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.080409 Accuracy=0.962963
-2025-10-18 19:40:45,707 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:46,019 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.095024 Accuracy=0.944444
-2025-10-18 19:40:46,019 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:46,341 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.090067 Accuracy=0.962963
-2025-10-18 19:40:46,342 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:46,674 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.058868 Accuracy=0.976852
-2025-10-18 19:40:46,674 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:47,005 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.066233 Accuracy=0.976852
-2025-10-18 19:40:47,005 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:47,365 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.065967 Accuracy=0.976852
-2025-10-18 19:40:47,456 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.720490, Test Accuracy: 0.791667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 40ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 20ms/step
-2025-10-18 19:40:47,595 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.19 0.81]]
-2025-10-18 19:40:47,597 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.417s)
-2025-10-18 19:40:47,597 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:47,632 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:47,719 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.977453, Test Accuracy: 0.666667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:40:47,832 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.42 0.58]]
-2025-10-18 19:40:47,834 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:47,834 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:48,153 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.420322 Accuracy=0.824074
-2025-10-18 19:40:48,153 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:48,478 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.338176 Accuracy=0.884259
-2025-10-18 19:40:48,478 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:48,794 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.339495 Accuracy=0.912037
-2025-10-18 19:40:48,795 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:49,159 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.282842 Accuracy=0.902778
-2025-10-18 19:40:49,160 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:49,499 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.223099 Accuracy=0.898148
-2025-10-18 19:40:49,499 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:49,854 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.179703 Accuracy=0.930556
-2025-10-18 19:40:49,854 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:50,197 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.158405 Accuracy=0.939815
-2025-10-18 19:40:50,198 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:50,530 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.131809 Accuracy=0.939815
-2025-10-18 19:40:50,530 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:50,924 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.144563 Accuracy=0.986111
-2025-10-18 19:40:50,924 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:51,266 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.122786 Accuracy=0.953704
-2025-10-18 19:40:51,266 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:51,599 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.106880 Accuracy=0.958333
-2025-10-18 19:40:51,599 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:40:51,949 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.093337 Accuracy=0.962963
-2025-10-18 19:40:51,949 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:40:52,277 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.077270 Accuracy=0.958333
-2025-10-18 19:40:52,277 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:40:52,661 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.067828 Accuracy=0.944444
-2025-10-18 19:40:52,662 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:40:53,026 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.077149 Accuracy=0.962963
-2025-10-18 19:40:53,026 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:40:53,362 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.077872 Accuracy=0.972222
-2025-10-18 19:40:53,362 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:40:53,738 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.084669 Accuracy=0.981481
-2025-10-18 19:40:53,739 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:40:54,102 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.090026 Accuracy=0.962963
-2025-10-18 19:40:54,102 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:40:54,456 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.080339 Accuracy=0.976852
-2025-10-18 19:40:54,457 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:40:54,805 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.068336 Accuracy=0.967593
-2025-10-18 19:40:54,879 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.908984, Test Accuracy: 0.805556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:40:54,991 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.14 0.86]]
-2025-10-18 19:40:54,993 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.159s)
-2025-10-18 19:40:54,993 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:40:55,013 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:40:55,096 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.218297, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 31ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 25ms/step
-2025-10-18 19:40:55,222 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.36 0.64]]
-2025-10-18 19:40:55,223 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:40:55,223 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:40:55,601 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.447307 Accuracy=0.856481
-2025-10-18 19:40:55,602 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:40:56,023 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.327823 Accuracy=0.870370
-2025-10-18 19:40:56,023 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:40:56,451 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.246379 Accuracy=0.916667
-2025-10-18 19:40:56,452 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:40:56,854 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.175331 Accuracy=0.935185
-2025-10-18 19:40:56,854 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:40:57,296 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.177505 Accuracy=0.944444
-2025-10-18 19:40:57,296 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:40:57,746 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.136416 Accuracy=0.921296
-2025-10-18 19:40:57,746 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:40:58,234 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.181456 Accuracy=0.935185
-2025-10-18 19:40:58,234 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:40:58,670 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.151259 Accuracy=0.944444
-2025-10-18 19:40:58,670 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:40:59,058 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.152692 Accuracy=0.944444
-2025-10-18 19:40:59,058 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:40:59,390 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.139111 Accuracy=0.962963
-2025-10-18 19:40:59,390 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:40:59,748 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.123027 Accuracy=0.953704
-2025-10-18 19:40:59,748 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:00,098 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.095161 Accuracy=0.958333
-2025-10-18 19:41:00,098 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:00,487 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.087575 Accuracy=0.972222
-2025-10-18 19:41:00,488 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:00,831 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.086078 Accuracy=0.967593
-2025-10-18 19:41:00,832 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:01,194 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.070532 Accuracy=0.967593
-2025-10-18 19:41:01,194 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:01,533 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.099244 Accuracy=0.962963
-2025-10-18 19:41:01,534 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:01,909 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.087201 Accuracy=0.981481
-2025-10-18 19:41:01,910 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:02,226 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.067667 Accuracy=0.962963
-2025-10-18 19:41:02,226 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:02,549 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.074400 Accuracy=0.981481
-2025-10-18 19:41:02,549 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:02,862 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.082227 Accuracy=0.990741
-2025-10-18 19:41:02,950 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.860780, Test Accuracy: 0.791667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 34ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:41:03,066 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.19 0.81]]
-2025-10-18 19:41:03,067 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.844s)
-2025-10-18 19:41:03,068 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:03,115 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:03,205 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.121386, Test Accuracy: 0.694444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 40ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:41:03,313 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.69 0.31]
- [0.31 0.69]]
-2025-10-18 19:41:03,315 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:03,315 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:03,619 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.386816 Accuracy=0.833333
-2025-10-18 19:41:03,619 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:04,059 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.300807 Accuracy=0.893519
-2025-10-18 19:41:04,059 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:04,457 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.245191 Accuracy=0.865741
-2025-10-18 19:41:04,459 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:04,886 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.210798 Accuracy=0.888889
-2025-10-18 19:41:04,887 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:05,227 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.193067 Accuracy=0.935185
-2025-10-18 19:41:05,227 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:05,552 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.186705 Accuracy=0.935185
-2025-10-18 19:41:05,553 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:05,868 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.117429 Accuracy=0.944444
-2025-10-18 19:41:05,868 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:06,205 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.142337 Accuracy=0.939815
-2025-10-18 19:41:06,205 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:06,540 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.119327 Accuracy=0.967593
-2025-10-18 19:41:06,540 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:06,876 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.127708 Accuracy=0.967593
-2025-10-18 19:41:06,877 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:07,266 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.100333 Accuracy=0.958333
-2025-10-18 19:41:07,266 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:07,614 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.107659 Accuracy=0.958333
-2025-10-18 19:41:07,614 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:08,031 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.072109 Accuracy=0.962963
-2025-10-18 19:41:08,031 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:08,384 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.098113 Accuracy=0.976852
-2025-10-18 19:41:08,384 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:08,730 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.081139 Accuracy=0.958333
-2025-10-18 19:41:08,730 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:09,095 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.060840 Accuracy=0.976852
-2025-10-18 19:41:09,095 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:09,445 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.050322 Accuracy=0.967593
-2025-10-18 19:41:09,445 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:09,788 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.061547 Accuracy=0.967593
-2025-10-18 19:41:09,788 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:10,123 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.073295 Accuracy=0.972222
-2025-10-18 19:41:10,123 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:10,495 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.073499 Accuracy=0.962963
-2025-10-18 19:41:10,567 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.852955, Test Accuracy: 0.805556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 29ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:41:10,666 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
- [0.19 0.81]]
-2025-10-18 19:41:10,669 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.354s)
-2025-10-18 19:41:10,669 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:10,773 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:10,867 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.866623, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 18ms/step
-2025-10-18 19:41:10,995 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.39 0.61]]
-2025-10-18 19:41:10,996 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:10,996 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:11,350 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.375478 Accuracy=0.833333
-2025-10-18 19:41:11,350 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:11,699 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.297293 Accuracy=0.888889
-2025-10-18 19:41:11,699 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:12,056 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.226928 Accuracy=0.912037
-2025-10-18 19:41:12,056 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:12,417 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.188717 Accuracy=0.925926
-2025-10-18 19:41:12,417 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:12,790 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.136043 Accuracy=0.944444
-2025-10-18 19:41:12,791 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:13,165 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.146872 Accuracy=0.949074
-2025-10-18 19:41:13,167 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:13,549 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.132609 Accuracy=0.949074
-2025-10-18 19:41:13,550 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:13,889 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.165174 Accuracy=0.930556
-2025-10-18 19:41:13,889 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:17,583 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.174005 Accuracy=0.902778
-2025-10-18 19:41:17,583 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:17,913 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.103960 Accuracy=0.939815
-2025-10-18 19:41:17,915 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:18,234 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.095735 Accuracy=0.958333
-2025-10-18 19:41:18,235 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:18,593 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.095966 Accuracy=0.967593
-2025-10-18 19:41:18,593 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:18,945 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.081830 Accuracy=0.958333
-2025-10-18 19:41:18,945 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:19,296 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.077779 Accuracy=0.958333
-2025-10-18 19:41:19,297 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:19,638 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.062980 Accuracy=0.958333
-2025-10-18 19:41:19,639 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:19,932 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.056422 Accuracy=0.967593
-2025-10-18 19:41:19,932 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:20,264 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.067728 Accuracy=0.962963
-2025-10-18 19:41:20,264 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:20,613 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.058233 Accuracy=0.986111
-2025-10-18 19:41:20,613 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:21,009 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.072524 Accuracy=0.944444
-2025-10-18 19:41:21,009 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:21,361 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.065073 Accuracy=0.967593
-2025-10-18 19:41:21,450 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.941290, Test Accuracy: 0.763889
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:41:21,571 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.25 0.75]]
-2025-10-18 19:41:21,572 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.576s)
-2025-10-18 19:41:21,572 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:21,592 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:21,682 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.005379, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 50ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 19ms/step
-2025-10-18 19:41:21,820 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.31 0.69]]
-2025-10-18 19:41:21,821 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:21,822 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:22,204 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.367333 Accuracy=0.847222
-2025-10-18 19:41:22,205 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:22,560 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.278227 Accuracy=0.884259
-2025-10-18 19:41:22,560 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:22,999 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.156323 Accuracy=0.921296
-2025-10-18 19:41:23,000 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:23,395 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.180251 Accuracy=0.962963
-2025-10-18 19:41:23,395 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:23,750 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.129683 Accuracy=0.944444
-2025-10-18 19:41:23,750 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:24,094 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.155962 Accuracy=0.939815
-2025-10-18 19:41:24,094 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:24,406 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.105655 Accuracy=0.944444
-2025-10-18 19:41:24,406 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:24,782 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.105954 Accuracy=0.939815
-2025-10-18 19:41:24,782 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:25,182 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.118771 Accuracy=0.972222
-2025-10-18 19:41:25,182 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:25,596 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.090949 Accuracy=0.972222
-2025-10-18 19:41:25,596 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:25,969 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.094566 Accuracy=0.972222
-2025-10-18 19:41:25,970 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:26,367 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.069412 Accuracy=0.944444
-2025-10-18 19:41:26,368 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:26,769 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.073486 Accuracy=0.986111
-2025-10-18 19:41:26,770 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:27,128 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.078537 Accuracy=0.962963
-2025-10-18 19:41:27,128 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:27,489 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.089123 Accuracy=0.981481
-2025-10-18 19:41:27,489 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:27,881 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.065874 Accuracy=0.958333
-2025-10-18 19:41:27,882 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:28,251 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.067241 Accuracy=0.976852
-2025-10-18 19:41:28,252 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:28,712 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.068635 Accuracy=0.972222
-2025-10-18 19:41:28,712 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:29,109 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.068489 Accuracy=0.976852
-2025-10-18 19:41:29,109 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:29,409 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.043823 Accuracy=0.949074
-2025-10-18 19:41:29,486 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.215480, Test Accuracy: 0.750000
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 28ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 8ms/step 
-2025-10-18 19:41:29,581 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.25 0.75]]
-2025-10-18 19:41:29,582 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.761s)
-2025-10-18 19:41:29,583 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:29,603 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:29,679 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.048492, Test Accuracy: 0.694444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 36ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:41:29,790 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.36 0.64]]
-2025-10-18 19:41:29,792 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:29,792 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:30,124 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.338609 Accuracy=0.851852
-2025-10-18 19:41:30,124 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:30,495 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.300222 Accuracy=0.879630
-2025-10-18 19:41:30,495 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:30,846 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.221554 Accuracy=0.907407
-2025-10-18 19:41:30,846 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:31,194 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.202153 Accuracy=0.935185
-2025-10-18 19:41:31,195 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:31,525 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.155357 Accuracy=0.967593
-2025-10-18 19:41:31,525 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:31,942 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.161351 Accuracy=0.944444
-2025-10-18 19:41:31,943 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:32,318 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.106597 Accuracy=0.962963
-2025-10-18 19:41:32,318 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:32,667 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.138164 Accuracy=0.949074
-2025-10-18 19:41:32,667 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:33,013 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.096235 Accuracy=0.949074
-2025-10-18 19:41:33,013 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:33,369 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.077109 Accuracy=0.962963
-2025-10-18 19:41:33,369 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:33,726 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.056466 Accuracy=0.967593
-2025-10-18 19:41:33,726 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:34,084 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.158329 Accuracy=0.972222
-2025-10-18 19:41:34,084 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:34,435 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.104098 Accuracy=0.958333
-2025-10-18 19:41:34,435 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:34,791 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.068633 Accuracy=0.967593
-2025-10-18 19:41:34,792 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:35,142 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.081824 Accuracy=0.976852
-2025-10-18 19:41:35,142 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:35,473 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.061098 Accuracy=0.981481
-2025-10-18 19:41:35,473 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:35,827 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.067861 Accuracy=0.981481
-2025-10-18 19:41:35,828 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:36,151 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.062645 Accuracy=0.986111
-2025-10-18 19:41:36,151 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:36,506 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.049282 Accuracy=0.981481
-2025-10-18 19:41:36,506 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:36,846 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.064334 Accuracy=0.972222
-2025-10-18 19:41:36,919 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.001226, Test Accuracy: 0.791667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:41:37,037 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.83 0.17]
- [0.25 0.75]]
-2025-10-18 19:41:37,038 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.247s)
-2025-10-18 19:41:37,039 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:37,069 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:37,152 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.362881, Test Accuracy: 0.680556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:41:37,257 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.58 0.42]
- [0.22 0.78]]
-2025-10-18 19:41:37,261 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:37,261 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:37,582 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.380211 Accuracy=0.842593
-2025-10-18 19:41:37,582 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:37,893 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.244807 Accuracy=0.879630
-2025-10-18 19:41:37,893 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:38,229 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.199793 Accuracy=0.902778
-2025-10-18 19:41:38,229 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:38,582 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.144738 Accuracy=0.925926
-2025-10-18 19:41:38,582 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:39,023 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.102046 Accuracy=0.949074
-2025-10-18 19:41:39,023 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:39,394 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.104669 Accuracy=0.967593
-2025-10-18 19:41:39,394 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:39,757 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.119480 Accuracy=0.925926
-2025-10-18 19:41:39,757 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:40,058 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.100796 Accuracy=0.949074
-2025-10-18 19:41:40,058 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:40,423 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.086008 Accuracy=0.949074
-2025-10-18 19:41:40,423 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:40,781 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.068766 Accuracy=0.962963
-2025-10-18 19:41:40,781 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:41,178 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.056312 Accuracy=0.976852
-2025-10-18 19:41:41,178 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:41,507 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.063356 Accuracy=0.976852
-2025-10-18 19:41:41,507 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:41,873 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.055155 Accuracy=0.976852
-2025-10-18 19:41:41,873 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:42,224 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.034565 Accuracy=0.962963
-2025-10-18 19:41:42,225 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:42,587 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.037095 Accuracy=0.981481
-2025-10-18 19:41:42,587 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:42,931 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.047928 Accuracy=0.981481
-2025-10-18 19:41:42,931 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:43,271 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.036252 Accuracy=0.976852
-2025-10-18 19:41:43,271 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:43,613 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.042538 Accuracy=0.986111
-2025-10-18 19:41:43,613 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:43,960 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.032531 Accuracy=0.990741
-2025-10-18 19:41:43,961 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:44,331 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.058481 Accuracy=0.990741
-2025-10-18 19:41:44,411 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.185245, Test Accuracy: 0.777778
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 34ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 17ms/step
-2025-10-18 19:41:44,532 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.75 0.25]
- [0.19 0.81]]
-2025-10-18 19:41:44,534 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.273s)
-2025-10-18 19:41:44,534 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:44,595 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:44,681 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.024041, Test Accuracy: 0.694444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 36ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 18ms/step
-2025-10-18 19:41:44,815 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.33 0.67]]
-2025-10-18 19:41:44,821 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:44,821 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:45,172 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.331143 Accuracy=0.865741
-2025-10-18 19:41:45,172 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:45,552 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.237391 Accuracy=0.893519
-2025-10-18 19:41:45,553 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:45,914 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.186043 Accuracy=0.907407
-2025-10-18 19:41:45,914 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:46,277 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.118346 Accuracy=0.944444
-2025-10-18 19:41:46,277 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:46,646 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.150361 Accuracy=0.935185
-2025-10-18 19:41:46,646 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:47,021 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.081434 Accuracy=0.967593
-2025-10-18 19:41:47,022 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:47,405 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.123086 Accuracy=0.981481
-2025-10-18 19:41:47,405 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:51,112 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.128997 Accuracy=0.949074
-2025-10-18 19:41:51,113 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:51,557 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.112819 Accuracy=0.949074
-2025-10-18 19:41:51,557 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:51,897 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.071202 Accuracy=0.925926
-2025-10-18 19:41:51,897 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:52,257 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.077638 Accuracy=0.935185
-2025-10-18 19:41:52,257 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:41:52,623 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.087284 Accuracy=0.949074
-2025-10-18 19:41:52,623 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:41:52,963 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.084467 Accuracy=0.939815
-2025-10-18 19:41:52,964 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:41:53,324 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.088261 Accuracy=0.986111
-2025-10-18 19:41:53,324 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:41:53,688 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.083207 Accuracy=0.981481
-2025-10-18 19:41:53,688 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:41:54,058 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.051236 Accuracy=0.972222
-2025-10-18 19:41:54,059 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:41:54,500 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.039260 Accuracy=0.949074
-2025-10-18 19:41:54,500 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:41:54,821 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.088464 Accuracy=0.962963
-2025-10-18 19:41:54,821 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:41:55,222 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.093085 Accuracy=0.958333
-2025-10-18 19:41:55,222 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:41:55,617 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.087871 Accuracy=0.986111
-2025-10-18 19:41:55,722 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.832587, Test Accuracy: 0.777778
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 44ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:41:55,871 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.17 0.83]]
-2025-10-18 19:41:55,874 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=11.053s)
-2025-10-18 19:41:55,874 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:41:55,952 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:41:56,032 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.205219, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:41:56,143 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.67 0.33]
- [0.25 0.75]]
-2025-10-18 19:41:56,146 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:41:56,146 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:41:56,467 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.298462 Accuracy=0.861111
-2025-10-18 19:41:56,468 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:41:56,790 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.245336 Accuracy=0.916667
-2025-10-18 19:41:56,791 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:41:57,110 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.189766 Accuracy=0.879630
-2025-10-18 19:41:57,111 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:41:57,413 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.169294 Accuracy=0.930556
-2025-10-18 19:41:57,413 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:41:57,727 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.150791 Accuracy=0.935185
-2025-10-18 19:41:57,727 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:41:58,080 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.146267 Accuracy=0.921296
-2025-10-18 19:41:58,080 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:41:58,447 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.075066 Accuracy=0.949074
-2025-10-18 19:41:58,447 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:41:58,737 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.089488 Accuracy=0.962963
-2025-10-18 19:41:58,737 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:41:59,057 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.102121 Accuracy=0.981481
-2025-10-18 19:41:59,057 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:41:59,387 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.053114 Accuracy=0.935185
-2025-10-18 19:41:59,387 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:41:59,705 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.085061 Accuracy=0.972222
-2025-10-18 19:41:59,705 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:00,014 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.063672 Accuracy=0.972222
-2025-10-18 19:42:00,015 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:00,338 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.064045 Accuracy=0.986111
-2025-10-18 19:42:00,340 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:00,673 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.053328 Accuracy=0.967593
-2025-10-18 19:42:00,673 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:01,003 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.069807 Accuracy=0.972222
-2025-10-18 19:42:01,004 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:01,411 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.044770 Accuracy=0.962963
-2025-10-18 19:42:01,411 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:01,748 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.033514 Accuracy=0.976852
-2025-10-18 19:42:01,749 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:02,146 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.036744 Accuracy=0.976852
-2025-10-18 19:42:02,147 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:02,491 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.057037 Accuracy=0.986111
-2025-10-18 19:42:02,491 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:02,819 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.030184 Accuracy=0.986111
-2025-10-18 19:42:02,897 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.264292, Test Accuracy: 0.805556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:42:03,029 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
- [0.19 0.81]]
-2025-10-18 19:42:03,031 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.885s)
-2025-10-18 19:42:03,031 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:03,050 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:03,141 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.492281, Test Accuracy: 0.694444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 40ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 18ms/step
-2025-10-18 19:42:03,264 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.33 0.67]]
-2025-10-18 19:42:03,266 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:03,266 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:03,646 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.363762 Accuracy=0.870370
-2025-10-18 19:42:03,646 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:04,015 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.278434 Accuracy=0.884259
-2025-10-18 19:42:04,015 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:04,380 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.218295 Accuracy=0.907407
-2025-10-18 19:42:04,380 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:04,714 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.119493 Accuracy=0.953704
-2025-10-18 19:42:04,714 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:05,106 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.138225 Accuracy=0.935185
-2025-10-18 19:42:05,107 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:05,533 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.134149 Accuracy=0.949074
-2025-10-18 19:42:05,533 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:05,866 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.136617 Accuracy=0.949074
-2025-10-18 19:42:05,866 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:06,196 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.078235 Accuracy=0.958333
-2025-10-18 19:42:06,197 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:06,509 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.092261 Accuracy=0.967593
-2025-10-18 19:42:06,509 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:06,879 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.064190 Accuracy=0.953704
-2025-10-18 19:42:06,880 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:07,363 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.092562 Accuracy=0.949074
-2025-10-18 19:42:07,363 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:07,703 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.078273 Accuracy=0.953704
-2025-10-18 19:42:07,703 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:08,096 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.062813 Accuracy=0.986111
-2025-10-18 19:42:08,097 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:08,446 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.042723 Accuracy=0.981481
-2025-10-18 19:42:08,446 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:08,843 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.052665 Accuracy=0.986111
-2025-10-18 19:42:08,843 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:09,163 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.050630 Accuracy=0.967593
-2025-10-18 19:42:09,164 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:09,506 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.045445 Accuracy=0.972222
-2025-10-18 19:42:09,512 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:09,889 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.045260 Accuracy=0.972222
-2025-10-18 19:42:09,889 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:10,347 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.044800 Accuracy=0.990741
-2025-10-18 19:42:10,347 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:10,658 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.043678 Accuracy=0.976852
-2025-10-18 19:42:10,736 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.304488, Test Accuracy: 0.805556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 26ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 9ms/step 
-2025-10-18 19:42:10,821 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
- [0.19 0.81]]
-2025-10-18 19:42:10,822 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.556s)
-2025-10-18 19:42:10,822 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:10,847 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:10,937 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.276940, Test Accuracy: 0.666667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 43ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:42:11,065 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.39 0.61]]
-2025-10-18 19:42:11,067 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:11,067 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:11,387 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.346577 Accuracy=0.865741
-2025-10-18 19:42:11,387 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:11,734 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.259042 Accuracy=0.902778
-2025-10-18 19:42:11,734 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:12,094 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.184856 Accuracy=0.893519
-2025-10-18 19:42:12,094 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:12,435 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.130136 Accuracy=0.944444
-2025-10-18 19:42:12,435 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:12,778 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.135876 Accuracy=0.939815
-2025-10-18 19:42:12,778 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:13,096 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.116062 Accuracy=0.953704
-2025-10-18 19:42:13,096 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:13,392 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.110903 Accuracy=0.935185
-2025-10-18 19:42:13,392 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:13,697 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.099138 Accuracy=0.953704
-2025-10-18 19:42:13,698 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:14,050 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.065061 Accuracy=0.958333
-2025-10-18 19:42:14,050 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:14,396 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.066918 Accuracy=0.962963
-2025-10-18 19:42:14,396 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:14,705 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.071528 Accuracy=0.967593
-2025-10-18 19:42:14,706 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:15,013 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.058256 Accuracy=0.981481
-2025-10-18 19:42:15,013 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:15,334 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.044512 Accuracy=0.981481
-2025-10-18 19:42:15,334 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:15,647 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.053825 Accuracy=0.972222
-2025-10-18 19:42:15,648 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:15,963 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.060777 Accuracy=0.967593
-2025-10-18 19:42:15,963 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:16,255 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.056656 Accuracy=0.967593
-2025-10-18 19:42:16,255 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:16,554 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.025330 Accuracy=0.990741
-2025-10-18 19:42:16,554 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:16,869 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.028309 Accuracy=0.986111
-2025-10-18 19:42:16,869 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:17,176 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.039291 Accuracy=0.981481
-2025-10-18 19:42:17,176 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:17,534 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.055500 Accuracy=0.995370
-2025-10-18 19:42:17,635 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.286893, Test Accuracy: 0.805556
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 40ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 20ms/step
-2025-10-18 19:42:17,781 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.81 0.19]
- [0.19 0.81]]
-2025-10-18 19:42:17,783 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.716s)
-2025-10-18 19:42:17,783 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:17,918 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:18,003 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.475231, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 42ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:42:18,123 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.31 0.69]]
-2025-10-18 19:42:18,125 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:18,125 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:18,452 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.318167 Accuracy=0.902778
-2025-10-18 19:42:18,452 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:18,788 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.246318 Accuracy=0.912037
-2025-10-18 19:42:18,788 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:19,134 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.187641 Accuracy=0.930556
-2025-10-18 19:42:19,134 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:19,457 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.168015 Accuracy=0.944444
-2025-10-18 19:42:19,457 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:19,773 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.133768 Accuracy=0.944444
-2025-10-18 19:42:19,773 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:20,105 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.140464 Accuracy=0.949074
-2025-10-18 19:42:20,105 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:20,461 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.084588 Accuracy=0.967593
-2025-10-18 19:42:20,461 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:20,765 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.089674 Accuracy=0.962963
-2025-10-18 19:42:20,765 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:24,421 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.076970 Accuracy=0.962963
-2025-10-18 19:42:24,422 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:24,781 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.111170 Accuracy=0.953704
-2025-10-18 19:42:24,782 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:25,113 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.097118 Accuracy=0.949074
-2025-10-18 19:42:25,113 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:25,429 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.074915 Accuracy=0.967593
-2025-10-18 19:42:25,429 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:25,761 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.084493 Accuracy=0.939815
-2025-10-18 19:42:25,761 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:26,139 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.067134 Accuracy=0.972222
-2025-10-18 19:42:26,139 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:26,535 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.065190 Accuracy=0.967593
-2025-10-18 19:42:26,536 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:26,852 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.058802 Accuracy=0.976852
-2025-10-18 19:42:26,852 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:27,201 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.041942 Accuracy=0.981481
-2025-10-18 19:42:27,201 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:27,541 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.052710 Accuracy=0.972222
-2025-10-18 19:42:27,541 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:27,867 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.051591 Accuracy=0.981481
-2025-10-18 19:42:27,868 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:28,184 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.035232 Accuracy=0.981481
-2025-10-18 19:42:28,260 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.063718, Test Accuracy: 0.777778
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
-2025-10-18 19:42:28,379 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.22 0.78]]
-2025-10-18 19:42:28,381 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.256s)
-2025-10-18 19:42:28,382 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:28,445 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:28,525 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.448740, Test Accuracy: 0.694444
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 39ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:42:28,640 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.67 0.33]
- [0.28 0.72]]
-2025-10-18 19:42:28,642 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:28,642 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:28,993 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.300500 Accuracy=0.865741
-2025-10-18 19:42:28,993 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:29,367 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.234861 Accuracy=0.921296
-2025-10-18 19:42:29,367 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:29,688 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.150467 Accuracy=0.939815
-2025-10-18 19:42:29,688 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:30,105 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.136766 Accuracy=0.925926
-2025-10-18 19:42:30,106 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:30,519 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.121678 Accuracy=0.958333
-2025-10-18 19:42:30,519 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:30,899 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.114901 Accuracy=0.953704
-2025-10-18 19:42:30,899 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:31,201 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.075506 Accuracy=0.976852
-2025-10-18 19:42:31,201 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:31,517 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.063666 Accuracy=0.949074
-2025-10-18 19:42:31,517 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:31,830 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.086970 Accuracy=0.981481
-2025-10-18 19:42:31,830 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:32,171 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.051514 Accuracy=0.972222
-2025-10-18 19:42:32,171 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:32,547 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.071930 Accuracy=0.976852
-2025-10-18 19:42:32,547 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:32,915 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.069228 Accuracy=0.972222
-2025-10-18 19:42:32,915 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:33,243 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.069064 Accuracy=0.972222
-2025-10-18 19:42:33,243 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:33,572 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.062143 Accuracy=0.976852
-2025-10-18 19:42:33,572 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:33,896 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.080132 Accuracy=0.958333
-2025-10-18 19:42:33,896 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:34,243 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.086708 Accuracy=0.962963
-2025-10-18 19:42:34,243 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:34,600 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.060421 Accuracy=0.953704
-2025-10-18 19:42:34,600 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:34,954 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.039338 Accuracy=0.981481
-2025-10-18 19:42:34,955 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:35,400 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.026151 Accuracy=0.981481
-2025-10-18 19:42:35,400 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:35,786 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.064098 Accuracy=0.986111
-2025-10-18 19:42:35,883 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.907724, Test Accuracy: 0.763889
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 48ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 21ms/step
-2025-10-18 19:42:36,042 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.25 0.75]]
-2025-10-18 19:42:36,044 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.403s)
-2025-10-18 19:42:36,045 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:36,197 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:36,312 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.549472, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 53ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 23ms/step
-2025-10-18 19:42:36,477 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.64 0.36]
- [0.22 0.78]]
-2025-10-18 19:42:36,479 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:36,479 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:36,925 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.345733 Accuracy=0.888889
-2025-10-18 19:42:36,926 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:37,315 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.239167 Accuracy=0.870370
-2025-10-18 19:42:37,315 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:37,676 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.211872 Accuracy=0.902778
-2025-10-18 19:42:37,676 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:38,019 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.217356 Accuracy=0.902778
-2025-10-18 19:42:38,019 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:38,400 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.180373 Accuracy=0.898148
-2025-10-18 19:42:38,401 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:38,739 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.132122 Accuracy=0.930556
-2025-10-18 19:42:38,740 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:39,094 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.092879 Accuracy=0.953704
-2025-10-18 19:42:39,094 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:39,411 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.120657 Accuracy=0.962963
-2025-10-18 19:42:39,411 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:39,778 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.077290 Accuracy=0.958333
-2025-10-18 19:42:39,778 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:40,141 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.061037 Accuracy=0.967593
-2025-10-18 19:42:40,141 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:40,493 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.070867 Accuracy=0.962963
-2025-10-18 19:42:40,494 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:40,810 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.067515 Accuracy=0.981481
-2025-10-18 19:42:40,811 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:41,215 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.049691 Accuracy=0.981481
-2025-10-18 19:42:41,215 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:41,607 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.059414 Accuracy=0.981481
-2025-10-18 19:42:41,607 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:41,983 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.030876 Accuracy=0.972222
-2025-10-18 19:42:41,983 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:42,363 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.044741 Accuracy=0.972222
-2025-10-18 19:42:42,364 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:42,749 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.054742 Accuracy=0.990741
-2025-10-18 19:42:42,749 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:43,150 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.053077 Accuracy=0.962963
-2025-10-18 19:42:43,150 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:43,513 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.064162 Accuracy=0.962963
-2025-10-18 19:42:43,513 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:43,846 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.043222 Accuracy=0.962963
-2025-10-18 19:42:43,922 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.332842, Test Accuracy: 0.833333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 21ms/step
-2025-10-18 19:42:44,055 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+2025-10-18 19:48:17,360 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
 [[0.89 0.11]
- [0.22 0.78]]
-2025-10-18 19:42:44,056 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.577s)
-2025-10-18 19:42:44,056 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:44,096 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:44,187 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.412460, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
-2025-10-18 19:42:44,299 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
  [0.31 0.69]]
-2025-10-18 19:42:44,301 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:44,301 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:44,677 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.325123 Accuracy=0.907407
-2025-10-18 19:42:44,677 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:45,001 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.193677 Accuracy=0.939815
-2025-10-18 19:42:45,001 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:45,342 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.169607 Accuracy=0.902778
-2025-10-18 19:42:45,343 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:45,664 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.114466 Accuracy=0.944444
-2025-10-18 19:42:45,664 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:45,992 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.118981 Accuracy=0.939815
-2025-10-18 19:42:45,992 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:46,403 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.089178 Accuracy=0.972222
-2025-10-18 19:42:46,403 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:46,725 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.103823 Accuracy=0.944444
-2025-10-18 19:42:46,725 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:47,054 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.079389 Accuracy=0.976852
-2025-10-18 19:42:47,055 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:47,365 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.067254 Accuracy=0.949074
-2025-10-18 19:42:47,366 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:47,691 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.059102 Accuracy=0.972222
-2025-10-18 19:42:47,692 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:48,009 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.042462 Accuracy=0.972222
-2025-10-18 19:42:48,009 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:48,320 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.053617 Accuracy=0.967593
-2025-10-18 19:42:48,320 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:48,715 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.063821 Accuracy=0.976852
-2025-10-18 19:42:48,715 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:49,054 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.055887 Accuracy=0.972222
-2025-10-18 19:42:49,054 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:42:49,397 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.039297 Accuracy=0.976852
-2025-10-18 19:42:49,397 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:42:49,772 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.026258 Accuracy=0.976852
-2025-10-18 19:42:49,774 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:42:50,094 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.035739 Accuracy=0.972222
-2025-10-18 19:42:50,094 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:42:50,384 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.048785 Accuracy=0.976852
-2025-10-18 19:42:50,384 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:42:50,686 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.041080 Accuracy=0.981481
-2025-10-18 19:42:50,686 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:42:51,041 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.048024 Accuracy=0.986111
-2025-10-18 19:42:51,144 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.208222, Test Accuracy: 0.791667
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 33ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 13ms/step
-2025-10-18 19:42:51,252 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.78 0.22]
- [0.19 0.81]]
-2025-10-18 19:42:51,253 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=6.952s)
-2025-10-18 19:42:51,253 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:42:51,352 INFO [federated_sim.TCPClient.client_9] Received FEDERATED_WEIGHTS message (bytes=2080551)
-2025-10-18 19:42:51,450 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.469449, Test Accuracy: 0.708333
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 41ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 22ms/step
-2025-10-18 19:42:51,590 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.64 0.36]
- [0.22 0.78]]
-2025-10-18 19:42:51,592 INFO [federated_sim.TCPClient.client_9] Starting training: epochs=20 batch_size=32
-2025-10-18 19:42:51,592 INFO [federated_sim.TCPClient.client_9] Epoch 1/20
-2025-10-18 19:42:51,986 INFO [federated_sim.TCPClient.client_9] Epoch 1 result: Loss=0.236056 Accuracy=0.893519
-2025-10-18 19:42:51,986 INFO [federated_sim.TCPClient.client_9] Epoch 2/20
-2025-10-18 19:42:52,368 INFO [federated_sim.TCPClient.client_9] Epoch 2 result: Loss=0.134234 Accuracy=0.907407
-2025-10-18 19:42:52,368 INFO [federated_sim.TCPClient.client_9] Epoch 3/20
-2025-10-18 19:42:52,740 INFO [federated_sim.TCPClient.client_9] Epoch 3 result: Loss=0.142901 Accuracy=0.930556
-2025-10-18 19:42:52,740 INFO [federated_sim.TCPClient.client_9] Epoch 4/20
-2025-10-18 19:42:53,083 INFO [federated_sim.TCPClient.client_9] Epoch 4 result: Loss=0.142033 Accuracy=0.953704
-2025-10-18 19:42:53,085 INFO [federated_sim.TCPClient.client_9] Epoch 5/20
-2025-10-18 19:42:53,457 INFO [federated_sim.TCPClient.client_9] Epoch 5 result: Loss=0.141437 Accuracy=0.935185
-2025-10-18 19:42:53,457 INFO [federated_sim.TCPClient.client_9] Epoch 6/20
-2025-10-18 19:42:53,863 INFO [federated_sim.TCPClient.client_9] Epoch 6 result: Loss=0.111156 Accuracy=0.939815
-2025-10-18 19:42:53,864 INFO [federated_sim.TCPClient.client_9] Epoch 7/20
-2025-10-18 19:42:57,548 INFO [federated_sim.TCPClient.client_9] Epoch 7 result: Loss=0.064366 Accuracy=0.958333
-2025-10-18 19:42:57,548 INFO [federated_sim.TCPClient.client_9] Epoch 8/20
-2025-10-18 19:42:57,876 INFO [federated_sim.TCPClient.client_9] Epoch 8 result: Loss=0.055772 Accuracy=0.976852
-2025-10-18 19:42:57,877 INFO [federated_sim.TCPClient.client_9] Epoch 9/20
-2025-10-18 19:42:58,250 INFO [federated_sim.TCPClient.client_9] Epoch 9 result: Loss=0.049345 Accuracy=0.949074
-2025-10-18 19:42:58,250 INFO [federated_sim.TCPClient.client_9] Epoch 10/20
-2025-10-18 19:42:58,563 INFO [federated_sim.TCPClient.client_9] Epoch 10 result: Loss=0.047513 Accuracy=0.967593
-2025-10-18 19:42:58,563 INFO [federated_sim.TCPClient.client_9] Epoch 11/20
-2025-10-18 19:42:58,891 INFO [federated_sim.TCPClient.client_9] Epoch 11 result: Loss=0.041126 Accuracy=0.981481
-2025-10-18 19:42:58,891 INFO [federated_sim.TCPClient.client_9] Epoch 12/20
-2025-10-18 19:42:59,218 INFO [federated_sim.TCPClient.client_9] Epoch 12 result: Loss=0.042601 Accuracy=0.981481
-2025-10-18 19:42:59,219 INFO [federated_sim.TCPClient.client_9] Epoch 13/20
-2025-10-18 19:42:59,596 INFO [federated_sim.TCPClient.client_9] Epoch 13 result: Loss=0.066932 Accuracy=0.990741
-2025-10-18 19:42:59,597 INFO [federated_sim.TCPClient.client_9] Epoch 14/20
-2025-10-18 19:42:59,921 INFO [federated_sim.TCPClient.client_9] Epoch 14 result: Loss=0.031524 Accuracy=0.972222
-2025-10-18 19:42:59,922 INFO [federated_sim.TCPClient.client_9] Epoch 15/20
-2025-10-18 19:43:00,264 INFO [federated_sim.TCPClient.client_9] Epoch 15 result: Loss=0.028503 Accuracy=0.967593
-2025-10-18 19:43:00,265 INFO [federated_sim.TCPClient.client_9] Epoch 16/20
-2025-10-18 19:43:00,678 INFO [federated_sim.TCPClient.client_9] Epoch 16 result: Loss=0.044874 Accuracy=0.972222
-2025-10-18 19:43:00,679 INFO [federated_sim.TCPClient.client_9] Epoch 17/20
-2025-10-18 19:43:01,048 INFO [federated_sim.TCPClient.client_9] Epoch 17 result: Loss=0.032486 Accuracy=0.981481
-2025-10-18 19:43:01,048 INFO [federated_sim.TCPClient.client_9] Epoch 18/20
-2025-10-18 19:43:01,417 INFO [federated_sim.TCPClient.client_9] Epoch 18 result: Loss=0.037748 Accuracy=0.981481
-2025-10-18 19:43:01,417 INFO [federated_sim.TCPClient.client_9] Epoch 19/20
-2025-10-18 19:43:01,758 INFO [federated_sim.TCPClient.client_9] Epoch 19 result: Loss=0.057785 Accuracy=0.986111
-2025-10-18 19:43:01,758 INFO [federated_sim.TCPClient.client_9] Epoch 20/20
-2025-10-18 19:43:02,137 INFO [federated_sim.TCPClient.client_9] Epoch 20 result: Loss=0.032046 Accuracy=0.986111
-2025-10-18 19:43:02,223 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.091613, Test Accuracy: 0.777778
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 38ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 14ms/step
-2025-10-18 19:43:02,339 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.72 0.28]
- [0.17 0.83]]
-2025-10-18 19:43:02,341 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=10.749s)
-2025-10-18 19:43:02,341 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
-2025-10-18 19:43:02,397 INFO [federated_sim.TCPClient.client_9] Received END_FL_TRAINING message. Federated training finished.
-2025-10-18 19:43:02,496 INFO [federated_sim.TCPClient.client_9] Test Loss: 1.462647, Test Accuracy: 0.722222
-[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 36ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 18ms/step
-2025-10-18 19:43:02,630 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
-[[0.64 0.36]
- [0.19 0.81]]
-2025-10-18 19:43:02,633 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_EVALUATION to server (client_id=9)
-2025-10-18 19:43:02,633 INFO [federated_sim.TCPClient.client_9] Connection closed
+2025-10-18 19:48:17,364 INFO [federated_sim.TCPClient.client_9] Training finished for this round (elapsed=7.503s)
+2025-10-18 19:48:17,364 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_MODEL to server (client_id=9, n_samples=216)
+2025-10-18 19:48:17,443 INFO [federated_sim.TCPClient.client_9] Received END_FL_TRAINING message. Federated training finished.
+2025-10-18 19:48:17,534 INFO [federated_sim.TCPClient.client_9] Test Loss: 0.522077, Test Accuracy: 0.750000
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
+2025-10-18 19:48:17,659 INFO [federated_sim.TCPClient.client_9] Confusion Matrix (Percentage):
+[[0.81 0.19]
+ [0.31 0.69]]
+2025-10-18 19:48:17,661 INFO [federated_sim.TCPClient.client_9] Sending CLIENT_EVALUATION to server (client_id=9)
+2025-10-18 19:48:17,662 INFO [federated_sim.TCPClient.client_9] Connection closed

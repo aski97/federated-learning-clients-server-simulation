@@ -19,10 +19,23 @@ class TCPClient(ABC):
 
     def __init__(self, server_address, client_id: int):
         self.server_address = server_address
+        # create socket and apply sane defaults
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # allow quick restart during development
+        try:
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            # disable Nagle for lower-latency small messages
+            self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        except Exception:
+            pass
+
         self.id = client_id
         # per-client logger
         self.logger = logging.getLogger(f"{__name__}.client_{client_id}")
+
+        # connection retry configuration (useful if server starts later)
+        self._connect_retries = 10
+        self._connect_retry_delay = 1.0  # seconds initial backoff
 
         self._is_profiling = False
         self._training_execution_time = 0
@@ -55,10 +68,29 @@ class TCPClient(ABC):
     # METHODS
 
     def _connect(self) -> None:
-        """Connect to the server"""
-        self.logger.info("Connecting to server %s", self.server_address)
-        self.socket.connect(self.server_address)
-        self.logger.info("Connected to server")
+        """Connect to the server with retries and exponential backoff."""
+        attempt = 0
+        delay = float(self._connect_retry_delay)
+        while True:
+            try:
+                self.logger.info("Connecting to server %s (attempt %d)", self.server_address, attempt + 1)
+                self.socket.connect(self.server_address)
+                # optional: set a short recv timeout to allow graceful stop later if needed
+                # self.socket.settimeout(5.0)
+                self.logger.info("Connected to server %s", self.server_address)
+                return
+            except ConnectionRefusedError:
+                attempt += 1
+                self.logger.warning("Connection refused to %s (attempt %d/%d). Retrying in %.1fs",
+                                    self.server_address, attempt, self._connect_retries, delay)
+                if attempt >= self._connect_retries:
+                    self.logger.error("Exceeded max connection attempts (%d). Giving up.", self._connect_retries)
+                    raise
+                time.sleep(delay)
+                delay = min(delay * 2, 30.0)
+            except Exception as e:
+                self.logger.error("Unexpected error while connecting to %s: %s", self.server_address, e)
+                raise
 
     def _manage_communication(self) -> None:
         """ It manages the message communication with the server"""
@@ -159,26 +191,41 @@ class TCPClient(ABC):
         It waits until a message from a server is received.
         :return: unpacked message {msg_type, msg_body} and message length
         """
-        # Read message length by first 4 bytes
-        msg_len_bytes = self.socket.recv(4)
-        if not msg_len_bytes:
-            return None, None, None
-        msg_len = struct.unpack('!I', msg_len_bytes)[0]
-        # Read the message data
-        data = b''
-        while len(data) < msg_len:
-            packet = self.socket.recv(msg_len - len(data))
-            if not packet:  # EOF
-                break
-            data += packet
+        try:
+            # Read message length by first 4 bytes
+            msg_len_bytes = self.socket.recv(4)
+            if not msg_len_bytes:
+                self.logger.info("No length bytes received (remote closed connection)")
+                return None, None, None
+            msg_len = struct.unpack('!I', msg_len_bytes)[0]
+            # Read the message data
+            data = b''
+            while len(data) < msg_len:
+                packet = self.socket.recv(msg_len - len(data))
+                if not packet:  # EOF
+                    self.logger.warning("Socket closed while reading message payload (expected %d bytes, got %d)",
+                                        msg_len, len(data))
+                    break
+                data += packet
 
-        msg_body, msg_type = unpack_message(data)
-        self.logger.debug("Received message type=%s bytes=%d", msg_type, msg_len)
-        return msg_body, msg_type, msg_len
+            msg_body, msg_type = unpack_message(data)
+            self.logger.debug("Received message type=%s bytes=%d", msg_type, msg_len)
+            return msg_body, msg_type, msg_len
+        except socket.timeout:
+            # no data available within timeout
+            self.logger.debug("Socket recv timed out (no data)")
+            return None, None, None
+        except Exception as e:
+            self.logger.error("Error receiving message: %s", e)
+            return None, None, None
 
     def _close_connection(self) -> None:
         """It closes connection with the server"""
         try:
+            try:
+                self.socket.shutdown(socket.SHUT_RDWR)
+            except Exception:
+                pass
             self.socket.close()
             self.logger.info("Connection closed")
         except Exception as e:
