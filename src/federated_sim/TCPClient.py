@@ -1,4 +1,5 @@
 import os
+import logging
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from abc import ABC, abstractmethod
@@ -11,12 +12,18 @@ from sklearn.metrics import confusion_matrix
 from src.federated_sim.CSUtils import MessageType, build_message, unpack_message
 import time
 
+# Configure module-level logging with a sensible default. The application can reconfigure if needed.
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
+
 class TCPClient(ABC):
 
     def __init__(self, server_address, client_id: int):
         self.server_address = server_address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = client_id
+        # per-client logger
+        self.logger = logging.getLogger(f"{__name__}.client_{client_id}")
+
         self._is_profiling = False
         self._training_execution_time = 0
         self._info_profiling = {
@@ -49,7 +56,9 @@ class TCPClient(ABC):
 
     def _connect(self) -> None:
         """Connect to the server"""
+        self.logger.info("Connecting to server %s", self.server_address)
         self.socket.connect(self.server_address)
+        self.logger.info("Connected to server")
 
     def _manage_communication(self) -> None:
         """ It manages the message communication with the server"""
@@ -59,6 +68,7 @@ class TCPClient(ABC):
 
             # check if server closed the connection
             if m_body is None or m_type is None:
+                self.logger.info("Server closed connection or received empty message")
                 break
 
             self._info_profiling['bytes_input'] += m_len
@@ -66,13 +76,14 @@ class TCPClient(ABC):
             # behave differently with respect to the type of message received
             match m_type:
                 case MessageType.FEDERATED_WEIGHTS:
-                    print("Received federated weights")
+                    self.logger.info("Received FEDERATED_WEIGHTS message (bytes=%d)", m_len)
                     # get weights from server
                     weights = m_body["weights"]
 
                     # check for configurations (round 0)
                     if "configurations" in m_body:
-                        self._is_profiling = m_body['configurations']['profiling']
+                        self._is_profiling = m_body['configurations'].get('profiling', False)
+                        self.logger.info("Profiling enabled: %s", self._is_profiling)
 
                     # update model
                     self._update_weights(weights)
@@ -86,7 +97,7 @@ class TCPClient(ABC):
                         import resource
                         import trace
 
-                        print("Tracing active")
+                        self.logger.info("Tracing active for profiling")
 
                         tracer = trace.Trace(
                             count=True,
@@ -103,16 +114,18 @@ class TCPClient(ABC):
 
                         self._info_profiling['training_n_instructions'] += n_instructions
                         self._info_profiling['max_ram_used'] = max(used_memory, self._info_profiling['max_ram_used'])
+                        self.logger.info("Profiling: instructions=%d, max_ram=%d", n_instructions, used_memory)
                     else:
                         self._train_model()
 
                     execution_time = time.time() - start_time
                     self._training_execution_time += execution_time
+                    self.logger.info("Training finished for this round (elapsed=%.3fs)", execution_time)
 
                     # send trained weights to the server
                     self._send_local_model()
                 case MessageType.END_FL_TRAINING:
-                    print("Received final federated weights. Federated training has finished.")
+                    self.logger.info("Received END_FL_TRAINING message. Federated training finished.")
                     # get weights from server
                     weights = m_body["weights"]
                     # Update model
@@ -124,6 +137,7 @@ class TCPClient(ABC):
                     # Client disconnect to the server
                     break
                 case _:
+                    self.logger.debug("Received unhandled message type: %s", m_type)
                     continue
 
     def _send_message(self, msg_type: MessageType, body: object) -> None:
@@ -133,7 +147,12 @@ class TCPClient(ABC):
         :param body: body of the message.
         """
         msg_serialized = build_message(msg_type, body)
-        self.socket.sendall(msg_serialized)
+        try:
+            self.socket.sendall(msg_serialized)
+            self.logger.debug("Sent message type=%s bytes=%d", msg_type, len(msg_serialized))
+        except Exception as e:
+            self.logger.error("Error sending message: %s", e)
+            raise
 
     def _receive_message(self) -> tuple:
         """
@@ -154,11 +173,16 @@ class TCPClient(ABC):
             data += packet
 
         msg_body, msg_type = unpack_message(data)
+        self.logger.debug("Received message type=%s bytes=%d", msg_type, msg_len)
         return msg_body, msg_type, msg_len
 
     def _close_connection(self) -> None:
         """It closes connection with the server"""
-        self.socket.close()
+        try:
+            self.socket.close()
+            self.logger.info("Connection closed")
+        except Exception as e:
+            self.logger.debug("Error closing socket: %s", e)
 
     def _load_compiled_model(self) -> keras.Model:
         """ It loads the local model to be trained"""
@@ -170,12 +194,15 @@ class TCPClient(ABC):
 
         model.compile(optimizer=optimizer, loss=loss, metrics=[metric])
 
+        self.logger.info("Local model compiled with optimizer=%s loss=%s metric=%s", type(optimizer).__name__ if optimizer else str(optimizer), type(loss).__name__ if loss else str(loss), type(metric).__name__ if metric else str(metric))
+
         return model
 
     def _update_weights(self, weights) -> None:
         """ It updates the weights of the local model"""
         self.weights = weights
         self._model.set_weights(weights)
+        self.logger.debug("Local model weights updated (n_weights=%d)", len(weights) if hasattr(weights, '__len__') else 1)
 
     @tf.function
     def _train_step(self, x, y):
@@ -206,14 +233,16 @@ class TCPClient(ABC):
         """
         It trains the model.
         """
+        self.logger.info("Starting training: epochs=%d batch_size=%d", self._epochs, self._batch_size)
         for epoch in range(self._epochs):
-            print(f"Epoch {epoch + 1}/{self._epochs}")
+            self.logger.info("Epoch %d/%d", epoch + 1, self._epochs)
 
             if self._shuffle_dataset_each_epoch:
                 indices = np.arange(self.x_train.shape[0])
                 np.random.shuffle(indices)
                 self.x_train = self.x_train[indices]
                 self.y_train = self.y_train[indices]
+                self.logger.debug("Shuffled training dataset for epoch %d", epoch + 1)
 
             epoch_loss_avg = tf.metrics.Mean()
             epoch_accuracy = self.get_metric()
@@ -229,11 +258,6 @@ class TCPClient(ABC):
 
                 loss_value, gradients = self._train_step(x_batch, y_batch)
 
-                # # Convert gradients to numpy and print
-                # gradients_np = [grad.numpy() for grad in gradients]
-                # for i, grad in enumerate(gradients_np):
-                #     print(f"Gradiente {i} - media: {np.mean(grad)}, std: {np.std(grad)}")
-
                 # Accumulate gradients
                 accumulated_gradients = [accum_grad + grad for accum_grad, grad in
                                          zip(accumulated_gradients, gradients)]
@@ -246,7 +270,7 @@ class TCPClient(ABC):
             averaged_gradients = [grad / num_batches for grad in accumulated_gradients]
             self.gradients = np.array([grad.numpy() for grad in averaged_gradients], dtype='object')
 
-            print(f"Epoch {epoch + 1}: Loss: {epoch_loss_avg.result()}, Accuracy: {epoch_accuracy.result()}")
+            self.logger.info("Epoch %d result: Loss=%.6f Accuracy=%.6f", epoch + 1, epoch_loss_avg.result().numpy(), epoch_accuracy.result().numpy())
 
         # set trained weights
         self.weights = np.array(self._model.get_weights(), dtype='object')
@@ -276,7 +300,7 @@ class TCPClient(ABC):
             test_loss_avg.update_state(loss_value)
             test_accuracy.update_state(y_batch, model(x_batch, training=False))
 
-        print(f"Test Loss: {test_loss_avg.result()}, Test Accuracy: {test_accuracy.result()}")
+        self.logger.info("Test Loss: %.6f, Test Accuracy: %.6f", test_loss_avg.result().numpy(), test_accuracy.result().numpy())
 
         # Confusion Matrix
         y_pred = model.predict(self.x_test)
@@ -286,8 +310,7 @@ class TCPClient(ABC):
 
         cm_percentage = np.round(cm, 2)
 
-        print("Confusion Matrix (Percentage):")
-        print(cm_percentage)
+        self.logger.info("Confusion Matrix (Percentage):\n%s", cm_percentage)
 
         evaluation_data = np.array([[test_accuracy.result(), test_loss_avg.result()]])
 
@@ -310,6 +333,7 @@ class TCPClient(ABC):
     def _send_local_model(self) -> None:
         """Send trained weights to the server"""
         msg_body = {'client_id': self.id, 'weights': self.weights, 'gradients': self.gradients, 'n_training_samples': len(self.y_train)}
+        self.logger.info("Sending CLIENT_MODEL to server (client_id=%s, n_samples=%d)", self.id, len(self.y_train))
         self._send_message(MessageType.CLIENT_MODEL, msg_body)
 
     def _send_kpi_data(self) -> None:
@@ -326,6 +350,7 @@ class TCPClient(ABC):
             self._info_profiling['test_samples'] = len(self.y_test)
             msg_body['info_profiling'] = self._info_profiling
 
+        self.logger.info("Sending CLIENT_EVALUATION to server (client_id=%s)", self.id)
         self._send_message(MessageType.CLIENT_EVALUATION, msg_body)
 
     def run(self) -> None:
@@ -344,7 +369,7 @@ class TCPClient(ABC):
             self._manage_communication()
 
         except socket.error as e:
-            print(f"Socket error: {e}")
+            self.logger.error("Socket error: %s", e)
         finally:
             # Close socket
             self._close_connection()

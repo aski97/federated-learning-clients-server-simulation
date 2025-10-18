@@ -34,7 +34,7 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 3)
+    server = Server(server_address, 9, 30)
     server.set_aggregation_algorithm(FedAvg())
     # server.set_aggregation_algorithm(FedMiddleAvg())
     # server.set_aggregation_algorithm(FedAvgMomentum(beta=0.1))
