@@ -1,14 +1,14 @@
 import sys
 import os
 
-from src.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam
+from federated_sim.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
-from src.TCPServer import TCPServer
+from federated_sim.TCPServer import TCPServer
 import tensorflow.keras as keras
 from keras.layers import Conv1D, Flatten, Dense, Dropout
-from keras.src.regularizers import l1
+from keras.src.regularizers import L1
 
 
 class Server(TCPServer):
@@ -17,11 +17,11 @@ class Server(TCPServer):
         initializer = "glorot_uniform"
 
         return keras.models.Sequential([
-            Conv1D(16, 5, padding='same', activation='relu', kernel_regularizer=l1(), kernel_initializer=initializer,
+            Conv1D(16, 5, padding='same', activation='relu', kernel_regularizer=L1(), kernel_initializer=initializer,
                    input_shape=(253, 1)),
-            Conv1D(32, 3, padding='same', activation='relu', kernel_regularizer=l1(), kernel_initializer=initializer),
+            Conv1D(32, 3, padding='same', activation='relu', kernel_regularizer=L1(), kernel_initializer=initializer),
             Flatten(),
-            Dense(64, activation='relu', kernel_regularizer=l1(), kernel_initializer=initializer),
+            Dense(64, activation='relu', kernel_regularizer=L1(), kernel_initializer=initializer),
             Dropout(0.5),
             Dense(2, activation='softmax', kernel_initializer=initializer)
         ])

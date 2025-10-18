@@ -1,0 +1,1 @@
+Error: '/home/vittorio_belardo/federated-learning-clients-server-simulation/examples/BNCI2014_001/dataset/10' folder doesn't exist, execute SaveDataset.py first: python3 SaveDataset.py

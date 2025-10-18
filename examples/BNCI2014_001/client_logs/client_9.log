@@ -1,0 +1,166 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1760804555.530026   38734 cuda_executor.cc:1309] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1760804555.564077   38734 gpu_device.cc:2342] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+/home/vittorio_belardo/federated-learning-clients-server-simulation/.venv/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py:113: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+Dataset loaded: 288 items
+Received federated weights
+Test Loss: 0.7065903544425964, Test Accuracy: 0.5
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 102ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 44ms/step [1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 55ms/step
+Confusion Matrix (Percentage):
+[[0. 1.]
+ [0. 1.]]
+Epoch 1/20
+Epoch 1: Loss: 0.7227348685264587, Accuracy: 0.5879629850387573
+Epoch 2/20
+Epoch 2: Loss: 0.6436982750892639, Accuracy: 0.6805555820465088
+Epoch 3/20
+Epoch 3: Loss: 0.6474381685256958, Accuracy: 0.6712962985038757
+Epoch 4/20
+Epoch 4: Loss: 0.5878691077232361, Accuracy: 0.7129629850387573
+Epoch 5/20
+Epoch 5: Loss: 0.5725568532943726, Accuracy: 0.7592592835426331
+Epoch 6/20
+Epoch 6: Loss: 0.528721272945404, Accuracy: 0.7546296119689941
+Epoch 7/20
+Epoch 7: Loss: 0.4950757324695587, Accuracy: 0.8379629850387573
+Epoch 8/20
+Epoch 8: Loss: 0.4389338493347168, Accuracy: 0.7962962985038757
+Epoch 9/20
+Epoch 9: Loss: 0.42544427514076233, Accuracy: 0.8379629850387573
+Epoch 10/20
+Epoch 10: Loss: 0.42415329813957214, Accuracy: 0.8472222089767456
+Epoch 11/20
+Epoch 11: Loss: 0.38755396008491516, Accuracy: 0.8518518805503845
+Epoch 12/20
+Epoch 12: Loss: 0.33213192224502563, Accuracy: 0.8564814925193787
+Epoch 13/20
+Epoch 13: Loss: 0.3292788565158844, Accuracy: 0.9166666865348816
+Epoch 14/20
+Epoch 14: Loss: 0.2992119789123535, Accuracy: 0.9027777910232544
+Epoch 15/20
+Epoch 15: Loss: 0.3568234145641327, Accuracy: 0.8657407164573669
+Epoch 16/20
+Epoch 16: Loss: 0.28103530406951904, Accuracy: 0.8888888955116272
+Epoch 17/20
+Epoch 17: Loss: 0.2836723029613495, Accuracy: 0.9027777910232544
+Epoch 18/20
+Epoch 18: Loss: 0.27292707562446594, Accuracy: 0.9027777910232544
+Epoch 19/20
+Epoch 19: Loss: 0.23740121722221375, Accuracy: 0.9212962985038757
+Epoch 20/20
+Epoch 20: Loss: 0.20692655444145203, Accuracy: 0.9444444179534912
+Test Loss: 0.2821337878704071, Test Accuracy: 0.8472222089767456
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 41ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
+Confusion Matrix (Percentage):
+[[0.86 0.14]
+ [0.17 0.83]]
+Received federated weights
+Test Loss: 0.6630033850669861, Test Accuracy: 0.5
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 39ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
+Confusion Matrix (Percentage):
+[[0. 1.]
+ [0. 1.]]
+Epoch 1/20
+Epoch 1: Loss: 0.6065510511398315, Accuracy: 0.6759259104728699
+Epoch 2/20
+Epoch 2: Loss: 0.5559681057929993, Accuracy: 0.7268518805503845
+Epoch 3/20
+Epoch 3: Loss: 0.4953996241092682, Accuracy: 0.7870370149612427
+Epoch 4/20
+Epoch 4: Loss: 0.5115698575973511, Accuracy: 0.7870370149612427
+Epoch 5/20
+Epoch 5: Loss: 0.4490094482898712, Accuracy: 0.8194444179534912
+Epoch 6/20
+Epoch 6: Loss: 0.4014813303947449, Accuracy: 0.8425925970077515
+Epoch 7/20
+Epoch 7: Loss: 0.4065262973308563, Accuracy: 0.8333333134651184
+Epoch 8/20
+Epoch 8: Loss: 0.3547125458717346, Accuracy: 0.8472222089767456
+Epoch 9/20
+Epoch 9: Loss: 0.3562324345111847, Accuracy: 0.8935185074806213
+Epoch 10/20
+Epoch 10: Loss: 0.3321087658405304, Accuracy: 0.8518518805503845
+Epoch 11/20
+Epoch 11: Loss: 0.3201258182525635, Accuracy: 0.8611111044883728
+Epoch 12/20
+Epoch 12: Loss: 0.32010385394096375, Accuracy: 0.875
+Epoch 13/20
+Epoch 13: Loss: 0.2827438414096832, Accuracy: 0.9120370149612427
+Epoch 14/20
+Epoch 14: Loss: 0.2797289788722992, Accuracy: 0.8981481194496155
+Epoch 15/20
+Epoch 15: Loss: 0.26425695419311523, Accuracy: 0.9259259104728699
+Epoch 16/20
+Epoch 16: Loss: 0.26170966029167175, Accuracy: 0.8842592835426331
+Epoch 17/20
+Epoch 17: Loss: 0.22472795844078064, Accuracy: 0.9212962985038757
+Epoch 18/20
+Epoch 18: Loss: 0.22217059135437012, Accuracy: 0.9212962985038757
+Epoch 19/20
+Epoch 19: Loss: 0.21654963493347168, Accuracy: 0.8935185074806213
+Epoch 20/20
+Epoch 20: Loss: 0.22528637945652008, Accuracy: 0.9166666865348816
+Test Loss: 0.31091758608818054, Test Accuracy: 0.8472222089767456
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 29ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 12ms/step
+Confusion Matrix (Percentage):
+[[0.86 0.14]
+ [0.17 0.83]]
+Received federated weights
+Test Loss: 0.5445985794067383, Test Accuracy: 0.7361111044883728
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
+Confusion Matrix (Percentage):
+[[0.69 0.31]
+ [0.22 0.78]]
+Epoch 1/20
+Epoch 1: Loss: 0.5694171190261841, Accuracy: 0.7268518805503845
+Epoch 2/20
+Epoch 2: Loss: 0.56584233045578, Accuracy: 0.7824074029922485
+Epoch 3/20
+Epoch 3: Loss: 0.5158353447914124, Accuracy: 0.7037037014961243
+Epoch 4/20
+Epoch 4: Loss: 0.4225201904773712, Accuracy: 0.8425925970077515
+Epoch 5/20
+Epoch 5: Loss: 0.36798739433288574, Accuracy: 0.7962962985038757
+Epoch 6/20
+Epoch 6: Loss: 0.33309683203697205, Accuracy: 0.8611111044883728
+Epoch 7/20
+Epoch 7: Loss: 0.37911781668663025, Accuracy: 0.8703703880310059
+Epoch 8/20
+Epoch 8: Loss: 0.2829182744026184, Accuracy: 0.8703703880310059
+Epoch 9/20
+Epoch 9: Loss: 0.3389730453491211, Accuracy: 0.8703703880310059
+Epoch 10/20
+Epoch 10: Loss: 0.3043135106563568, Accuracy: 0.875
+Epoch 11/20
+Epoch 11: Loss: 0.24963019788265228, Accuracy: 0.9074074029922485
+Epoch 12/20
+Epoch 12: Loss: 0.2538921535015106, Accuracy: 0.9074074029922485
+Epoch 13/20
+Epoch 13: Loss: 0.31000256538391113, Accuracy: 0.9305555820465088
+Epoch 14/20
+Epoch 14: Loss: 0.28056153655052185, Accuracy: 0.8518518805503845
+Epoch 15/20
+Epoch 15: Loss: 0.25623244047164917, Accuracy: 0.8796296119689941
+Epoch 16/20
+Epoch 16: Loss: 0.2994399964809418, Accuracy: 0.8888888955116272
+Epoch 17/20
+Epoch 17: Loss: 0.26683908700942993, Accuracy: 0.8981481194496155
+Epoch 18/20
+Epoch 18: Loss: 0.21073420345783234, Accuracy: 0.875
+Epoch 19/20
+Epoch 19: Loss: 0.2204694002866745, Accuracy: 0.9166666865348816
+Epoch 20/20
+Epoch 20: Loss: 0.21513919532299042, Accuracy: 0.9166666865348816
+Test Loss: 0.3186585605144501, Test Accuracy: 0.875
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 32ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 16ms/step
+Confusion Matrix (Percentage):
+[[0.89 0.11]
+ [0.14 0.86]]
+Received final federated weights. Federated training has finished.
+Test Loss: 0.5963022112846375, Test Accuracy: 0.6805555820465088
+[1m1/3[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m0s[0m 35ms/step[1m3/3[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 15ms/step
+Confusion Matrix (Percentage):
+[[0.81 0.19]
+ [0.44 0.56]]

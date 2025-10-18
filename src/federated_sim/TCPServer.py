@@ -1,6 +1,6 @@
 import os
 
-from src.AggregationAlgorithm import AggregationAlgorithm, FedAvg
+from src.federated_sim.AggregationAlgorithm import AggregationAlgorithm, FedAvg
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from abc import ABC, abstractmethod
@@ -8,7 +8,7 @@ import numpy as np
 import socket
 import threading
 import struct
-from src.CSUtils import MessageType, build_message, unpack_message
+from src.federated_sim.CSUtils import MessageType, build_message, unpack_message
 import tensorflow as tf
 from tensorflow.keras.models import Model
 

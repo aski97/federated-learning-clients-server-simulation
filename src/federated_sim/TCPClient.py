@@ -8,7 +8,7 @@ import socket
 import tensorflow as tf
 from tensorflow import keras
 from sklearn.metrics import confusion_matrix
-from src.CSUtils import MessageType, build_message, unpack_message
+from src.federated_sim.CSUtils import MessageType, build_message, unpack_message
 import time
 
 class TCPClient(ABC):

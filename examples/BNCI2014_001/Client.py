@@ -3,10 +3,10 @@ import os
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
-from src.TCPClient import TCPClient
+from federated_sim.TCPClient import TCPClient
 from tensorflow import keras
 from keras.layers import Conv1D, Flatten, Dense, Dropout
-from keras.src.regularizers import l1
+from keras.src.regularizers import L1
 import argparse
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -31,17 +31,18 @@ class Client(TCPClient):
 
     def get_skeleton_model(self) -> keras.Model:
         return keras.models.Sequential([
-            Conv1D(16, 5, padding='same', activation='relu', kernel_regularizer=l1(),
+            Conv1D(16, 5, padding='same', activation='relu', kernel_regularizer=L1(),
                    input_shape=self.x_train.shape[1:]),
-            Conv1D(32, 3, padding='same', activation='relu', kernel_regularizer=l1()),
+            Conv1D(32, 3, padding='same', activation='relu', kernel_regularizer=L1()),
             Flatten(),
-            Dense(64, activation='relu', kernel_regularizer=l1()),
+            Dense(64, activation='relu', kernel_regularizer=L1()),
             Dropout(0.5),
             Dense(2, activation='softmax')
         ])
 
     def load_dataset(self) -> tuple:
-        folder_path = f"dataset/{self.id}"
+        base_dir = os.path.dirname(__file__)
+        folder_path = os.path.join(base_dir, "dataset", str(self.id))
         # Check dataset has saved
         if not os.path.isdir(folder_path):
             sys.exit(
