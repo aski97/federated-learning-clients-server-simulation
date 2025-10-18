@@ -11,39 +11,51 @@ class AggregationAlgorithm(ABC):
 
     @staticmethod
     def compute_avg(clients_values: dict, subject: str = "weights", weighted: bool = True):
-        sum_values = None
+        """
+        Compute per-layer average. Assumes clients_values[client][subject] is an iterable
+        (list/tuple) of numpy arrays (one per layer). Returns a list of numpy arrays.
+        """
+        if not clients_values:
+            raise ValueError("No clients provided for aggregation")
+
+        # get first client's layer structure to infer number of layers
+        first_item = next(iter(clients_values.values()))
+        if subject not in first_item:
+            raise KeyError(f"Subject '{subject}' not present in client data")
+        first_layers = first_item[subject]
+        n_layers = len(first_layers)
+
+        # initialize accumulators per layer
+        accum = [None] * n_layers
 
         if weighted:
-            # Compute a weighted average based on the number of training samples per client
             total_samples = 0
-            for key, client_values in clients_values.items():
-                value = np.array(client_values[subject])
-                w = client_values["n_training_samples"]
+            for client_vals in clients_values.values():
+                layers = client_vals[subject]
+                w = int(client_vals.get("n_training_samples", 0))
                 total_samples += w
-
-                if sum_values is None:
-                    sum_values = value * w
-                else:
-                    sum_values += value * w
+                for i, arr in enumerate(layers):
+                    arr = np.array(arr, dtype=float)
+                    if accum[i] is None:
+                        accum[i] = arr * w
+                    else:
+                        accum[i] = accum[i] + arr * w
 
             if total_samples == 0:
                 raise ValueError("Total number of training samples is zero")
 
-            avg = sum_values / total_samples
+            avg = [accum[i] / total_samples for i in range(n_layers)]
         else:
             total_clients = len(clients_values)
-            if total_clients == 0:
-                raise ValueError("No clients available for aggregation")
-
-            for key, client_values in clients_values.items():
-                value = np.array(client_values[subject])
-
-                if sum_values is None:
-                    sum_values = value
-                else:
-                    sum_values += value
-
-            avg = sum_values / total_clients
+            for client_vals in clients_values.values():
+                layers = client_vals[subject]
+                for i, arr in enumerate(layers):
+                    arr = np.array(arr, dtype=float)
+                    if accum[i] is None:
+                        accum[i] = arr
+                    else:
+                        accum[i] = accum[i] + arr
+            avg = [accum[i] / total_clients for i in range(n_layers)]
 
         return avg
 
