@@ -37,14 +37,23 @@ class TCPClient(ABC):
         self._connect_retries = 10
         self._connect_retry_delay = 1.0  # seconds initial backoff
 
-        self._is_profiling = False
+        # Profiling configuration (modes: 'none', 'light', 'tracemalloc', 'trace')
+        self._profiling_mode = 'none'
+        # If True and profiling is enabled, collect per-epoch timings/memory
+        self._profiling_sample_per_epoch = False
+        # Aggregated profiling info
         self._training_execution_time = 0
+        self._epoch_times = []           # list of per-epoch elapsed times (if sampling enabled)
+        self._epoch_mem_peak = []        # list of per-epoch mem peaks (if sampling enabled)
         self._info_profiling = {
             'train_samples': 0,
             'test_samples': 0,
             'bytes_input': 0,
             'training_n_instructions': 0,
-            'max_ram_used': 0}
+            'max_ram_used': 0,
+            'profiling_mode': self._profiling_mode,
+            'epoch_times': self._epoch_times,
+            'epoch_mem_peak': self._epoch_mem_peak}
         self.weights = None
         self.gradients = None
 
@@ -114,8 +123,14 @@ class TCPClient(ABC):
 
                     # check for configurations (round 0)
                     if "configurations" in m_body:
-                        self._is_profiling = m_body['configurations'].get('profiling', False)
-                        self.logger.info("Profiling enabled: %s", self._is_profiling)
+                        cfg = m_body['configurations']
+                        self._is_profiling = cfg.get('profiling', False)
+                        # accept explicit profiling mode: 'none'|'light'|'tracemalloc'|'trace'
+                        self._profiling_mode = cfg.get('profiling_mode', 'trace' if self._is_profiling else 'none')
+                        # per-epoch sampling
+                        self._profiling_sample_per_epoch = cfg.get('profiling_sample_per_epoch', False)
+                        self._info_profiling['profiling_mode'] = self._profiling_mode
+                        self.logger.info("Profiling enabled: %s mode=%s sample_per_epoch=%s", self._is_profiling, self._profiling_mode, self._profiling_sample_per_epoch)
 
                     # update model
                     self._update_weights(weights)
@@ -124,31 +139,43 @@ class TCPClient(ABC):
 
                     start_time = time.time()
 
-                    # train model with new weights
-                    if self._is_profiling:
-                        import resource
+                    # train model with new weights — choose profiling strategy
+                    if self._is_profiling and self._profiling_mode == 'trace':
                         import trace
-
-                        self.logger.info("Tracing active for profiling")
-
-                        tracer = trace.Trace(
-                            count=True,
-                            trace=False,
-                            timing=True)
-
+                        self.logger.info("Running detailed instruction trace for profiling (trace.Trace)")
+                        tracer = trace.Trace(count=True, trace=False, timing=True)
                         tracer.runfunc(self._train_model)
-
                         stats = tracer.results()
+                        try:
+                            n_instructions = sum(stats.counts.values())
+                        except Exception:
+                            n_instructions = 0
+                        self._info_profiling['training_n_instructions'] += int(n_instructions)
+                        self.logger.info("Trace profiling: instructions=%d", n_instructions)
 
-                        n_instructions = sum(stats.counts.values())
-
-                        used_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-
-                        self._info_profiling['training_n_instructions'] += n_instructions
-                        self._info_profiling['max_ram_used'] = max(used_memory, self._info_profiling['max_ram_used'])
-                        self.logger.info("Profiling: instructions=%d, max_ram=%d", n_instructions, used_memory)
-                    else:
+                    elif self._is_profiling and self._profiling_mode == 'tracemalloc':
+                        import tracemalloc
+                        self.logger.info("Starting tracemalloc profiling")
+                        tracemalloc.start()
                         self._train_model()
+                        current, peak = tracemalloc.get_traced_memory()
+                        tracemalloc.stop()
+                        self._info_profiling['max_ram_used'] = max(self._info_profiling.get('max_ram_used', 0), peak)
+                        self.logger.info("Tracemalloc peak memory: %d bytes", peak)
+
+                    else:
+                        # 'light' or 'none' fallback
+                        if self._is_profiling and self._profiling_mode == 'light':
+                            import resource
+                            self.logger.info("Running light profiling (time + resource usage)")
+                            # run training but _train_model collects epoch times if configured
+                            self._train_model()
+                            used_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                            self._info_profiling['max_ram_used'] = max(self._info_profiling.get('max_ram_used', 0), used_memory)
+                            self.logger.info("Light profiling: max_ram=%d", used_memory)
+                        else:
+                            # no profiling
+                            self._train_model()
 
                     execution_time = time.time() - start_time
                     self._training_execution_time += execution_time
@@ -281,9 +308,13 @@ class TCPClient(ABC):
         It trains the model.
         """
         self.logger.info("Starting training: epochs=%d batch_size=%d", self._epochs, self._batch_size)
-        for epoch in range(self._epochs):
-            self.logger.info("Epoch %d/%d", epoch + 1, self._epochs)
+        # reset per-run epoch info if sampling
+        if self._profiling_sample_per_epoch:
+            self._epoch_times.clear()
+            self._epoch_mem_peak.clear()
 
+        for epoch in range(self._epochs):
+            epoch_start = time.time() if self._profiling_sample_per_epoch else None
             if self._shuffle_dataset_each_epoch:
                 indices = np.arange(self.x_train.shape[0])
                 np.random.shuffle(indices)
@@ -319,10 +350,32 @@ class TCPClient(ABC):
 
             self.logger.info("Epoch %d result: Loss=%.6f Accuracy=%.6f", epoch + 1, epoch_loss_avg.result().numpy(), epoch_accuracy.result().numpy())
 
+            # per-epoch profiling sample
+            if self._profiling_sample_per_epoch:
+                epoch_time = time.time() - epoch_start if epoch_start is not None else 0.0
+                self._epoch_times.append(epoch_time)
+                try:
+                    import tracemalloc
+                    if tracemalloc.is_tracing():
+                        _, peak = tracemalloc.get_traced_memory()
+                        self._epoch_mem_peak.append(peak)
+                    else:
+                        import resource
+                        used = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                        self._epoch_mem_peak.append(used)
+                except Exception:
+                    self._epoch_mem_peak.append(0)
+                self.logger.debug("Epoch %d profiling: time=%.3fs mem_peak=%d", epoch + 1, epoch_time, self._epoch_mem_peak[-1])
+
         # set trained weights
         self.weights = np.array(self._model.get_weights(), dtype='object')
         # evaluate model
         self._evaluate_model(self._model)
+
+        # attach epoch-level data to info_profiling
+        if self._profiling_sample_per_epoch:
+            self._info_profiling['epoch_times'] = list(self._epoch_times)
+            self._info_profiling['epoch_mem_peak'] = list(self._epoch_mem_peak)
 
     def _evaluate_model(self, model=None) -> np.ndarray:
         """
