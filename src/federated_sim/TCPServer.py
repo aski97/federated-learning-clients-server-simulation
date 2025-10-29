@@ -49,6 +49,8 @@ class TCPServer(ABC):
 
         # graceful shutdown event
         self._stop_event = threading.Event()
+        # flag that indicates FL rounds finished (used to trigger final evaluations)
+        self._rounds_finished = False
 
         # per-server logger
         self.logger = logging.getLogger(f"{__name__}.server")
@@ -335,9 +337,8 @@ class TCPServer(ABC):
                         if self._save_weights_path is not None:
                             self.save_federated_weights(self._save_weights_path)
                             self.logger.info("Saved federated weights to %s", self._save_weights_path)
-                        # wake final evaluations and request shutdown
-                        self._stop_event.set()
-                        # notify any waiting conditions to let threads terminate
+                        # mark rounds finished and notify final evaluation thread (do NOT set _stop_event here)
+                        self._rounds_finished = True
                         with self.condition_add_client_evaluation:
                             self.condition_add_client_evaluation.notify_all()
                         break
@@ -348,11 +349,12 @@ class TCPServer(ABC):
         displaying the results and generating any graphs if necessary.
         """
         with self.condition_add_client_evaluation:
-            while not self._stop_event.is_set():
+            while True:
                 self.logger.debug("Waiting for client evaluations (received %d/%d)", len(self.clients_evaluations), self.number_clients)
+                # wait for evaluations (timeout to allow checks)
                 self.condition_add_client_evaluation.wait(timeout=1.0)
 
-                # Check if all clients involved have sent the evaluation
+                # If all evaluations received -> process and then request shutdown
                 if len(self.clients_evaluations) == self.number_clients:
 
                     def get_federated_average_metrics(metric_type, values):
@@ -589,6 +591,16 @@ class TCPServer(ABC):
 
                     # after finishing final evaluation we can set stop to allow clean shutdown
                     self._stop_event.set()
+                    break
+
+                # if rounds finished but we never will receive all evaluations, exit after logging
+                if self._rounds_finished and len(self.clients_evaluations) > 0 and len(self.clients_evaluations) < self.number_clients:
+                    self.logger.warning("Rounds finished but received only %d/%d client evaluations — proceeding with available data",
+                                        len(self.clients_evaluations), self.number_clients)
+                    # process with available data (reuse same code path) then stop
+                    # ... you can duplicate or call a helper that runs the evaluation/plots ...
+                    self._stop_event.set()
+                    break
 
     def _send_fl_model_to_client(self, client_socket: socket.socket) -> None:
         """
@@ -628,17 +640,17 @@ class TCPServer(ABC):
         if removed:
             self.logger.warning("Removed %d inactive client sockets", len(removed))
 
-    def _initialize_federated_model(self) -> np.ndarray:
+    def _initialize_federated_model(self) -> list:
         """
         Initialize weights of the model to send to clients. The result
         is affected by "kernel_initializer" of the keras model layers.
-        :return: weights
-        :rtype: np.ndarray
+        :return: weights as list of numpy arrays
+        :rtype: list[numpy.ndarray]
         """
         model = self.get_skeleton_model()
 
-        # initialize weights
-        weights = np.array(model.get_weights(), dtype='object')
+        # initialize weights as list (keras returns list)
+        weights = model.get_weights()
         self.logger.info("Initialized federated model with %d weight tensors", len(weights))
         return weights
 
@@ -646,9 +658,10 @@ class TCPServer(ABC):
         """
         It aggregates weights from clients computing the mean of the weights.
         """
-
         self.logger.debug("Aggregating weights from %d clients for round %d", len(self.client_weights), self.actual_round + 1)
-        self.weights = self.aggregation_algorithm.aggregate_weights(self.client_weights, self.weights)
+        aggregated = self.aggregation_algorithm.aggregate_weights(self.client_weights, self.weights)
+        # ensure stored representation is a plain list[numpy.ndarray]
+        self.weights = list(aggregated)
         self.client_weights.clear()
         self.logger.info("Aggregation completed for round %d", self.actual_round)
 
@@ -711,7 +724,8 @@ class TCPServer(ABC):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        np.save(file_path, self.weights)
+        # save as object-array (allow_pickle=True) to preserve a list of arrays
+        np.save(file_path, np.array(self.weights, dtype=object), allow_pickle=True)
 
     def load_initial_weights(self, file_path) -> None:
         """

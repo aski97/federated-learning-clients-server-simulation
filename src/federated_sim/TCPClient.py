@@ -41,6 +41,8 @@ class TCPClient(ABC):
         self._profiling_mode = 'none'
         # If True and profiling is enabled, collect per-epoch timings/memory
         self._profiling_sample_per_epoch = False
+        # Flag that indicates whether profiling is enabled (used in _manage_communication)
+        self._is_profiling = False
         # Aggregated profiling info
         self._training_execution_time = 0
         self._epoch_times = []           # list of per-epoch elapsed times (if sampling enabled)
@@ -346,7 +348,8 @@ class TCPClient(ABC):
 
             # Average gradients over the number of batches
             averaged_gradients = [grad / num_batches for grad in accumulated_gradients]
-            self.gradients = np.array([grad.numpy() for grad in averaged_gradients], dtype='object')
+            # keep gradients as a plain list of numpy arrays (not object-array)
+            self.gradients = [grad.numpy() for grad in averaged_gradients]
 
             self.logger.info("Epoch %d result: Loss=%.6f Accuracy=%.6f", epoch + 1, epoch_loss_avg.result().numpy(), epoch_accuracy.result().numpy())
 
@@ -367,8 +370,8 @@ class TCPClient(ABC):
                     self._epoch_mem_peak.append(0)
                 self.logger.debug("Epoch %d profiling: time=%.3fs mem_peak=%d", epoch + 1, epoch_time, self._epoch_mem_peak[-1])
 
-        # set trained weights
-        self.weights = np.array(self._model.get_weights(), dtype='object')
+        # set trained weights as list (Model.get_weights() returns a list)
+        self.weights = self._model.get_weights()
         # evaluate model
         self._evaluate_model(self._model)
 

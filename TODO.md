@@ -1,114 +1,91 @@
-# TODO — attività immediate (esteso)
+# TODO — attività immediate (aggiornato)
 
-Questa versione estesa raccoglie bugfix, refactor e funzionalità suggerite per rendere il framework pronto per esperimenti riproducibili, produzione leggera e sviluppo continuo.
+Aggiornamento esteso del TODO con focus su profiling client-side e priorità operative. Elenco sintetico e azioni concrete per le prossime modifiche.
 
-## Priorità Critica (fix / stabilità)
-1. Aggregation / weights format
-   - Uniformare rappresentazione: usare list[numpy.ndarray] (layer-wise) ovunque.
-   - Aggiornare AggregationAlgorithm e tutte le implementazioni (FedAvg, FedAdam, FedAvgMomentum, FedSGD, FedMiddleAvg).
-   - Aggiungere test che verificano compatibilità con keras.Model.get/set_weights().
-
-2. Networking / socket lifecycle
-   - Garantire che TCPServer.run blocchi correttamente fino a shutdown; fix già applicato.
-   - Rendere accept timeout configurabile (None = blocking).
-   - Gestire reconnection e retry lato client (parametrizzabili).
-   - Aggiungere heartbeat/keepalive e gestione dei client disconnect parziali.
-
-3. Messaggistica / serializzazione
-   - Documentare e validare schema messaggi (versioning).
-   - Valutare sostituzione pickle con msgpack/flatbuffers/protobuf per performance e sicurezza.
-   - Limitare dimensione massima messaggi e gestire streaming chunked per payload grandi.
-
-4. Logging
-   - Rimuovere logging.basicConfig dai moduli; configurazione centralizzata negli esempi.
-   - Adottare logger namespaced e supportare formato strutturato (JSON) opzionale.
-   - Aggiungere livelli DEBUG/TRACE per diagnostica e metriche runtime.
-
-## Funzionalità e miglioramenti (features)
-1. Profiling client/server (migliorare)
-   - Persistenza per-client dei risultati di profiling (file o endpoint).
-   - Modalità a basso-overhead: campionamento temporale e statistico (es. solo percentili).
-   - Profiling selettivo per round/epoca, disable automatico per grandi sperimenti.
-   - API per esportare risultati (CSV/JSON/npz).
-
-2. Fault tolerance & resuming
-   - Checkpointing federated model e round metadata.
-   - Ripresa automatica da checkpoint.
-   - Supporto partial participation (client mancanti in un round) e timeout per round.
-
-3. Scalabilità e orchestrazione
-   - Supporto asincrono (opzionale) per Federated Averaging con client che arrivano in tempi diversi.
-   - Docker/Docker Compose esempi per avviare server + N client.
-   - Kubernetes manifest + Helm chart (per esperimenti su cluster).
-
-4. Privacy & sicurezza
-   - Canale TLS opzionale (wrap socket con ssl).
-   - Supporto per secure aggregation (opzionale) e/ o differential privacy (noise injection lato client).
-   - Autenticazione semplice (token) ed autorizzazioni minime.
-
-5. Compressione e efficienza
-   - Compressione pesi/gradients (quantization, subsampling, gzip, msgpack).
-   - Trasferimento incrementale (send only diffs) per ridurre banda.
-
-6. Client selection & sampling
-   - Strategie di selezione clients (random, round-robin, weighted).
-   - Configurare percentuale di partecipazione per round.
-
-## Refactor / Architettura
-1. Separare componenti
-   - networking (TCPServer/Client), aggregation, utils, profiling, io.
-   - Plugin system per algoritmi di aggregazione e metriche.
-
-2. API e configurazione
-   - File di configurazione YAML/JSON per esperimenti (server, clients, dataset, profiling).
-   - CLI centralizzata per lanciare server/clients con args.
-
-3. Testability
-   - Mock network layer per test unitari (senza socket reali).
-   - Coverage minima per aggregation e CSUtils.
-
-4. Type-safety & lint
-   - Aggiungere type hints coerenti, mypy e rimozione uso di dtype=object.
-   - Configurare lint (ruff/flake8) e formatter (black).
-
-## Testing & CI
-1. Unit tests:
-   - AggregationAlgorithm (weighted/unweighted), FedAdam/FedAvgMomentum per-layer.
-   - CSUtils serialize/unpack.
-   - TCPServer/TCPClient integration test minimal (loopback).
-2. Integration tests:
-   - E2E su macchina locale con N client finti (fast, small model).
-3. CI:
-   - GitHub Actions pipeline (lint, mypy, pytest).
-   - Artefatto test-report e opzione per run di smoke tests su push.
-
-## UX / Documentazione
-1. README e HOWTO aggiornati (esempi: avviare server, avviare N client, profiling).
-2. Notebook Jupyter con esperimenti di esempio e grafici.
-3. Documentazione API per sviluppatori (docstrings e un README per ogni modulo).
-
-## Monitoring e metriche
-1. Esportare metriche (Prometheus) su server: round, clients_connected, bandwidth, latency.
-2. Dashboard minimale (Grafana) come esempio.
-
-## Performance / benchmark
-1. Script benchmark per misurare:
-   - throughput di rete per round,
-   - tempo di aggregazione su modelli di diverse dimensioni,
-   - memoria peak lato client/server.
-2. Esempi di modelli più grandi per testare scalabilità e compressione.
-
-## Esempi avanzati / ricerca
-1. Supporto per heterogenous clients (differenti modelli o feature sets).
-2. Algoritmi più avanzati: FedProx, SCAFFOLD, secure aggregation, federated transfer learning.
-3. Modularità per plug-in di ottimizzatori lato server (Adam, Momentum, etc).
+## Obiettivi principali
+- Stabilità e coerenza dei formati (weights/gradients come list[numpy.ndarray]).
+- Robustezza rete (shutdown, retry, timeouts configurabili).
+- Profiling client efficiente, persistente e configurabile.
+- Serializzazione sicura/performante e test coverage minimo.
 
 ---
 
-## Azioni consigliate immediate (ordine operativo)
-1. Rifattorizzare AggregationAlgorithm e tutti gli algoritmi per operare layer-wise.
-2. Centralizzare logging e rimuovere basicConfig dai moduli.
-3. Implementare e testare retry lato client e accept_timeout configurabile.
-4. Sostituire pickle per serializzazione o definire un wrapper sicuro/validato.
-5. Aggiungere 10-20 unit tests chiave e pipeline CI minima.
-6. Fornire esempi Docker + README aggiornato.
+## Priorità Critica (da fare subito)
+1. Aggregation / weights format
+   - Rifattorizzare AggregationAlgorithm (già iniziato) e adattare tutte le chiamate nel codice per usare list[numpy.ndarray].
+   - Aggiungere assert/validator che controllino che self.weights e client payload siano liste prima di aggregare.
+   - Test unitari semplici che verificano compatibilità con keras.Model.get_weights()/set_weights().
+
+2. Networking / lifecycle
+   - Assicurare che `TCPServer.run()` blocchi sullo _stop_event e non chiuda la socket prematuramente.
+   - Rendere accept timeout e comportamenti di shutdown configurabili via argomento/attributo.
+   - Implementare retry esponenziale lato client con parametri configurabili (_connect_retries, _connect_retry_delay).
+
+3. Messaggistica / serializzazione
+   - Definire e documentare schema dei messaggi (versioning minimale).
+   - Estrarre/implementare `serialize_message` / `deserialize_message` in `CSUtils.py` usando un wrapper che può essere cambiato (pickle per ora, possibilità di passare a msgpack/protobuf).
+   - Limitare una dimensione massima opzionale per i messaggi e gestire chunking se necessario.
+
+4. Logging
+   - Rimuovere `logging.basicConfig` dai moduli della libreria; lasciare configurazione nel top-level (es. examples/Server.py).
+   - Usare nomi logger coerenti (`federated_sim.server`, `federated_sim.client`, `federated_sim.agg`).
+
+---
+
+## Profiling client (design e tasks)
+Obiettivo: profiling utile per debug/benchmark ma non intrusivo per esperimenti su larga scala.
+
+1. Design delle modalità (implementate/da finalizzare)
+   - none: disabilitato.
+   - light: tempo totale di training + peak RAM via resource (basso overhead).
+   - tracemalloc: memoria dettagliata via tracemalloc (moderato).
+   - trace: trace delle istruzioni (alto overhead) — usare solo quando necessario.
+   - sampled: modalità che campiona N epoche o 1 epoca ogni K per ridurre overhead.
+
+2. Tasks pratici
+   - Centralizzare modalità e parametri di profiling in `TCPClient` (`_profiling_mode`, `_profiling_sample_per_epoch`, `_profiling_sample_rate`).
+   - Attivazione via messaggio server (m_body['configurations']): profiling (bool), profiling_mode (str), sample_per_epoch (bool), sample_rate (int).
+   - Persistenza: salvare risultati profiling per client in file JSON/npz nella directory `logs/profiling/client_{id}_round_{r}.json` (opzionale) — implementare writer asincrono o a fine round.
+   - Formato di output standard: { round, mode, total_time, peak_mem, epoch_times:[], epoch_mem_peaks:[], instructions (if trace) }.
+   - API per esportare i risultati aggregati sul server (ricevere e salvare `info_profiling` nel CLIENT_EVALUATION): server salva per-client file e opzionalmente genera CSV/JSON aggregato.
+
+3. Ottimizzazioni
+   - Evitare `trace` di default; usarlo solo su richiesta e loggare un avviso.
+   - Usare tracemalloc per memorie dettagliate; fallback a resource su piattaforme non supportate.
+   - Per grandi esperimenti, raccomandare `light + sampled` come default.
+
+---
+
+## Priorità Media (migliorie e refactor)
+1. Persistenza / Resume
+   - Checkpoint federated model (.npz/.npy) e metadata (round corrente).
+   - API `save_federated_weights` / `load_initial_weights` robuste (gestire permissive formats).
+
+2. Tests
+   - Unit tests: aggregation, CSUtils serialize/unpack, client connect retry, server accept loop (mock).
+   - Integration test minimal server+1 client (loopback).
+
+3. CLI / config
+   - Aggiungere file di configurazione YAML per esperimenti (server address, n_clients, profiling_mode, timeouts).
+   - CLI wrapper per lanciare server e client con config.
+
+4. Security & performance
+   - Valutare switch a msgpack/protobuf per messaggi pesanti.
+   - Aggiungere opzione TLS (ssl.wrap_socket) per canale sicuro.
+
+---
+
+## Priorità Bassa (feature, deployment)
+- Docker / docker-compose per avviare server + N clients.
+- Endpoint metrics Prometheus + esempio dashboard.
+- Compressione/quantizzazione dei pesi per uso in rete limitata.
+- Algoritmi avanzati: FedProx, SCAFFOLD, secure aggregation.
+
+---
+
+## Esempio di next-steps immediati (ordine operativo)
+1. Finalizzare `CSUtils.serialize_message` / `deserialize_message` e testare roundtrip.
+2. Applicare i fix minimi suggeriti per TCPServer/TCPClient (weights come list, retry client, blocking run).
+3. Implementare salvataggio profiling lato client (JSON) e invio `info_profiling` al server.
+4. Aggiungere 4-6 unit tests per aggregation e message serialization.
+5. Rimuovere basicConfig dai moduli e aggiungere logging config in `examples/BNCI2014_001/Server.py`.

@@ -7,22 +7,55 @@ class AggregationAlgorithm(ABC):
     """
     Abstract base class for federated aggregation algorithms.
     Defines the strategy for aggregation.
+
+    NOTE: All algorithms operate layer-wise and return a list[numpy.ndarray]
+    compatible with Keras `Model.get_weights()` / `set_weights()`.
     """
+
+    @staticmethod
+    def _to_layer_list(obj):
+        """
+        Normalize federated model / client layer containers to a list of numpy arrays.
+        Accepts:
+         - list/tuple of ndarray-like
+         - numpy.ndarray with dtype=object (as used in some places)
+        Returns: list[numpy.ndarray]
+        """
+        if obj is None:
+            return None
+
+        if isinstance(obj, np.ndarray):
+            # common pattern: np.array(list_of_ndarrays, dtype='object')
+            try:
+                # If it's an object-dtype array containing arrays, extract them
+                if obj.dtype == np.object_:
+                    return [np.array(x) for x in obj.tolist()]
+                # otherwise it's a regular numeric ndarray -> treat as single-layer
+                return [obj.copy()]
+            except Exception:
+                return [np.array(x) for x in obj]
+        elif isinstance(obj, (list, tuple)):
+            return [np.array(x) for x in obj]
+        else:
+            # single array-like
+            return [np.array(obj)]
 
     @staticmethod
     def compute_avg(clients_values: dict, subject: str = "weights", weighted: bool = True):
         """
         Compute per-layer average. Assumes clients_values[client][subject] is an iterable
         (list/tuple) of numpy arrays (one per layer). Returns a list of numpy arrays.
+
+        Weighted averaging uses 'n_training_samples' key from each client dict.
         """
         if not clients_values:
             raise ValueError("No clients provided for aggregation")
 
-        # get first client's layer structure to infer number of layers
+        # infer structure from first client
         first_item = next(iter(clients_values.values()))
         if subject not in first_item:
             raise KeyError(f"Subject '{subject}' not present in client data")
-        first_layers = first_item[subject]
+        first_layers = AggregationAlgorithm._to_layer_list(first_item[subject])
         n_layers = len(first_layers)
 
         # initialize accumulators per layer
@@ -31,7 +64,7 @@ class AggregationAlgorithm(ABC):
         if weighted:
             total_samples = 0
             for client_vals in clients_values.values():
-                layers = client_vals[subject]
+                layers = AggregationAlgorithm._to_layer_list(client_vals[subject])
                 w = int(client_vals.get("n_training_samples", 0))
                 total_samples += w
                 for i, arr in enumerate(layers):
@@ -48,7 +81,7 @@ class AggregationAlgorithm(ABC):
         else:
             total_clients = len(clients_values)
             for client_vals in clients_values.values():
-                layers = client_vals[subject]
+                layers = AggregationAlgorithm._to_layer_list(client_vals[subject])
                 for i, arr in enumerate(layers):
                     arr = np.array(arr, dtype=float)
                     if accum[i] is None:
@@ -68,16 +101,16 @@ class AggregationAlgorithm(ABC):
         return AggregationAlgorithm.compute_avg(clients_gradients, "gradients", weighted)
 
     @abstractmethod
-    def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
         """
         Abstract method to aggregate client weights.
 
         Args:
             clients_weights (dict): Dictionary of client weights.
-            federated_model (np.ndarray): Current federated model weights.
+            federated_model: Current federated model weights (list or np.ndarray).
 
         Returns:
-            np.ndarray: Aggregated weights.
+            list[numpy.ndarray]: Aggregated weights (layer-wise list).
         """
         pass
 
@@ -97,16 +130,11 @@ class FedAvg(AggregationAlgorithm):
         """
         self.weighted = weighted
 
-    def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
         """
         Aggregates client weights using the FedAvg algorithm.
 
-        Args:
-            clients_weights (dict): Dictionary containing client weights and respective contributions.
-            federated_model (np.ndarray): Current federated model weights.
-
-        Returns:
-            np.ndarray: Aggregated weights.
+        Returns list[numpy.ndarray].
         """
         if not clients_weights:
             raise ValueError("clients_weights dictionary is empty")
@@ -130,71 +158,65 @@ class FedMiddleAvg(AggregationAlgorithm):
         """
         self.weighted = weighted
 
-    def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
         """
         Aggregates client weights using the FedMiddleAvg algorithm.
 
-        Args:
-            clients_weights (dict): Dictionary containing client weights and respective contributions.
-            federated_model (np.ndarray): Current federated model weights.
-
-        Returns:
-            np.ndarray: Aggregated weights.
+        Returns list[numpy.ndarray].
         """
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
+        if federated_model is None:
+            raise ValueError("federated_model must be provided")
 
         fed_avg = self.compute_avg_weights(clients_weights, self.weighted)
-        fed_middle_avg_weights = (fed_avg + federated_model) / 2
-        return fed_middle_avg_weights
+        fed_model_layers = self._to_layer_list(federated_model)
+
+        if len(fed_avg) != len(fed_model_layers):
+            raise ValueError("Mismatch in number of layers between clients and federated model")
+
+        return [(fed_avg[i] + fed_model_layers[i]) / 2.0 for i in range(len(fed_avg))]
 
 
 class FedAvgMomentum(AggregationAlgorithm):
     """
     Implements the server momentum aggregation algorithm for Federated Learning.
     Combines momentum with FedAvg to stabilize and accelerate the training process.
-
-    Args:
-        beta (float): Momentum factor.
-        learning_rate (float): Learning rate for updating weights.
-        weighted (bool): If True, use a weighted average based on the number of training samples per client.
-                         If False, use a simple arithmetic mean.
     """
 
-    def __init__(self, beta=0.9, learning_rate=0.1, weighted=True):
+    def __init__(self, beta=0.9, learning_rate=0.01, weighted=True):
         self.beta = beta
         self.learning_rate = learning_rate
         self.weighted = weighted
-        self.momentum = None
+        self.momentum = None  # will be list of arrays
 
-    def aggregate_weights(self, clients_weights: dict, federated_model: np.ndarray) -> np.ndarray:
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
         """
         Aggregates client weights using server momentum.
 
-        Args:
-            clients_weights (dict): Dictionary containing client weights and respective contributions.
-            federated_model (np.ndarray): Current federated model weights.
-
-        Returns:
-            np.ndarray: New federated model weights.
+        Returns list[numpy.ndarray].
         """
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
+        if federated_model is None:
+            raise ValueError("federated_model must be provided")
+
+        fed_model_layers = self._to_layer_list(federated_model)
 
         if self.momentum is None:
-            self.momentum = np.zeros_like(federated_model)
+            self.momentum = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
 
-        # Compute the average operation
         avg = self.compute_avg_weights(clients_weights, self.weighted)
 
-        # Compute the difference between the model and the average
-        delta = avg - federated_model
+        if len(avg) != len(fed_model_layers):
+            raise ValueError("Mismatch in number of layers between clients and federated model")
 
-        # Update momentum
-        self.momentum = self.beta * self.momentum + delta
+        # delta = avg - federated_model (per-layer)
+        deltas = [avg[i] - fed_model_layers[i] for i in range(len(avg))]
 
-        # Compute new weights
-        new_weights = federated_model + self.learning_rate * self.momentum
+        # update momentum and compute new weights using a damped update
+        new_weights = []
+        for i, delta in enumerate(deltas):
+            # use (1-beta) factor to avoid unbounded accumulation
+            self.momentum[i] = self.beta * self.momentum[i] + (1.0 - self.beta) * delta
+            new_w = fed_model_layers[i] + self.learning_rate * self.momentum[i]
+            new_weights.append(new_w)
 
         return new_weights
 
@@ -202,13 +224,7 @@ class FedAvgMomentum(AggregationAlgorithm):
 class FedAdam(AggregationAlgorithm):
     """
     Implements the Adam (Adaptive Moment Estimation) aggregation algorithm for Federated Learning.
-    Combines first and second moment estimates with FedAvg to stabilize and accelerate the training process.
-
-    Args:
-        beta1 (float): Exponential decay rate for the first moment estimates.
-        beta2 (float): Exponential decay rate for the second moment estimates.
-        epsilon (float): Small constant for numerical stability.
-        learning_rate (float): Learning rate for updating weights.
+    Operates layer-wise and stores m/v as lists of arrays.
     """
 
     def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001):
@@ -216,56 +232,50 @@ class FedAdam(AggregationAlgorithm):
         self.beta2 = beta2
         self.epsilon = epsilon
         self.learning_rate = learning_rate
-        self.m = None  # First moment vectors for each client
-        self.v = None  # Second moment vectors for each client
-        self.t = 0  # Timestep
+        self.m = None  # list of first moments (per-layer)
+        self.v = None  # list of second moments (per-layer)
+        self.t = 0  # timestep
 
-    def aggregate_weights(self, clients_data: dict, federated_model: np.ndarray) -> np.ndarray:
+    def aggregate_weights(self, clients_data: dict, federated_model) -> list:
         """
-        Aggregates client gradients using the Adam algorithm.
-
-        Args:
-            clients_data (dict): Dictionary containing client weights, gradients and respective contributions.
-            federated_model (np.ndarray): Current federated model weights.
-
-        Returns:
-            np.ndarray: New federated model weights.
+        Aggregates client weights using an Adam-like server optimizer.
+        clients_data is expected to contain 'weights' (for FedAvg) or gradients depending on use.
+        Returns list[numpy.ndarray].
         """
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
+        if federated_model is None:
+            raise ValueError("federated_model must be provided")
 
-        # Initialize m and v for each client if not already done
+        fed_model_layers = self._to_layer_list(federated_model)
+
         if self.m is None:
-            self.m = np.zeros_like(federated_model)
+            self.m = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
         if self.v is None:
-            self.v = np.zeros_like(federated_model)
+            self.v = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
+
         self.t += 1
 
-        avg = self.compute_avg_weights(clients_data)
+        # Use FedAvg as base update (weighted)
+        avg = self.compute_avg_weights(clients_data, weighted=True)
 
-        delta_w = avg - federated_model
+        if len(avg) != len(fed_model_layers):
+            raise ValueError("Mismatch in number of layers between clients and federated model")
 
-        # Update biased first moment estimate for client
-        self.m = self.beta1 * self.m + (1 - self.beta1) * delta_w
+        new_params = []
+        for i in range(len(avg)):
+            delta_w = avg[i] - fed_model_layers[i]
+            # update biased first moment estimate
+            self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * delta_w
+            # update biased second raw moment estimate
+            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (delta_w ** 2)
 
-        # Update biased second raw moment estimate for client
-        self.v = self.beta2 * self.v + (1 - self.beta2) * (delta_w ** 2)
+            # compute bias-corrected estimates
+            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
+            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
 
-        # Compute bias-corrected first moment estimate
-        m_hat = self.m / (1 - self.beta1 ** self.t)
-
-        # Compute bias-corrected second raw moment estimate
-        v_hat = self.v / (1 - self.beta2 ** self.t)
-
-        v_hat_sqr_list = []
-
-        for arr in v_hat:
-            sqrt_arr = np.sqrt(arr)
-            v_hat_sqr_list.append(sqrt_arr)
-
-        v_hat_squared = np.array(v_hat_sqr_list, dtype='object')
-
-        new_params = federated_model + self.learning_rate * m_hat / (v_hat_squared + self.epsilon)
+            # parameter update
+            denom = np.sqrt(v_hat) + self.epsilon
+            new_param = fed_model_layers[i] + self.learning_rate * (m_hat / denom)
+            new_params.append(new_param)
 
         return new_params
 
@@ -278,13 +288,16 @@ class FedSGD(AggregationAlgorithm):
     def __init__(self, learning_rate=0.01):
         self.learning_rate = learning_rate
 
-    def aggregate_weights(self, clients_gradients: dict, federated_model: np.ndarray) -> np.ndarray:
-        if federated_model is None or not isinstance(federated_model, np.ndarray):
-            raise ValueError("federated_model must be a valid numpy ndarray")
+    def aggregate_weights(self, clients_gradients: dict, federated_model) -> list:
+        if federated_model is None:
+            raise ValueError("federated_model must be provided")
 
-        # Compute the weighted average of gradients
+        fed_model_layers = self._to_layer_list(federated_model)
         avg_gradient = self.compute_avg_gradients(clients_gradients, True)
 
-        new_weights = federated_model - self.learning_rate * avg_gradient
+        if len(avg_gradient) != len(fed_model_layers):
+            raise ValueError("Mismatch in number of layers between gradients and federated model")
+
+        new_weights = [fed_model_layers[i] - self.learning_rate * avg_gradient[i] for i in range(len(fed_model_layers))]
 
         return new_weights

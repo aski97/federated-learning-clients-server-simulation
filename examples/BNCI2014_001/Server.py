@@ -34,12 +34,12 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 5)
-    server.set_aggregation_algorithm(FedAvg())
+    server = Server(server_address, 9, 15)
+    # server.set_aggregation_algorithm(FedAvg())
     # server.set_aggregation_algorithm(FedMiddleAvg())
-    # server.set_aggregation_algorithm(FedAvgMomentum(beta=0.1))
+    server.set_aggregation_algorithm(FedAvgMomentum(beta=0.01))
     # server.set_aggregation_algorithm(FedAdam(beta1=0.5, learning_rate=0.01))
     server.enable_op_determinism()
     server.enable_clients_profiling(False)
-    server.enable_evaluations_plots(True)
+    server.enable_evaluations_plots(False)
     server.run()
