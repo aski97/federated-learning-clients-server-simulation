@@ -344,6 +344,7 @@ class TCPServer(ABC):
                         break
 
     def _handle_final_evaluations(self) -> None:
+        import time
         """
         It manages the final evaluations of Federated Learning,
         displaying the results and generating any graphs if necessary.
@@ -597,8 +598,9 @@ class TCPServer(ABC):
                 if self._rounds_finished and len(self.clients_evaluations) > 0 and len(self.clients_evaluations) < self.number_clients:
                     self.logger.warning("Rounds finished but received only %d/%d client evaluations — proceeding with available data",
                                         len(self.clients_evaluations), self.number_clients)
-                    # process with available data (reuse same code path) then stop
-                    # ... you can duplicate or call a helper that runs the evaluation/plots ...
+                    time.sleep(0.5)  # small delay to allow any last message to be processed
+                elif self._rounds_finished and len(self.clients_evaluations) == self.number_clients:
+                    self.logger.info("All client evaluations received after rounds finished")
                     self._stop_event.set()
                     break
 
