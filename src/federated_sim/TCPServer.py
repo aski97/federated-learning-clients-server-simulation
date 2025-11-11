@@ -1,6 +1,16 @@
 import os
 import logging
 
+import time 
+
+try:
+    from src.federated_sim.utils.MetricsCalculator import MetricsCalculator
+    from src.federated_sim.utils.ResultsLogger import ResultsLogger
+    from src.federated_sim.utils.PlotGenerator import PlotGenerator
+except ImportError:
+    print("Could not import custom utils. Please ensure they are in the correct path.")
+    exit(1)
+
 from src.federated_sim.AggregationAlgorithm import AggregationAlgorithm, FedAvg
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -344,265 +354,79 @@ class TCPServer(ABC):
                         break
 
     def _handle_final_evaluations(self) -> None:
-        import time
         """
         It manages the final evaluations of Federated Learning,
-        displaying the results and generating any graphs if necessary.
+        delegating processing, logging, and plotting to specialized classes.
         """
         with self.condition_add_client_evaluation:
             while True:
-                self.logger.debug("Waiting for client evaluations (received %d/%d)", len(self.clients_evaluations), self.number_clients)
-                # wait for evaluations (timeout to allow checks)
+                self.logger.debug("Waiting for client evaluations (received %d/%d)", 
+                                 len(self.clients_evaluations), self.number_clients)
+                
+                # Wait with a timeout to allow _stop_event checks
                 self.condition_add_client_evaluation.wait(timeout=1.0)
 
                 # If all evaluations received -> process and then request shutdown
                 if len(self.clients_evaluations) == self.number_clients:
+                    self.logger.info("All %d client evaluations received. Processing final results...", 
+                                     self.number_clients)
+                    
+                    try:
+                        # 1. Initialize helper classes
+                        agg_name = self.aggregation_algorithm.__class__.__name__
+                        class_names = self.get_classes_name()
 
-                    def get_federated_average_metrics(metric_type, values):
-                        data_per_client = []
+                        calculator = MetricsCalculator(
+                            aggregation_name=agg_name,
+                            num_rounds=self.number_rounds,
+                            classes_name=class_names
+                        )
+                        reporter = ResultsLogger(logger=self.logger)
+                        plotter = PlotGenerator(
+                            aggregation_name=agg_name,
+                            classes_name=class_names,
+                            num_rounds=self.number_rounds
+                        )
 
-                        for key, value in values.items():
-                            eval_federated = value['evaluation_federated']
-                            metric_values = [el[0 if metric_type == "accuracy" else 1] for el in eval_federated]
-                            data_per_client.append(metric_values)
+                        # 2. Process: Delegate calculation
+                        processed_data = calculator.process(self.clients_evaluations)
 
-                        values_per_client_np = np.array(data_per_client)
+                        # 3. Report: Delegate logging
+                        reporter.log_summary(processed_data)
+                        reporter.log_client_profiling(
+                            self.clients_evaluations,
+                            self._output_bytes_clients,
+                            self._clients_profiling_enabled
+                        )
 
-                        method_name = self.aggregation_algorithm.__class__.__name__
-                        # Save the rounds values to a NumPy file
-                        # Define the directory to save the file
-                        directory = 'evaluations/nodes/'
-
-                        # Check if the directory exists, if not, create it
-                        os.makedirs(directory, exist_ok=True)
-
-                        # Save the rounds values to a NumPy file
-                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{self.number_rounds}rounds.npy'),
-                                values_per_client_np)
-
-                        mean = np.mean(values_per_client_np, axis=0)
-                        return mean
-
-                    def print_clients_profiling_data():
-                        import psutil
-                        import resource
-                        max_m_used = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-                        print(f"Server max memory used: {max_m_used / (1024.0 * 1024.0)} GB")
-                        # Ottieni il processo corrente
-                        process = psutil.Process()
-
-                        # Ottieni l'uso della memoria del processo corrente
-                        memory_info = process.memory_info()
-
-                        # Se vuoi ottenere l'uso della memoria in Megabyte
-                        print(f"RSS (Resident Set Size): {memory_info.rss / (1024 ** 2)} MB")
-
-                        for key, value in self.clients_evaluations.items():
-                            client_id = key
-                            if self._clients_profiling_enabled:
-                                profiling_data = value['info_profiling']
-
-                                output_bytes = self._output_bytes_clients[client_id]
-                                input_bytes = profiling_data['bytes_input']
-                                train_samples = profiling_data['train_samples']
-                                test_samples = profiling_data['test_samples']
-                                n_i = profiling_data['training_n_instructions']
-                                e_t = value['training_execution_time']
-                                ram_used = profiling_data['max_ram_used']
-
-                                print(f"Profiling Client {client_id} -> "
-                                      f"input_bytes = {input_bytes} B"
-                                      f"|| output_bytes = {output_bytes} B"
-                                      f"|| #instructions = {n_i} "
-                                      f"|| execution_time = {e_t} s "
-                                      f"|| max_ram_used = {ram_used / (1024.0 * 1024.0)} GB "
-                                      f"|| #train_samples = {train_samples} "
-                                      f"!! #test_samples = {test_samples} ")
-                            else:
-                                e_t = value['training_execution_time']
-                                print(f"Profiling Client {client_id} -> "
-                                      f"|| execution_time = {e_t} s ")
-
-                    def plot_profiling_data(data_type, title, y_label):
-                        from matplotlib import pyplot as plt
-
-                        clients = []
-                        data = []
-                        plt.title(title)
-                        for key, value in self.clients_evaluations.items():
-                            client_id = key
-
-                            profiling_data = value['info_profiling']
-
-                            clients.append(f"C{client_id}")
-
-                            if data_type == "training_execution_time":
-                                val = value["training_execution_time"]
-                            else:
-                                val = profiling_data[data_type]
-
-                            if data_type == "max_ram_used":
-                                val = val / (1024.0 * 1024.0)  # convert from KB to GB
-
-                            data.append(val)
-
-                        plt.stem(clients, data)
-
-                        plt.ylabel(y_label)
-
-                        plt.show()
-
-                    def plot_metric_per_client(metric_type):
-                        from matplotlib import pyplot as plt
-
-                        fig, ax = plt.subplots()
-                        fig.suptitle(f'{metric_type.capitalize()} on test samples after receiving Federated Model')
-
-                        for key, value in self.clients_evaluations.items():
-                            client_id = key
-                            eval_federated = value['evaluation_federated']
-                            metric_values = [el[0 if metric_type == "accuracy" else 1] for el in eval_federated]
-                            round_numbers = list(range(len(eval_federated)))
-
-                            ax.plot(round_numbers, metric_values, label=f'Client {client_id}', marker='o')
-
-                        ax.set_xlabel('Rounds')
-                        ax.set_ylabel(metric_type.capitalize())
-                        ax.legend()
-
-                        # plt.savefig(f'plots/{metric_type}_per_client.png')
-
-                        plt.show()
-
-                    def plot_average_metric(metric_type, values):
-                        from matplotlib import pyplot as plt
-
-                        rounds = list(range(len(values)))
-
-                        fig, ax = plt.subplots()
-                        fig.suptitle(f'Average {metric_type} of Federated Model per round')
-
-                        ax.plot(rounds, values, label=f'Federated Model', marker='o')
-
-                        ax.set_xlabel('Rounds')
-                        ax.set_ylabel(f'{metric_type.capitalize()}')
-                        ax.legend()
-
-                        # plt.savefig(f'plots/{metric_type}_federated_model.png')
-                        plt.show()
-                        method_name = self.aggregation_algorithm.__class__.__name__
-                        # Save the rounds values to a NumPy file
-                        # Define the directory to save the file
-                        directory = 'evaluations'
-
-                        # Check if the directory exists, if not, create it
-                        os.makedirs(directory, exist_ok=True)
-
-                        # Save the rounds values to a NumPy file
-                        np.save(os.path.join(directory, f'{metric_type}_{method_name}_{len(values) - 1}rounds.npy'), values)
-
-                    def plot_confusion_matrix(values, classes):
-                        from matplotlib import pyplot as plt
-                        import itertools
-
-                        plt.imshow(values, interpolation='nearest', cmap=plt.colormaps["Reds"])
-                        plt.title('Confusion matrix')
-                        plt.colorbar()
-                        tick_marks = np.arange(len(classes))
-                        plt.xticks(tick_marks, classes, rotation=45)
-                        plt.yticks(tick_marks, classes)
-
-                        thresh = values.max() / 2.
-                        for i, j in itertools.product(range(values.shape[0]), range(values.shape[1])):
-                            color = "white" if values[i, j] > thresh else "black"
-                            plt.text(j, i, str(values[i, j]), horizontalalignment="center", color=color)
-
-                        plt.tight_layout()
-                        plt.ylabel('True label')
-                        plt.xlabel('Predicted label')
-                        plt.show()
-
-                    # compute federated average metrics
-                    accuracy_avg = get_federated_average_metrics('accuracy', self.clients_evaluations)
-                    loss_avg = get_federated_average_metrics('loss', self.clients_evaluations)
-
-                    # confusion matrix
-                    final_cm_per_client = [value['cm_federated'][-1] for value in self.clients_evaluations.values()]
-
-                    # Compute mean confusion matrix
-                    n_classes = len(self.get_classes_name())
-
-                    sum_rows = np.zeros((n_classes, n_classes))
-                    count_rows = np.zeros(n_classes)
-
-                    for matrix in final_cm_per_client:
-                        for i in range(n_classes):
-                            # if the row has at least one not zero-value
-                            if np.any(matrix[i]):
-                                sum_rows[i] += matrix[i]
-                                count_rows[i] += 1
-
-                    average_rows = np.zeros((n_classes, n_classes))
-                    for i in range(n_classes):
-                        if count_rows[i] > 0:
-                            average_rows[i] = sum_rows[i] / count_rows[i]
-
-                    cm_mean = np.round(average_rows, 2)
-
-                    logger.info("Average accuracy of final federated model: %s", accuracy_avg[-1])
-                    logger.info("Average loss of final federated model: %s", loss_avg[-1])
-                    logger.info("Average Confusion Matrix of final federated model (Percentage):\n%s", cm_mean)
-
-                    # profiling / per-client info
-                    for key, value in self.clients_evaluations.items():
-                        client_id = key
-                        if self._clients_profiling_enabled:
-                            profiling_data = value['info_profiling']
-                            output_bytes = self._output_bytes_clients.get(client_id, 0)
-                            input_bytes = profiling_data.get('bytes_input', 0)
-                            train_samples = profiling_data.get('train_samples', 0)
-                            test_samples = profiling_data.get('test_samples', 0)
-                            n_i = profiling_data.get('training_n_instructions', 0)
-                            e_t = value.get('training_execution_time', 0)
-                            ram_used = profiling_data.get('max_ram_used', 0)
-
-                            logger.info("Profiling Client %s -> input_bytes=%s B output_bytes=%s B #instructions=%s execution_time=%s s max_ram_used=%s B #train_samples=%s #test_samples=%s",
-                                        client_id, input_bytes, output_bytes, n_i, e_t, ram_used, train_samples, test_samples)
+                        # 4. Plot: Delegate visualization
+                        if self._evaluation_plots_enabled:
+                            plotter.plot_all(
+                                processed_data,
+                                self.clients_evaluations,
+                                self._clients_profiling_enabled
+                            )
                         else:
-                            e_t = value.get('training_execution_time', 0)
-                            logger.info("Client %s execution_time=%s s", client_id, e_t)
+                            self.logger.info("Evaluation plots are disabled. Skipping plot generation.")
 
-                    if self._evaluation_plots_enabled:
-                        plot_metric_per_client('accuracy')
-                        plot_metric_per_client('loss')
-                        plot_average_metric("accuracy", accuracy_avg)
-                        plot_average_metric("loss", loss_avg)
-                        plot_confusion_matrix(cm_mean, self.get_classes_name())
-
-                        if self._clients_profiling_enabled:
-                            plot_profiling_data('training_n_instructions',
-                                                "Total number of instructions during all the training process",
-                                                "# instructions")
-                            plot_profiling_data('training_execution_time',
-                                                "Total execution time of the training",
-                                                "seconds")
-                            plot_profiling_data('max_ram_used',
-                                                "Max memory used during all the training process",
-                                                "GB")
-
-                    # after finishing final evaluation we can set stop to allow clean shutdown
-                    self._stop_event.set()
-                    break
-
-                # if rounds finished but we never will receive all evaluations, exit after logging
-                if self._rounds_finished and len(self.clients_evaluations) > 0 and len(self.clients_evaluations) < self.number_clients:
-                    self.logger.warning("Rounds finished but received only %d/%d client evaluations — proceeding with available data",
-                                        len(self.clients_evaluations), self.number_clients)
-                    time.sleep(0.5)  # small delay to allow any last message to be processed
-                elif self._rounds_finished and len(self.clients_evaluations) == self.number_clients:
-                    self.logger.info("All client evaluations received after rounds finished")
-                    self._stop_event.set()
-                    break
+                    except Exception as e:
+                        self.logger.critical("A critical error occurred during final evaluation processing: %s", e, exc_info=True)
+                    
+                    finally:
+                        # 5. Signal server shutdown
+                        self.logger.info("Final evaluations finished. Signalling server to stop.")
+                        self._stop_event.set()
+                        break # Exit the wait loop
+                # Handle case where rounds finished but not all clients reported
+                elif self._rounds_finished:
+                    if len(self.clients_evaluations) > 0:
+                        self.logger.warning("Rounds finished but received only %d/%d client evaluations. Proceeding with available data in 1s...",
+                                            len(self.clients_evaluations), self.number_clients)
+                        time.sleep(1.0) # Give a short grace period
+                        
+                    else:
+                        self.logger.warning("Rounds finished but no evaluations received. Shutting down.")
+                        time.sleep(1.0) # Give a short grace period
 
     def _send_fl_model_to_client(self, client_socket: socket.socket) -> None:
         """
