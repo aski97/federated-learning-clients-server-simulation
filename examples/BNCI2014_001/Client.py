@@ -18,7 +18,7 @@ class Client(TCPClient):
         return 32
 
     def get_train_epochs(self) -> int:
-        return 20
+        return 30
 
     def get_loss_function(self):
         return keras.losses.CategoricalCrossentropy()
@@ -73,7 +73,7 @@ class Client(TCPClient):
         return x_train, x_test, y_train, y_test
 
     def get_optimizer(self):
-        return keras.optimizers.Adam(0.002)
+        return keras.optimizers.SGD(0.002)
 
 
 if __name__ == "__main__":

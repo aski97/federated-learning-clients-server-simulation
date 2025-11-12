@@ -236,10 +236,10 @@ class FedAdam(AggregationAlgorithm):
         self.v = None  # list of second moments (per-layer)
         self.t = 0  # timestep
 
-    def aggregate_weights(self, clients_data: dict, federated_model) -> list:
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
         """
         Aggregates client weights using an Adam-like server optimizer.
-        clients_data is expected to contain 'weights' (for FedAvg) or gradients depending on use.
+        clients_weights is expected to contain 'weights'.
         Returns list[numpy.ndarray].
         """
         if federated_model is None:
@@ -255,7 +255,7 @@ class FedAdam(AggregationAlgorithm):
         self.t += 1
 
         # Use FedAvg as base update (weighted)
-        avg = self.compute_avg_weights(clients_data, weighted=True)
+        avg = self.compute_avg_weights(clients_weights, weighted=True)
 
         if len(avg) != len(fed_model_layers):
             raise ValueError("Mismatch in number of layers between clients and federated model")
@@ -273,6 +273,124 @@ class FedAdam(AggregationAlgorithm):
             v_hat = self.v[i] / (1 - self.beta2 ** self.t)
 
             # parameter update
+            denom = np.sqrt(v_hat) + self.epsilon
+            new_param = fed_model_layers[i] + self.learning_rate * (m_hat / denom)
+            new_params.append(new_param)
+
+        return new_params
+
+class FedAdagrad(AggregationAlgorithm):
+    """
+    Implements the FedAdagrad algorithm.
+    
+    This is an Adam-like optimizer that uses the Adagrad rule for the 
+    second moment (v_t).
+    """
+
+    def __init__(self, beta1=0.9, epsilon=1e-7, learning_rate=0.001):
+        self.beta1 = beta1
+        self.epsilon = epsilon
+        self.learning_rate = learning_rate
+        self.m = None  # list of first moments (per-layer)
+        self.v = None  # list of second moments (per-layer)
+        self.t = 0     # timestep
+
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
+        """
+        Aggregates client weights using the FedAdagrad server optimizer.
+        """
+        if federated_model is None:
+            raise ValueError("federated_model must be provided")
+
+        fed_model_layers = self._to_layer_list(federated_model)
+
+        if self.m is None:
+            self.m = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
+        if self.v is None:
+            # v_t is an accumulator, initialize to zeros
+            self.v = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
+
+        self.t += 1
+
+        # Use FedAvg as base update (weighted)
+        avg = self.compute_avg_weights(clients_weights, weighted=True)
+
+        if len(avg) != len(fed_model_layers):
+            raise ValueError("Mismatch in number of layers between clients and federated model")
+
+        new_params = []
+        for i in range(len(avg)):
+            delta_w = avg[i] - fed_model_layers[i] 
+
+            self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * delta_w
+            
+            # v_t = v_{t-1} + Delta_t^2
+            self.v[i] = self.v[i] + (delta_w ** 2)
+
+            # Compute bias-corrected first moment (m_hat)
+            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
+            
+            denom = np.sqrt(self.v[i]) + self.epsilon
+            new_param = fed_model_layers[i] + self.learning_rate * (m_hat / denom)
+            new_params.append(new_param)
+
+        return new_params
+
+
+class FedYogi(AggregationAlgorithm):
+    """
+    Implements the FedYogi algorithm.
+    
+    This is an Adam-variant optimizer that uses a different rule for 
+    the second moment (v_t) to control its increase.
+    """
+
+    def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-7, learning_rate=0.001):
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.learning_rate = learning_rate
+        self.m = None  # list of first moments (per-layer)
+        self.v = None  # list of second moments (per-layer)
+        self.t = 0     # timestep
+
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
+        """
+        Aggregates client weights using the FedYogi server optimizer.
+        """
+        if federated_model is None:
+            raise ValueError("federated_model must be provided")
+
+        fed_model_layers = self._to_layer_list(federated_model)
+
+        if self.m is None:
+            self.m = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
+        if self.v is None:
+            self.v = [np.zeros_like(layer, dtype=float) for layer in fed_model_layers]
+
+        self.t += 1
+
+        # Use FedAvg as base update (weighted)
+        avg = self.compute_avg_weights(clients_weights, weighted=True)
+
+        if len(avg) != len(fed_model_layers):
+            raise ValueError("Mismatch in number of layers between clients and federated model")
+
+        new_params = []
+        for i in range(len(avg)):
+            delta_w = avg[i] - fed_model_layers[i] 
+            delta_w_sq = delta_w ** 2
+
+            self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * delta_w
+            
+            v_prev = self.v[i]
+            sign_diff = np.sign(v_prev - delta_w_sq)
+            self.v[i] = v_prev - (1 - self.beta2) * delta_w_sq * sign_diff
+
+            # Compute bias-corrected estimates (same as FedAdam)
+            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
+            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
+
             denom = np.sqrt(v_hat) + self.epsilon
             new_param = fed_model_layers[i] + self.learning_rate * (m_hat / denom)
             new_params.append(new_param)

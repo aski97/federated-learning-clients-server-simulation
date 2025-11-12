@@ -1,7 +1,7 @@
 import sys
 import os
 
-from federated_sim.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam
+from federated_sim.AggregationAlgorithm import FedAvg, FedMiddleAvg, FedAvgMomentum, FedAdam, FedYogi
 
 dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(dir_path)
@@ -34,10 +34,11 @@ if __name__ == "__main__":
     server_address = ('localhost', 12345)
 
     # Server creation and execution
-    server = Server(server_address, 9, 15)
-    # server.set_aggregation_algorithm(FedAvg())
+    server = Server(server_address, 9, 20)
+    #server.set_aggregation_algorithm(FedAvg())
+    server.set_aggregation_algorithm(FedYogi(beta1=0.5, beta2=0.9, learning_rate=0.01))
     # server.set_aggregation_algorithm(FedMiddleAvg())
-    server.set_aggregation_algorithm(FedAvgMomentum(beta=0.01))
+    # server.set_aggregation_algorithm(FedAvgMomentum(beta=0.01))
     # server.set_aggregation_algorithm(FedAdam(beta1=0.5, learning_rate=0.01))
     server.enable_op_determinism()
     server.enable_clients_profiling(False)
