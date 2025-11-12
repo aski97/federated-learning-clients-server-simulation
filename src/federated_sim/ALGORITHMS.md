@@ -106,9 +106,65 @@ All three algorithms share the same update for the 1st moment (momentum) $m_t$ a
 
 ---
 
+## Robust Aggregation Algorithms
+
+These algorithms are designed to be resilient to outlier clients, such as those sending corrupted or malicious (Byzantine) updates.
+
+### 8. FedMedian
+
+* **Class:** `FedMedian`
+* **Description:** A robust aggregation algorithm that computes the **element-wise median** of client model weights instead of the mean. The median is a robust statistic, making the aggregation step highly resilient to a fraction of outlier clients.
+* **Formula:**
+    $$
+    x_{t+1}[j] = \text{Median}\left( x_{1,K}^t[j], x_{2,K}^t[j], \ldots, x_{|S|,K}^t[j] \right)
+    $$
+    (where $j$ indexes an individual parameter in the model)
+
+---
+
+## Personalized Federated Learning (PFL) Algorithms
+
+These algorithms aim to create models that are personalized for each client's local data, rather than a single "one-size-fits-all" global model.
+
+### 9. FedRep
+
+* **Class:** `FedRep`
+* **Description:** Implements Federated Representation Learning. The model is split into a shared **"base"** (representation) and a personal **"head"** (classifier). The server only aggregates the base layers from clients using FedAvg. The head layers are trained and kept locally by each client and are never sent to the server.
+* **Formula:**
+    1.  Split model: $x = (x_{\text{base}}, x_{\text{head}})$
+    2.  Compute FedAvg for base: $x_{\text{base, avg}}^t = \sum_{i \in S} \frac{n_i}{N} x_{i, \text{base}}^t$
+    3.  Update global model: $x_{t+1} = (x_{\text{base, avg}}^t, x_{\text{head}}^t)$
+        (The global model's head $x_{\text{head}}^t$ is retained from the previous round. Clients receive the new $x_{\text{base, avg}}^t$ and continue training their personal $x_{i, \text{head}}$).
+* **Source:** Collins, L., Hassani, H., Mokhtari, A., & Shakkottai, S. (2021). "Exploiting Shared Representations for Personalized Federated Learning." *ICML*.
+
+---
+
+## Notes on Client-Side Optimization
+
+While this repository focuses on *server-side* aggregation, the choice of the *client-side* optimizer is equally critical.
+
+1.  **Recommended: Standard SGD**
+    * The vast majority of FL algorithms, including the original **FedAvg**, assume clients perform their local training using standard **Stochastic Gradient Descent (SGD)**.
+    * This is lightweight, computationally cheap, and its (mostly) stateless nature works well with the "averaging" paradigm.
+
+2.  **Caution: Client-Side Adaptive Optimizers (e.g., Adam)**
+    * It is generally **not recommended** to use stateful, adaptive optimizers like **Adam**, **RMSProp**, or **Adagrad** on the clients *when using FedAvg*.
+    * **Reason:** These optimizers maintain internal states (e.g., 1st and 2nd moment vectors $m$ and $v$ for Adam). When the server performs `FedAvg`, it averages the *model weights* ($x_i$) but not the *optimizer states*.
+    * When a client receives the new global model ($x_{t+1}$), its local optimizer state is now "out of sync" with the new weights, leading to instability and poor convergence.
+    * **The Solution:** This problem is the entire motivation for the **Adaptive Federated Optimization** algorithms (`FedAdam`, `FedYogi`). They **move the adaptive logic to the server**, allowing clients to remain simple (using SGD) while the global model benefits from adaptive updates.
+
+3.  **For Non-IID Data: FedProx or SCAFFOLD**
+    * If you are dealing with significant data heterogeneity (non-IID data), the main challenge is "client drift," where local models diverge too far from the global consensus.
+    * **`FedProx`:** This is a client-side modification. The client still uses SGD, but adds a **proximal term** to its local loss function. This term penalizes the local model for moving too far from the global model it started with, effectively limiting client drift.
+    * **`SCAFFOLD`:** This is a more advanced (and stateful) algorithm that modifies both the client and server to correct for client drift using control variates. The client optimizer is still based on SGD.
+
+---
+
 ## References
 
 1.  Reddi, S., et al. (2020). **"Adaptive Federated Optimization."**
     * *Link:* [https://arxiv.org/pdf/2003.00295](https://arxiv.org/pdf/2003.00295)
 2.  McMahan, H. B., et al. (2017). **"Communication-Efficient Learning of Deep Networks from Decentralized Data."**
     * *Link:* [http://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf](http://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf)
+3.  Collins, L., et al. (2021). **"Exploiting Shared Representations for Personalized Federated Learning."**
+    * *Link:* [http://proceedings.mlr.press/v139/collins21a/collins21a.pdf](http://proceedings.mlr.press/v139/collins21a/collins21a.pdf)

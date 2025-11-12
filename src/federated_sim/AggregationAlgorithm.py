@@ -419,3 +419,137 @@ class FedSGD(AggregationAlgorithm):
         new_weights = [fed_model_layers[i] - self.learning_rate * avg_gradient[i] for i in range(len(fed_model_layers))]
 
         return new_weights
+    
+
+class FedMedian(AggregationAlgorithm):
+    """
+    Implements Federated Median (FedMedian).
+    Aggregates weights by computing the element-wise median of client weights.
+    This algorithm is robust to outliers and Byzantine clients.
+    """
+
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
+        """
+        Aggregates client weights using element-wise median.
+
+        Args:
+            clients_weights (dict): Dictionary of client weights.
+            federated_model: Ignored (not needed for median).
+
+        Returns:
+            list[numpy.ndarray]: Aggregated weights (layer-wise list).
+        """
+        if not clients_weights:
+            raise ValueError("clients_weights dictionary is empty")
+
+        # Infer number of layers from the first client
+        first_client_val = next(iter(clients_weights.values()))
+        first_layers = self._to_layer_list(first_client_val['weights'])
+        n_layers = len(first_layers)
+
+        median_weights = []
+
+        # Iterate layer by layer
+        for i in range(n_layers):
+            # Stack the i-th layer from all clients
+            try:
+                # Collect the i-th layer from each client
+                layer_stack = [
+                    np.array(self._to_layer_list(client_val['weights'])[i])
+                    for client_val in clients_weights.values()
+                ]
+                
+                # Stack into a single numpy array (clients, layer_shape...)
+                stacked_arr = np.stack(layer_stack, axis=0)
+                
+                # Compute the median along the 'clients' axis (axis=0)
+                median_layer = np.median(stacked_arr, axis=0)
+                median_weights.append(median_layer)
+
+            except Exception as e:
+                raise ValueError(f"Error computing median for layer {i}. "
+                                 f"Ensure all clients have identical model architectures. Error: {e}")
+
+        return median_weights
+
+
+class FedRep(AggregationAlgorithm):
+    """
+    Implements Federated Representation Learning (FedRep).
+    
+    This algorithm splits the model into a 'base' (representation) and a
+    'head' (e.g., classifier). It aggregates only the 'base' layers using 
+    FedAvg, while the 'head' layers remain personal to each client and
+    are not aggregated.
+    
+    The server only updates and distributes the shared base.
+    """
+
+    def __init__(self, n_personal_layers: int = 2, weighted: bool = True):
+        """
+        Initializes the FedRep algorithm.
+
+        Args:
+            n_personal_layers (int): The number of layers from the *end* of
+                                     the model to treat as the personal 'head'.
+                                     These layers will not be aggregated.
+            weighted (bool): If True, use weighted FedAvg for the base layers.
+        """
+        if n_personal_layers < 1:
+            raise ValueError("n_personal_layers must be at least 1")
+            
+        self.n_personal_layers = n_personal_layers
+        self.weighted = weighted
+
+    def aggregate_weights(self, clients_weights: dict, federated_model) -> list:
+        """
+        Aggregates only the 'base' (representation) layers of the model.
+        The 'head' layers are taken from the current federated_model.
+
+        Args:
+            clients_weights (dict): Dictionary of client weights.
+            federated_model: Current federated model weights.
+
+        Returns:
+            list[numpy.ndarray]: Aggregated weights (layer-wise list).
+        """
+        if not clients_weights:
+            raise ValueError("clients_weights dictionary is empty")
+        if federated_model is None:
+            raise ValueError("federated_model must be provided for FedRep")
+
+        fed_model_layers = self._to_layer_list(federated_model)
+        n_total_layers = len(fed_model_layers)
+
+        if self.n_personal_layers >= n_total_layers:
+            raise ValueError(
+                f"n_personal_layers ({self.n_personal_layers}) is greater than "
+                f"or equal to total layers ({n_total_layers}). No base layers to aggregate.")
+
+        # Determine the split point
+        split_idx = n_total_layers - self.n_personal_layers
+
+        # Create a new dict containing only the base layers from each client
+        clients_base_weights = {}
+        for client_id, client_data in clients_weights.items():
+            client_all_layers = self._to_layer_list(client_data['weights'])
+            
+            if len(client_all_layers) != n_total_layers:
+                raise ValueError(f"Client {client_id} has {len(client_all_layers)} layers, "
+                                 f"but federated model has {n_total_layers}.")
+            
+            # Extract base layers and copy client metadata
+            client_base = client_all_layers[:split_idx]
+            clients_base_weights[client_id] = {
+                'weights': client_base,
+                'n_training_samples': client_data.get('n_training_samples', 0)
+            }
+
+        # Aggregate the base layers using standard FedAvg
+        aggregated_base = self.compute_avg_weights(clients_base_weights, self.weighted)
+
+        # Get the (unchanged) head layers from the *current global model*
+        global_head = fed_model_layers[split_idx:]
+
+        # Combine the new base with the old head
+        return aggregated_base + global_head
