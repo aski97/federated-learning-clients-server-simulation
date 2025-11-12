@@ -136,64 +136,10 @@ Once the federated training is complete, the client closes the connection with t
 
 
 ### Supported aggregation algorithms
-The framework supports several aggregation algorithms:
 
-- **FedAvg**: Aggregates the weights of the clients' models by computing a weighted or simple average.
-  - Weighted Average: Each local model contributes based on the number of training samples used by the client.
-  - Simple Average: Each local model contributes equally to the computation of the federated model.
-  
-  Weighted Average Formula:
-  \[
-  \theta_{t+1} = \frac{\sum_{k=1}^{K} n_k \theta_t^{(k)}}{n}
-  \]
-  Simple Average Formula:
-  \[
-  \theta_{t+1} = \frac{1}{K} \sum_{k=1}^{K} \theta_t^{(k)}
-  \]
+The framework supports a modular design for various server-side aggregation strategies. A detailed description of all implemented algorithms, including their formulas and sources, is available in a separate document.
 
-- **FedMiddleAvg**: Averages the current federated model with the average of the clients' models calculated using FedAvg.
-  \[
-  \theta_{t+1} = \frac{(\theta_{t+1}) + \theta_t}{2}
-  \]
-
-- **FedAvgMomentum**: Integrates the concept of momentum into the aggregation of weights to accelerate convergence and reduce oscillations.
-  \[
-  (\theta_{t+1}) = FedAvg(\theta_t^{(1)}, \theta_t^{(2)}, ..., \theta_t^{(k)})
-  \]
-  \[
-  \Delta_{t+1} = (\theta_{t+1}) - \theta_t
-  \]
-  \[
-  v_{t+1} = \beta v_t + \Delta_{t+1} \quad \beta \in [0, 1]
-  \]
-  \[
-  \theta_{t+1} = \theta_t + \eta v_{t+1}
-  \]
-
-- **FedAdam**: A variant of the Adam algorithm designed for federated learning, combining the benefits of AdaGrad and RMSProp.
-  \[
-  (\theta_{t+1}) = FedAvg(\theta_t^{(1)}, \theta_t^{(2)}, ..., \theta_t^{(k)})
-  \]
-  \[
-  \Delta_{t+1} = (\theta_{t+1}) - \theta_t
-  \]
-  \[
-  m_{t+1} = \beta_1 m_t + (1 - \beta_1) \Delta_{t+1}
-  \]
-  \[
-  v_{t+1} = \beta_2 v_t + (1 - \beta_2) \Delta_{t+1}^2
-  \]
-  \[
-  \theta_{t+1} = \theta_t + \eta \frac{m_{t+1}}{\sqrt{v_{t+1}} + \epsilon}
-  \]
-
-- **FedSGD**: A direct extension of Stochastic Gradient Descent (SGD) for federated learning.
-  \[
-  \theta_{t+1}^{(k)} = \theta_t - \eta g_t^{(k)}
-  \]
-  \[
-  \theta_{t+1} = \frac{\sum_{k=1}^{K} n_k \theta_{t+1}^{(k)}}{n}
-  \]
+**➡️ [See the full list and detailed descriptions in ALGORITHMS.md](src/federated_sim/ALGORITHMS.md)**
 
 ### Message exchange
 The server and clients communicate using the TCP/IP protocol. Each exchanged message is composed of a byte sequence, with the first four bytes indicating the message length. The message consists of the following fields:
